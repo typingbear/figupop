@@ -1,9 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.makeDraggable = makeDraggable;
-const utils_1 = require("./utils");
+import { isOverlap, playSound } from './utils';
 let topZ = 10;
-function makeDraggable(img, figure, figures, imageRoot, audioRoot) {
+export function makeDraggable(img, figure, figures, imageRoot, audioRoot) {
     let offsetX, offsetY;
     img.addEventListener('mousedown', (e) => {
         offsetX = e.offsetX;
@@ -18,7 +15,7 @@ function makeDraggable(img, figure, figures, imageRoot, audioRoot) {
             document.querySelectorAll('.figure').forEach(other => {
                 if (other === img)
                     return;
-                if ((0, utils_1.isOverlap)(img, other)) {
+                if (isOverlap(img, other)) {
                     const otherImg = other;
                     const otherId = otherImg.dataset.id;
                     const otherFigure = figures.find(f => f.id === otherId);
@@ -51,7 +48,7 @@ function checkCollision(draggedEl, draggedFigure, allFigures, imageRoot, audioRo
     document.querySelectorAll('.figure').forEach(targetEl => {
         if (targetEl === draggedEl)
             return;
-        if (!(0, utils_1.isOverlap)(draggedEl, targetEl))
+        if (!isOverlap(draggedEl, targetEl))
             return;
         const targetImg = targetEl;
         const targetId = targetImg.dataset.id;
@@ -59,12 +56,12 @@ function checkCollision(draggedEl, draggedFigure, allFigures, imageRoot, audioRo
         const dragReaction = draggedFigure.reactions.find(r => r.with === targetId);
         if (dragReaction && draggedEl.dataset.state !== dragReaction.resultState) {
             setFigureState(draggedEl, draggedFigure.id, dragReaction.resultState, imageRoot);
-            (0, utils_1.playSound)(audioRoot + dragReaction.sound);
+            playSound(audioRoot + dragReaction.sound);
         }
         const targetReaction = targetFigure.reactions.find(r => r.with === draggedId);
         if (targetReaction && targetImg.dataset.state !== targetReaction.resultState) {
             setFigureState(targetImg, targetFigure.id, targetReaction.resultState, imageRoot);
-            (0, utils_1.playSound)(audioRoot + targetReaction.sound);
+            playSound(audioRoot + targetReaction.sound);
         }
     });
 }

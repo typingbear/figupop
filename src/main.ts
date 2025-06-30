@@ -1,6 +1,6 @@
-import { FiguresData, Figure } from './types';
-import { makeDraggable } from './drag';
-import { pickRandom } from './utils';
+import { FiguresData, Figure } from './types.js';
+import { makeDraggable } from './drag.js';
+import { pickRandom } from './utils.js';
 
 const playground = document.getElementById('playground') as HTMLElement;
 const imageRoot = "assets/images/";

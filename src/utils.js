@@ -1,14 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.pickRandom = pickRandom;
-exports.isOverlap = isOverlap;
-exports.playSound = playSound;
 // 랜덤 3개 추출
-function pickRandom(arr, n) {
+export function pickRandom(arr, n) {
     return arr.slice().sort(() => Math.random() - 0.5).slice(0, n);
 }
 // 겹침 체크
-function isOverlap(el1, el2) {
+export function isOverlap(el1, el2) {
     const rect1 = el1.getBoundingClientRect();
     const rect2 = el2.getBoundingClientRect();
     return !(rect1.right < rect2.left ||
@@ -18,7 +13,7 @@ function isOverlap(el1, el2) {
 }
 // 사운드
 let soundCache = {};
-function playSound(url) {
+export function playSound(url) {
     if (!url)
         return;
     if (!soundCache[url])
