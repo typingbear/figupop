@@ -18,42 +18,32 @@ fetch('figures.json')
     });
   });
 
-function makeDraggable(element, figureData, allFiguresData) {
-  let offsetX, offsetY, isDragging = false;
+function makeDraggable(img, figure, figures) {
+  let offsetX, offsetY;
 
-  element.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    offsetX = e.clientX - element.offsetLeft;
-    offsetY = e.clientY - element.offsetTop;
-    element.style.zIndex = 10;
+  img.addEventListener('mousedown', (e) => {
+    offsetX = e.offsetX;
+    offsetY = e.offsetY;
+
+    function onMouseMove(ev) {
+      img.style.left = `${ev.pageX - offsetX}px`;
+      img.style.top = `${ev.pageY - offsetY}px`;
+    }
+
+    function onMouseUp(ev) {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+
+      // 충돌 체크
+      checkCollision(img, figure, figures);
+    }
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
   });
 
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
-    element.style.zIndex = '';
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    element.style.left = `${e.clientX - offsetX}px`;
-    element.style.top = `${e.clientY - offsetY}px`;
-
-    document.querySelectorAll('.figure').forEach(other => {
-      if (other === element) return;
-      if (isOverlap(element, other)) {
-        const otherId = other.dataset.id;
-        const reaction = figureData.reactions.find(r => r.with === otherId);
-        if (reaction && element.dataset.state !== reaction.resultState) {
-          element.dataset.state = reaction.resultState;
-          element.src = figureData.states[reaction.resultState];
-          element.classList.add('glow', 'bounce');
-          setTimeout(() => {
-            element.classList.remove('glow', 'bounce');
-          }, 300);
-        }
-      }
-    });
-  });
+  // ✅ 브라우저 기본 drag 방지
+  img.addEventListener('dragstart', (e) => e.preventDefault());
 }
 
 function isOverlap(el1, el2) {
