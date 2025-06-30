@@ -3,25 +3,26 @@
     {
       "id": "bear",
       "name": "Bear",
-      "states": {
-        "base": "images/animal/Round/bear.png",
-        "mode1": "images/animal/Square/bear.png"
-      },
+      "states": ["base", "mode1"],
       "reactions": [
-        {
-          "with": "frog",
-          "resultState": "mode1"
-        }
+        { "with": "frog", "resultState": "mode1", "sound": "reaction.mp3" },
+        { "with": "chick", "resultState": "mode1", "sound": "reaction.mp3" }  
       ]
     },
     {
       "id": "frog",
       "name": "Frog",
-      "states": {
-        "base": "images/animal/Round/frog.png",
-        "mode1": "images/animal/Square/frog.png"
-      },
+      "states": ["base"],
       "reactions": []
+    },
+    {
+      "id": "chick",
+      "name": "Chick",
+      "states": ["base", "mode1", "mode2"],
+      "reactions": [
+        { "with": "bear", "resultState": "mode1", "sound": "reaction.mp3" },
+        { "with": "frog", "resultState": "mode2", "sound": "reaction.mp3" }
+      ]
     }
   ]
 }
