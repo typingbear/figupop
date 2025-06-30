@@ -1,53 +1,68 @@
-const draggables = document.querySelectorAll('.draggable');
+const playground = document.getElementById('playground');
 
-draggables.forEach(img => {
-  img.style.left = Math.random() * 500 + 'px';
-  img.style.top = Math.random() * 300 + 'px';
+fetch('figures.json')
+  .then(res => res.json())
+  .then(data => {
+    const figures = data.figures.map(figure => {
+      const img = document.createElement('img');
+      img.src = figure.states.base;
+      img.dataset.id = figure.id;
+      img.dataset.state = 'base';
+      img.classList.add('figure');
+      img.style.left = `${Math.random() * 80 + 10}px`;
+      img.style.top = `${Math.random() * 80 + 10}px`;
 
-  img.onmousedown = function (e) {
-    let shiftX = e.clientX - img.getBoundingClientRect().left;
-    let shiftY = e.clientY - img.getBoundingClientRect().top;
-
-    img.style.zIndex = 1000;
-
-    function moveAt(pageX, pageY) {
-      img.style.left = pageX - shiftX + 'px';
-      img.style.top = pageY - shiftY + 'px';
-      checkCollision(img);
-    }
-
-    function onMouseMove(e) {
-      moveAt(e.pageX, e.pageY);
-    }
-
-    document.addEventListener('mousemove', onMouseMove);
-
-    img.onmouseup = function () {
-      document.removeEventListener('mousemove', onMouseMove);
-      img.onmouseup = null;
-    };
-  };
-
-  img.ondragstart = () => false;
-});
-
-// 충돌 체크
-function checkCollision(active) {
-  draggables.forEach(target => {
-    if (target !== active) {
-      const a = active.getBoundingClientRect();
-      const b = target.getBoundingClientRect();
-
-      const isOverlap = !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
-
-      if (isOverlap) {
-        active.classList.add('glow', 'bounce');
-        setTimeout(() => {
-          active.classList.remove('bounce');
-        }, 400);
-      } else {
-        active.classList.remove('glow');
-      }
-    }
+      makeDraggable(img, figure, data.figures);
+      playground.appendChild(img);
+      return img;
+    });
   });
+
+function makeDraggable(element, figureData, allFiguresData) {
+  let offsetX, offsetY, isDragging = false;
+
+  element.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    offsetX = e.clientX - element.offsetLeft;
+    offsetY = e.clientY - element.offsetTop;
+    element.style.zIndex = 10;
+  });
+
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    element.style.zIndex = '';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    element.style.left = `${e.clientX - offsetX}px`;
+    element.style.top = `${e.clientY - offsetY}px`;
+
+    document.querySelectorAll('.figure').forEach(other => {
+      if (other === element) return;
+      if (isOverlap(element, other)) {
+        const otherId = other.dataset.id;
+        const reaction = figureData.reactions.find(r => r.with === otherId);
+        if (reaction && element.dataset.state !== reaction.resultState) {
+          element.dataset.state = reaction.resultState;
+          element.src = figureData.states[reaction.resultState];
+          element.classList.add('glow', 'bounce');
+          setTimeout(() => {
+            element.classList.remove('glow', 'bounce');
+          }, 300);
+        }
+      }
+    });
+  });
+}
+
+function isOverlap(el1, el2) {
+  const rect1 = el1.getBoundingClientRect();
+  const rect2 = el2.getBoundingClientRect();
+  return !(
+    rect1.right < rect2.left || 
+    rect1.left > rect2.right || 
+    rect1.bottom < rect2.top || 
+    rect1.top > rect2.bottom
+  );
 }
