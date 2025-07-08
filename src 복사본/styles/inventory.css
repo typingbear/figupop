@@ -1,0 +1,216 @@
+/* ==========================
+   [1] 인벤토리 전체 패널 (사이드바)
+========================== */
+#inventory-group {
+  position: fixed;
+  right: 0; top: 0;
+  height: 100vh;
+  width: 308px; /* 220 + 28 */
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  z-index: 10;
+  transform: translateX(0);
+  transition: transform 1s cubic-bezier(.7,0,.3,1);
+  will-change: transform;
+}
+#inventory-group.closed {
+  /* 220px(패널만큼만 이동), 버튼은 화면에 남음 */
+  transform: translateX(280px);
+  pointer-events: auto !important;  /* ← 버튼 클릭 항상 가능 */
+}
+
+
+/* transition 강제 제거용 */
+#inventory-group.notransition {
+  transition: none !important;
+}
+
+/* ==========================
+   [2] 인벤토리 내용 영역(패널 본체)
+========================== */
+#inventory {
+  width: 280px;
+  height: 100vh;
+  background: #fff1e6;
+  display: flex;
+  flex-direction: column;
+  /* 아이템/컨트롤바와 좌/우 패딩 조정 */
+  padding: 32px 0 0 22px;
+  font-size: 1.3em;
+  font-weight: bold;
+  border-radius: 20px 0 0 20px;
+  box-shadow: none !important;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ==========================
+   [3] 인벤토리 토글 버튼(패널 옆)
+========================== */
+#inventory-toggle {
+  width: 28px;
+  height: 60px;
+  background: #ffb4a2;
+  border: none !important;
+  border-radius: 12px 0 0 12px;
+  cursor: pointer;
+  font-size: 1.4em;
+  box-shadow: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0 0 0;
+  transition: background 0.3s;
+  z-index: 11;
+  /* flex 정렬로 패널 바로 옆에 항상 딱 붙음 */
+}
+
+/* ==========================
+   [5] 인벤토리 아이템(하얀 박스)
+========================== */
+.inventory-thumb {
+  width: 68px;      /* 작게! */
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 1px 8px #0001;
+  text-align: center;
+  overflow: hidden;
+}
+
+.inventory-thumb img {
+  width: 10px;     /* 박스보다 20px 정도 작게 */
+  height: 10px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ==========================
+   [4] 인벤토리 그리드 뷰 영역
+========================== */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  column-gap: 0px;    /* ← 좌우(가로) 간격 */
+  row-gap: 18px; 
+  padding: 0 0px 0 0px;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* ================================
+   인벤토리 피규어 모드 다이얼로그(팝오버)
+=============================== */
+.inventory-mode-dialog {
+  position: absolute;
+  background: #fff;
+  border: 1.5px solid #dedede;
+  border-radius: 13px;
+  box-shadow: 0 4px 24px #0001, 0 1.5px 5px #ffd1b3a0;
+  padding: 12px 8px;               /* 좌우 패딩만 줄임 */
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 9999;
+
+  /* min-width: 120px;   ← 삭제 or 주석! */
+  /* width: auto;        ← 굳이 추가할 필요 없음 */
+}
+
+/* 모드 이미지(내부 img) 크기 일괄 지정 */
+.inventory-mode-dialog img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 7px;
+  background: #f8f8f8;
+  box-shadow: 0 0.5px 2.5px #0001;
+  cursor: pointer;
+  flex: none;    /* grow 방지, 꼭 추가! */
+  transition: box-shadow 0.14s, border 0.12s;
+  border: 2px solid transparent;
+}
+.inventory-mode-dialog img:hover {
+  box-shadow: 0 2px 10px #0002;
+  border: 2px solid #ffb4a2;       /* 2px로 고정 */
+}
+
+.inventory-mode-dialog img.locked {
+  filter: blur(1.5px) grayscale(40%);
+  opacity: 0.42;
+  pointer-events: none; /* 클릭 방지(선택) */
+}
+
+/* 리스트 전체 */
+/* 전체 리스트 */
+.inventory-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* 리스트 행 */
+.inventory-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* 피규어 이름 (선택) */
+.figure-label {
+  font-size: 16px;
+  color: #444;
+  margin-right: 10px;
+  flex: none;
+}
+
+/* 가로 스크롤 영역 (모드 썸네일) */
+.inventory-mode-bar {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  max-width: 260px;   /* 너비 필요시 조정 */
+  align-items: center;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+
+.inventory-mode-bar::-webkit-scrollbar {
+  height: 6px;
+  background: #eee;
+  border-radius: 4px;
+}
+.inventory-mode-bar::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+/* 모드 썸네일 이미지 */
+.mode-thumb {
+  width: 44px;        /* ← 원하는 크기로 */
+  height: 44px;
+  border-radius: 8px;
+  background: #f9f9f9;
+  box-shadow: 0 0.5px 2.5px #0001;
+  object-fit: contain;
+  flex: none;
+}
+
+.mode-thumb.locked {
+  filter: blur(1.5px) grayscale(50%);
+  opacity: 0.44;
+}
+
+/* .draggable-inventory-thumb {
+  filter: none;
+  opacity: 1;
+  box-shadow: 0 2px 10px #2a7fff, 0 1.5px 5px #ffd1b3a0 !important;
+  transition: box-shadow 0.2s, filter 0.2s;
+} */

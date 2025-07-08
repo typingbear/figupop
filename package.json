@@ -1,5 +1,18 @@
 {
+  "name": "figupop-game",
+  "version": "1.0.0",
+  "description": "동물 조합 게임",
+  "main": "dist/main.js",
+  "scripts": {
+    "build:data": "node scripts/json-to-ts.js",
+    "build": "npm run build:data && tsc",
+    "dev": "npm run build:data && tsc --watch"
+  },
   "devDependencies": {
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "image-size": "^2.0.2",
+    "sharp": "^0.34.2"
   }
 }

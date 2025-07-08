@@ -1,0 +1,147 @@
+#inbox {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  min-width: 400px;
+  background: #fff8f4;
+  padding: 22px 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 28px;
+  box-shadow: 0 8px 24px #0001;
+  border: none;
+  z-index: 10;
+}
+
+/* 메인 컨테이너 */
+.inbox-container {
+  display: flex;
+  align-items: center;
+  gap: 38px;
+  padding: 0;
+  margin: 0;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* 박스 버튼 */
+.inbox-box-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.inbox-box-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+/* 박스 이미지 */
+.inbox-box-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  background: #fff;
+  object-fit: contain;
+  transition: box-shadow 0.2s, border-color 0.2s, filter 0.2s;
+}
+
+.inbox-box-img[alt="비어있음"] {
+  filter: grayscale(0.7) brightness(1.07);
+  opacity: 0.6;
+}
+
+.inbox-box-img[alt="택배 도착"] {
+  filter: none;
+  opacity: 1;
+}
+
+
+/* 타이머 영역 */
+.inbox-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  margin-left: 20px;
+}
+
+.inbox-timer-label {
+  font-size: 14px;
+  color: #c79e8e;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.1em;
+}
+
+.inbox-timer-value {
+  font-size: 28px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-weight: 900;
+  color: #171717;
+  letter-spacing: 0.07em;
+  text-shadow: 0 2px 8px #fff3;
+}
+
+.inbox-box-count {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 28px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-weight: 900;
+  color: #f29b6a;
+  background: #fff7ee;
+  padding: 4px 18px 4px 13px;
+  border-radius: 14px;
+  margin-left: 22px;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 12px #e7c1a822;
+  border: 2px solid #ffd3b5;
+}
+
+.inbox-box-count .count-x {
+  font-size: 20px;
+  font-weight: 700;
+  margin-right: 1px;
+  color: #c68a51;
+  opacity: 0.74;
+}
+.inbox-box-count .count-cur {
+  font-size: 28px;
+  font-weight: 900;
+  color: #f29b6a;
+  margin: 0 2px;
+}
+.inbox-box-count .count-max {
+  font-size: 20px;
+  font-weight: 600;
+  color: #a3a3a3;
+  opacity: 0.75;
+}
+.inbox-timer-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 36px;
+}
+.inbox-timer-label {
+  font-size: 15px;
+  color: #c79e8e;
+  font-weight: 700;
+  margin-bottom: 4px;
+  letter-spacing: 0.08em;
+}
+.inbox-timer-value {
+  font-size: 32px;
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-weight: 900;
+  color: #171717;
+  letter-spacing: 0.07em;
+  text-shadow: 0 2px 8px #fff3;
+}

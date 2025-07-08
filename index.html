@@ -3,12 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Figupop</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="src/styles/style.css">
+  <link rel="stylesheet" href="src/styles/playground.css">
+  <link rel="stylesheet" href="src/styles/inventory.css">
+  <link rel="stylesheet" href="src/styles/catalog.css">
+  <link rel="stylesheet" href="src/styles/inbox.css">
+  <link rel="stylesheet" href="src/dev/dev.css">
 </head>
 <body>
+  
   <div id="playground"></div>
+<div id="inbox" class="overlay-panel"></div>
+  <div id="catalog-group" class="overlay-panel closed">
+    <div id="catalog"></div>
+    <button id="catalog-toggle" aria-label="Toggle Catalog">≡</button>
+  </div>
 
-  <!-- 꼭 type="module"로! -->
-  <script type="module" src="src/main.js"></script>
+
+  <div id="inventory-group" class="closed">
+    <div id="inventory"></div>
+    <button id="inventory-toggle" aria-label="Toggle Inventory">≡</button>
+  </div>
+
+  <script type="module" src="dist/main.js"></script>
 </body>
 </html>

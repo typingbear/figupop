@@ -1,0 +1,55 @@
+// src/game/ui/PlaygroundRenderer.ts
+import { getFigureById } from "../../../services/figureLibraryService.js";
+import { IMAGE_ROOT } from "../../../common/config.js";
+import type { PlaygroundFigure } from "../../../common/types.js";
+
+/**
+ * 플레이그라운드에 피규어 배열을 렌더링 (순수 함수)
+ * @param container   렌더링 대상 컨테이너 (HTMLElement)
+ * @param figures     PlaygroundFigure 배열 (zIndex 오름차순 정렬)
+ * @param onRemoveFigure (선택) 우클릭 삭제 콜백 (serial 넘겨줌)
+ */
+export function renderPlayground(
+  container: HTMLElement,
+  figures: PlaygroundFigure[],
+  onRemoveFigure?: (serial: string) => void
+) {
+  container.innerHTML = "";
+
+  // zIndex 오름차순 정렬 (깊이순)
+  const sortedFigures = figures.slice().sort((a, b) => (a.zIndex ?? 0) - (b.zIndex ?? 0));
+
+  for (let i = 0; i < sortedFigures.length; i++) {
+    const fig = sortedFigures[i];
+    const meta = getFigureById(fig.id);
+    if (!meta) continue;
+
+    const img = document.createElement("img");
+    img.src = `${IMAGE_ROOT}${fig.id}-${fig.mode}.png`;
+    img.alt = `${meta.name} (${fig.mode})`;
+    img.style.position = "absolute";
+    img.style.left = `${fig.x}px`;
+    img.style.top = `${fig.y}px`;
+    img.style.width = "96px";
+    img.style.height = "96px";
+    img.style.zIndex = (fig.zIndex ?? 0).toString();
+    img.setAttribute("data-index", i.toString());
+
+    // 시리얼 속성 부여
+    if (fig.serial) {
+      img.dataset.serial = fig.serial;
+      img.setAttribute("data-serial", fig.serial);
+    }
+
+    // 우클릭으로 삭제
+    if (onRemoveFigure) {
+      img.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        const serial = img.dataset.serial || img.getAttribute("data-serial");
+        if (serial) onRemoveFigure(serial);
+      });
+    }
+
+    container.appendChild(img);
+  }
+}

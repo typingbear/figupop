@@ -1,11 +1,14 @@
 {
   "compilerOptions": {
     "target": "es2016",
-    "module": "esnext",         // ← ★ 이 부분만 변경! (es2020, es2015, es6 등도 OK)
+    "module": "esnext",            // ES6+ 모듈 방식
     "lib": ["es2016", "dom"],
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "rootDir": "./src",            // 추가: 소스 폴더
+    "outDir": "./dist"             // 추가: JS 출력 폴더
+  },
+  "include": ["src/**/*"]
 }
