@@ -1,4 +1,4 @@
-export const INITIAL_GAME_STATE = {
+export const gameStates = {
     "inboxParcels": 0,
     "playgroundFigures": [
         {
@@ -24,7 +24,8 @@ export const INITIAL_GAME_STATE = {
             "currentMode": "base",
             "unlockedModes": [
                 "base"
-            ]
+            ],
+            "openedAt": "2025-07-09T11:00:00.000Z"
         },
         {
             "id": "chick",
@@ -32,42 +33,56 @@ export const INITIAL_GAME_STATE = {
             "unlockedModes": [
                 "base",
                 "mode1"
-            ]
+            ],
+            "openedAt": "2025-07-09T12:30:00.000Z"
         },
         {
             "id": "bear",
             "currentMode": "base",
             "unlockedModes": [
                 "base"
-            ]
+            ],
+            "openedAt": "2025-07-09T13:15:00.000Z"
         },
         {
             "id": "rock",
             "currentMode": "base",
             "unlockedModes": [
                 "base"
-            ]
+            ],
+            "openedAt": "2025-07-08T09:40:00.000Z"
         },
         {
             "id": "fire",
             "currentMode": "base",
             "unlockedModes": [
                 "base"
-            ]
+            ],
+            "openedAt": "2025-07-08T10:20:00.000Z"
         },
         {
             "id": "shoe",
             "currentMode": "base",
             "unlockedModes": [
                 "base"
-            ]
+            ],
+            "openedAt": "2025-07-08T11:55:00.000Z"
         },
         {
             "id": "shark",
             "currentMode": "base",
             "unlockedModes": [
                 "base"
-            ]
+            ],
+            "openedAt": "2025-07-09T14:00:00.000Z"
+        },
+        {
+            "id": "sun",
+            "currentMode": "base",
+            "unlockedModes": [
+                "base"
+            ],
+            "openedAt": "2025-07-09T14:00:00.000Z"
         }
     ]
 };

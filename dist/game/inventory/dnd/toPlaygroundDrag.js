@@ -1,12 +1,15 @@
-// src/game/logic/inventoryDragHandler.ts
 import { makeSerialKey } from "../../../common/utils.js";
+import { ID_INVENTORY } from "../../../common/config.js";
 /**
  * 인벤토리 썸네일에 '드래그'만 부여 (드롭은 외부에서 따로)
  */
-export function enableInvToPlayDrag(root, getFigures) {
+export function enableInvToPlayDrag() {
+    const root = document.getElementById(ID_INVENTORY);
+    if (!root)
+        return;
     root.addEventListener("mousedown", e => {
         const target = e.target;
-        if (target && target.classList.contains("draggable-inventory-thumb")) {
+        if (target && target.classList.contains("draggable")) {
             const figureId = target.getAttribute("data-figure-id");
             const mode = target.getAttribute("data-mode");
             if (!figureId || !mode)
@@ -19,18 +22,18 @@ export function enableInvToPlayDrag(root, getFigures) {
             target.addEventListener("dragstart", (ev) => {
                 if (ev.dataTransfer) {
                     const serial = makeSerialKey();
-                    const dragData = JSON.stringify({ figureId, mode, serial, offsetX, offsetY,
-                        source: "inventory" });
+                    const dragData = JSON.stringify({
+                        figureId, mode, serial, offsetX, offsetY,
+                        source: "inventory"
+                    });
                     ev.dataTransfer.setData("text/plain", dragData);
-                    // 필요시 콘솔
-                    // console.log("[Drag] 드래그 시작!", dragData);
                 }
             }, { once: true });
         }
     });
     root.addEventListener("dragend", e => {
         const target = e.target;
-        if (target && target.classList.contains("draggable-inventory-thumb")) {
+        if (target && target.classList.contains("draggable")) {
             target.removeAttribute("draggable");
         }
     });

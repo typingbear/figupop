@@ -1,0 +1,63 @@
+html, body {
+  width: 100vw; height: 100vh;
+  margin: 0; padding: 0;
+  overflow: hidden;
+  background: #f3f3f3;
+}
+
+#playground {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: #f3f3f3;
+  overflow: scroll;          /* 스크롤 always! */
+  z-index: 0;
+  cursor: grab;
+}
+
+#stage {
+  position: relative;
+  width: 3000px;
+  height: 2000px;
+  min-width: 100vw;
+  min-height: 100vh;
+}
+
+#background {
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background: #eee url('assets/images/floor.png') center center/cover;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.playzone-figure-img {
+  position: absolute;
+  object-fit: contain;
+  max-width: 180px;
+  max-height: 180px;
+  pointer-events: auto;
+  user-select: none;
+  z-index: 1;
+}
+
+.will-transform {
+  outline: 3px solid #40aaff !important;
+  box-shadow: 0 0 12px 2px #ffae0088, 0 0 0 6px #fff5 inset;
+  border-radius: 18px;
+  transition: outline 0.15s, box-shadow 0.2s;
+}
+
+/* (선택) 스크롤바 스타일 (크롬/엣지/사파리) */
+#playground::-webkit-scrollbar { width: 14px; height: 14px; background: #dde; }
+#playground::-webkit-scrollbar-thumb { background: #bbb; border-radius: 8px; }
+
+#playground {
+  overflow: scroll;
+  scrollbar-width: none;      /* Firefox */
+  -ms-overflow-style: none;   /* IE/Edge */
+}
+#playground::-webkit-scrollbar {
+  display: none;              /* Chrome, Safari, Edge */
+}

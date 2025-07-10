@@ -1,9 +1,12 @@
-import { getMaxZIndex, addPlaygroundFigure, isModeUnlocked, unlockFigureMode } from "../../../services/gameStateService.js";
-import { NEW_FIGURE_AUDIO } from "../../../common/config.js";
-import { playSound } from "../../../common/utils.js";
-import { renderInventory } from "../../inventory/render/inventoryRenderer.js"; // 추가!
-import { renderCatalog } from "../../catalog/render/catalogRenderer.js"; // 추가!
-export function enablePlaygroundDrop(container, onAfterDrop) {
+import { ID_PLAYGROUND } from "../../../common/config.js";
+import { getMaxZIndex, addPlaygroundFigure } from "../../../core/services/gameStateService.js";
+import { renderPlayground } from "../render/playgroundRenderer.js";
+export function enablePlaygroundDrop() {
+    const container = document.getElementById(ID_PLAYGROUND);
+    if (!container) {
+        console.warn("[Playground Drop] 플레이그라운드 엘리먼트 없음!");
+        return;
+    }
     container.addEventListener("dragover", e => {
         e.preventDefault();
     });
@@ -17,35 +20,21 @@ export function enablePlaygroundDrop(container, onAfterDrop) {
         }
         try {
             const parsed = JSON.parse(data);
-            const { figureId, mode, serial, offsetX, offsetY, source } = parsed;
+            const { figureId, mode, serial, offsetX, offsetY } = parsed;
             const rect = container.getBoundingClientRect();
             const x = e.clientX - rect.left - (offsetX !== null && offsetX !== void 0 ? offsetX : 0);
             const y = e.clientY - rect.top - (offsetY !== null && offsetY !== void 0 ? offsetY : 0);
             const maxZ = getMaxZIndex();
-            let dropMode = source === "inbox" ? "base" : mode;
             const fig = {
                 id: figureId,
-                mode: dropMode,
+                mode,
                 x,
                 y,
                 serial,
                 zIndex: maxZ + 1
             };
             addPlaygroundFigure(fig);
-            // === 해금 체크 및 사운드 ===
-            let newlyUnlocked = false;
-            if (!isModeUnlocked(figureId, dropMode)) {
-                unlockFigureMode(figureId, dropMode);
-                playSound(NEW_FIGURE_AUDIO);
-                newlyUnlocked = true;
-            }
-            // === 인벤토리/도감 리렌더 ===
-            if (newlyUnlocked) {
-                renderInventory();
-                renderCatalog();
-            }
-            if (onAfterDrop)
-                onAfterDrop(source);
+            renderPlayground();
         }
         catch (err) {
             console.warn("[Playground Drop] 드롭 데이터 파싱 실패", err);

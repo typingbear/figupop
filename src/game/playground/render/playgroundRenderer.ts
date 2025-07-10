@@ -1,8 +1,7 @@
 // src/game/ui/PlaygroundRenderer.ts
-import { getFigureById, getFigureSize } from "../../../services/figureLibraryService.js";
-import { IMAGE_ROOT } from "../../../common/config.js";
-import type { PlaygroundFigure } from "../../../common/types.js";
-import { getPlaygroundFigures } from "../../../services/gameStateService.js";
+import { getFigureById, getFigureSize } from "../../../core/services/figureLibraryService.js";
+import { ID_PLAYGROUND, IMAGE_ROOT } from "../../../common/config.js";
+import { getPlaygroundFigures } from "../../../core/services/gameStateService.js";
 
 /**
  * 플레이그라운드에 피규어 배열을 렌더링 (순수 함수)
@@ -12,10 +11,11 @@ import { getPlaygroundFigures } from "../../../services/gameStateService.js";
  */
 
 
-export function renderPlayground(onRemoveFigure?: (serial: string) => void) {
-  // 1. 컨테이너 직접 얻기
-  const container = document.querySelector("#playground") as HTMLElement | null;
+export function renderPlayground() {
+  // 1. 컨테이너 직접 얻기 (상수로 관리)
+  const container = document.getElementById(ID_PLAYGROUND) as HTMLElement | null;
   if (!container) return;
+
 
   // 2. 현재 상태 직접 얻기
   const figures = getPlaygroundFigures();
@@ -48,15 +48,6 @@ export function renderPlayground(onRemoveFigure?: (serial: string) => void) {
     if (fig.serial) {
       img.dataset.serial = fig.serial;
       img.setAttribute("data-serial", fig.serial);
-    }
-
-    // 우클릭으로 삭제
-    if (onRemoveFigure) {
-      img.addEventListener("contextmenu", (e) => {
-        e.preventDefault();
-        const serial = img.dataset.serial || img.getAttribute("data-serial");
-        if (serial) onRemoveFigure(serial);
-      });
     }
 
     container.appendChild(img);

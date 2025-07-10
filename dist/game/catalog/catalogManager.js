@@ -1,5 +1,4 @@
-//catalogManager.ts
-import { renderCatalog } from "./render/catalogRenderer.js";
+import { renderCatalog } from "./render/catalogRenderer.js"; // ← 경로는 실제 위치에 맞게 조정
 export class CatalogManager {
     constructor() {
         this.group = document.querySelector("#catalog-group");

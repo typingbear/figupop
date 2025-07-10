@@ -1,11 +1,12 @@
-import { getPlaygroundFigures, saveToStorage, isModeUnlocked, unlockFigureMode, } from "../../../services/gameStateService.js";
-import { getReactionResult, getFigureSize, } from "../../../services/figureLibraryService.js";
-import { renderCatalog } from "../../catalog/render/catalogRenderer.js";
-import { renderInventory } from "../../inventory/render/inventoryRenderer.js";
+import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront } from "../../../core/services/gameStateService.js";
+import { getReactionResult, getFigureSize, } from "../../../core/services/figureLibraryService.js";
+import { renderCatalog, renderInventory, renderPlayground } from "../../index/renderIndex.js";
+import { ID_PLAYGROUND } from "../../../common/config.js";
 /**
  * 플레이그라운드에서 이미지 직접 드래그-이동 (z-index도 관리)
  */
-export function enablePlaygroundDnD(playgroundEl, rerender) {
+export function enablePlaygroundDnD() {
+    const playgroundEl = document.getElementById(ID_PLAYGROUND);
     let draggingImg = null;
     let draggingSerial = null;
     let startX = 0, startY = 0, origX = 0, origY = 0;
@@ -14,14 +15,10 @@ export function enablePlaygroundDnD(playgroundEl, rerender) {
         if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")) {
             draggingImg = target;
             draggingSerial = target.getAttribute("data-serial");
-            // z-index 최상위로!
-            const figures = getPlaygroundFigures();
-            const maxZ = figures.reduce((max, f) => { var _a; return Math.max(max, (_a = f.zIndex) !== null && _a !== void 0 ? _a : 0); }, 0);
-            const fig = figures.find(f => f.serial === draggingSerial);
-            if (fig) {
-                fig.zIndex = maxZ + 1;
-                draggingImg.style.zIndex = String(maxZ + 1);
-                saveToStorage();
+            // ★ z-index 최상위로!
+            const newZ = bringFigureToFront(draggingSerial);
+            if (typeof newZ === "number") {
+                draggingImg.style.zIndex = String(newZ);
             }
             startX = e.clientX;
             startY = e.clientY;
@@ -63,23 +60,23 @@ export function enablePlaygroundDnD(playgroundEl, rerender) {
         if (draggingImg && draggingSerial) {
             const figures = getPlaygroundFigures();
             const fig = figures.find(f => f.serial === draggingSerial);
-            let changed = false;
             if (fig && draggingImg) {
-                // 1. 변신 체크 (pending → 변신)
-                changed = applyPendingTransform(fig, draggingImg) || changed;
-                // 2. 겹친 상대 변신
+                // 변신 타깃들 배열 생성 (자기 자신 + 겹친 상대)
+                const targets = [[fig, draggingImg]];
                 const other = getOverlappingFigure(fig, figures);
                 if (other) {
                     const otherImg = playgroundEl.querySelector(`img[data-serial="${other.serial}"]`);
                     if (otherImg instanceof HTMLImageElement) {
-                        changed = applyPendingTransform(other, otherImg) || changed;
+                        targets.push([other, otherImg]);
                     }
                 }
-                // 3. 좌표/상태 무조건 저장 (변신 없어도)
-                saveToStorage();
-                rerender();
-                renderCatalog();
-                renderInventory();
+                // 한 번에 변신 처리
+                const restult = applyPendingTransformBatch(targets);
+                if (restult) {
+                    renderInventory();
+                    renderCatalog();
+                }
+                renderPlayground();
             }
         }
         draggingImg = null;
@@ -104,18 +101,22 @@ export function enablePlaygroundDnD(playgroundEl, rerender) {
             img === null || img === void 0 ? void 0 : img.setAttribute("data-pending-mode", reaction.resultMode);
         }
     }
-    function applyPendingTransform(fig, img) {
-        const pendingId = img.getAttribute("data-pending-id");
-        const pendingMode = img.getAttribute("data-pending-mode");
-        if (pendingId && pendingMode) {
-            fig.id = pendingId;
-            fig.mode = pendingMode;
-            if (!isModeUnlocked(pendingId, pendingMode)) {
-                unlockFigureMode(pendingId, pendingMode);
+    function applyPendingTransformBatch(targets) {
+        // 한 번이라도 새로운 언락이 있으면 true
+        let anyUnlocked = false;
+        for (const [fig, img] of targets) {
+            const pendingId = img.getAttribute("data-pending-id");
+            const pendingMode = img.getAttribute("data-pending-mode");
+            if (pendingId && pendingMode) {
+                fig.id = pendingId;
+                fig.mode = pendingMode;
+                const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
+                if (result !== "old") {
+                    anyUnlocked = true;
+                }
             }
-            return true;
         }
-        return false;
+        return anyUnlocked;
     }
     function getOverlappingFigure(a, figures) {
         const aSize = getFigureSize(a.id, a.mode);

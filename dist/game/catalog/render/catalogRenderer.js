@@ -1,20 +1,23 @@
-import { IMAGE_ROOT } from "../../../common/config.js";
-import { ALL_FIGURE_MODES } from "../../../services/figureLibraryService.js";
-import { isModeUnlocked } from "../../../services/gameStateService.js";
+import { ID_CATEGORY } from "../../../common/config.js";
+import { ALL_FIGURE_MODES } from "../../../core/services/figureLibraryService.js";
+import { isModeUnlocked } from "../../../core/services/gameStateService.js";
+import { createFigureThumb } from "../../../core/images/imageHandler.js"; // ← 경로 맞게 조정!
 export function renderCatalog() {
-    const panel = document.querySelector("#catalog");
+    const panel = document.getElementById(ID_CATEGORY);
     if (!panel)
         return;
     panel.innerHTML = "";
-    // 이미 ALL_FIGURE_MODES는 상수이므로 바로 사용!
     ALL_FIGURE_MODES.forEach(entry => {
-        const src = `${IMAGE_ROOT}${entry.id}.png`;
-        const img = document.createElement("img");
-        img.src = src;
-        img.alt = `${entry.name} (${entry.mode})`;
-        img.draggable = false;
         const unlocked = isModeUnlocked(entry.figureId, entry.mode);
-        img.className = "catalog-thumb" + (unlocked ? "" : " locked");
+        const img = createFigureThumb({
+            id: entry.figureId,
+            mode: entry.mode,
+            unlocked,
+            name: entry.name,
+            outline: true, // 항상 outline 지원
+            draggable: false, // 카탈로그는 드래그 불필요
+        });
+        img.classList.add("catalog-thumb"); // 카탈로그 전용 추가 스타일
         panel.appendChild(img);
     });
 }

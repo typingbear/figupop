@@ -1,4 +1,4 @@
-import { resetToInitialState } from "../services/gameStateService.js";
+import { resetToInitialState } from "../core/services/gameStateService.js";
 /** 개발자 전용 영역/버튼을 플레이그라운드 "바로 아래(형제)"에 추가 */
 export function injectPlaygroundDevArea() {
     var _a;

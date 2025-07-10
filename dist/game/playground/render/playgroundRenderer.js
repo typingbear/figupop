@@ -1,17 +1,17 @@
 // src/game/ui/PlaygroundRenderer.ts
-import { getFigureById, getFigureSize } from "../../../services/figureLibraryService.js";
-import { IMAGE_ROOT } from "../../../common/config.js";
-import { getPlaygroundFigures } from "../../../services/gameStateService.js";
+import { getFigureById, getFigureSize } from "../../../core/services/figureLibraryService.js";
+import { ID_PLAYGROUND, IMAGE_ROOT } from "../../../common/config.js";
+import { getPlaygroundFigures } from "../../../core/services/gameStateService.js";
 /**
  * 플레이그라운드에 피규어 배열을 렌더링 (순수 함수)
  * @param container   렌더링 대상 컨테이너 (HTMLElement)
  * @param figures     PlaygroundFigure 배열 (zIndex 오름차순 정렬)
  * @param onRemoveFigure (선택) 우클릭 삭제 콜백 (serial 넘겨줌)
  */
-export function renderPlayground(onRemoveFigure) {
+export function renderPlayground() {
     var _a;
-    // 1. 컨테이너 직접 얻기
-    const container = document.querySelector("#playground");
+    // 1. 컨테이너 직접 얻기 (상수로 관리)
+    const container = document.getElementById(ID_PLAYGROUND);
     if (!container)
         return;
     // 2. 현재 상태 직접 얻기
@@ -40,15 +40,6 @@ export function renderPlayground(onRemoveFigure) {
         if (fig.serial) {
             img.dataset.serial = fig.serial;
             img.setAttribute("data-serial", fig.serial);
-        }
-        // 우클릭으로 삭제
-        if (onRemoveFigure) {
-            img.addEventListener("contextmenu", (e) => {
-                e.preventDefault();
-                const serial = img.dataset.serial || img.getAttribute("data-serial");
-                if (serial)
-                    onRemoveFigure(serial);
-            });
         }
         container.appendChild(img);
     }

@@ -14,9 +14,17 @@ const jobs = [
   {
     jsonPath: path.join(__dirname, "../src/data/initialGameState.json"),
     tsPath: path.join(__dirname, "../src/data/initialGameState.ts"),
-    typeImport: "GameStateData",
+    typeImport: "GameState",
     typePath: "../common/types",
-    variable: "INITIAL_GAME_STATE",
+    variable: "gameStates",
+    accessor: null, // json 파일이 곧 전체 상태면 null
+  },  
+  {
+    jsonPath: path.join(__dirname, "../src/data/spritsEffects.json"),
+    tsPath: path.join(__dirname, "../src/data/spritsEffects.ts"),
+    typeImport: "SpritesEffect",
+    typePath: "../common/types",
+    variable: "spritesEffects",
     accessor: null, // json 파일이 곧 전체 상태면 null
   },
 ];

@@ -1,12 +1,13 @@
 // src/game/inbox/parcel/inboxParcelManager.ts
-import { PARCEL_TIME, PARCEL_LIMIT } from "../../../common/config.js";
-import { getFiguresByKind } from "../../../services/figureLibraryService.js";
-import { addInventoryFigure, addPlaygroundFigure, getMaxZIndex, getInventoryFigures, getInboxParcels, setInboxParcels, saveToStorage } from "../../../services/gameStateService.js";
+import { PARCEL_TIME, PARCEL_LIMIT, FIGURE_KIND_FOR_PARCEL } from "../../../common/config.js";
+import { getFiguresByKind } from "../../../core/services/figureLibraryService.js";
+import { addOrUnlockInventoryFigure, addPlaygroundFigure, getMaxZIndex, getInventoryFigures, getInboxParcels, setInboxParcels } from "../../../core/services/gameStateService.js";
 import { makeSerialKey } from "../../../common/utils.js";
 import { renderInventory } from "../../inventory/render/inventoryRenderer.js";
 import { renderCatalog } from "../../catalog/render/catalogRenderer.js";
 import { renderPlayground } from "../../playground/render/playgroundRenderer.js";
-const PARCEL_FIGURES = getFiguresByKind("prime");
+import { SpriteEffectManager } from "../../../core/effects/spriteEffectManager.js";
+const PARCEL_FIGURES = getFiguresByKind(FIGURE_KIND_FOR_PARCEL);
 const state = {
     deliveryCountdown: PARCEL_TIME,
     intervalId: null,
@@ -63,47 +64,53 @@ export function addParcel() {
     const now = getInboxParcels();
     if (now < PARCEL_LIMIT) {
         setInboxParcels(now + 1);
-        saveToStorage();
         (_a = state.onChange) === null || _a === void 0 ? void 0 : _a.call(state);
     }
 }
 export function removeParcelAndSpawn() {
     var _a;
-    let now = getInboxParcels();
-    if (now > 0) {
-        setInboxParcels(now - 1);
-        saveToStorage();
-        const ownedIds = new Set(getInventoryFigures().map(f => f.id));
-        const notOwnedList = PARCEL_FIGURES.filter(f => !ownedIds.has(f.id));
-        if (notOwnedList.length > 0) {
-            const randomFig = notOwnedList[Math.floor(Math.random() * notOwnedList.length)];
-            // === 가운데 위치 ===
-            const centerX = Math.round(window.innerWidth / 2 - 60);
-            const centerY = Math.round(window.innerHeight / 2 - 60);
-            // === 랜덤 offset 추가! ===
-            const offsetX = Math.floor(Math.random() * 141) - 70; // -70 ~ +70 px
-            const offsetY = Math.floor(Math.random() * 81) - 40; // -40 ~ +40 px
-            const result = addInventoryFigure(randomFig.id, "base");
-            if (result === "new-figure" || result === "new-mode") {
-                renderInventory();
-                renderCatalog();
-            }
-            addPlaygroundFigure({
-                id: randomFig.id,
-                mode: "base",
+    const now = getInboxParcels();
+    if (now <= 0)
+        return;
+    setInboxParcels(now - 1);
+    // 아직 없는 피규어만 필터
+    const ownedIds = new Set(getInventoryFigures().map(f => f.id));
+    const notOwnedList = PARCEL_FIGURES.filter(f => !ownedIds.has(f.id));
+    if (notOwnedList.length > 0) {
+        // 무작위 미소유 피규어 선택
+        const randomFig = notOwnedList[Math.floor(Math.random() * notOwnedList.length)];
+        const centerX = Math.round(window.innerWidth / 2 - 60);
+        const centerY = Math.round(window.innerHeight / 2 - 60);
+        const offsetX = Math.floor(Math.random() * 141) - 70; // -70 ~ +70 px
+        const offsetY = Math.floor(Math.random() * 81) - 40; // -40 ~ +40 px
+        // 피규어 인벤토리에 추가/언락, openedAt 자동 반영됨
+        const addResult = addOrUnlockInventoryFigure(randomFig.id, "base");
+        if (addResult !== "old") {
+            renderInventory();
+            renderCatalog();
+            SpriteEffectManager.play("circle", document.body, {
+                size: 192,
                 x: centerX + offsetX,
-                y: centerY + offsetY,
-                serial: makeSerialKey(),
-                zIndex: getMaxZIndex() + 1
+                y: centerY + offsetY
             });
-            renderPlayground();
         }
-        if (getInboxParcels() < PARCEL_LIMIT && state.intervalId === null) {
-            state.deliveryCountdown = PARCEL_TIME;
-            startInboxParcel();
-        }
-        (_a = state.onChange) === null || _a === void 0 ? void 0 : _a.call(state);
+        // 플레이그라운드에 추가
+        addPlaygroundFigure({
+            id: randomFig.id,
+            mode: "base",
+            x: centerX + offsetX,
+            y: centerY + offsetY,
+            serial: makeSerialKey(),
+            zIndex: getMaxZIndex() + 1
+        });
+        renderPlayground();
     }
+    // 택배 리필 카운트다운 관리
+    if (getInboxParcels() < PARCEL_LIMIT && state.intervalId === null) {
+        state.deliveryCountdown = PARCEL_TIME;
+        startInboxParcel();
+    }
+    (_a = state.onChange) === null || _a === void 0 ? void 0 : _a.call(state);
 }
 export function isParcelFull() {
     return getInboxParcels() >= PARCEL_LIMIT;

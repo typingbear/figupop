@@ -1,9 +1,9 @@
 // src/game/inbox/render/inboxRenderer.ts
-import { BOX_ARRIVED, BOX_EMPTY, PARCEL_LIMIT } from "../../../common/config.js";
+import { BOX_ARRIVED, BOX_EMPTY, ID_INBOX, PARCEL_LIMIT } from "../../../common/config.js";
 import { formatTimer } from "../../../common/utils.js";
 import { getParcelCount, getParcelCountdown, removeParcelAndSpawn, } from "../parcel/inboxParcelManager.js";
 export function renderInbox() {
-    const containerEl = document.querySelector("#inbox");
+    const containerEl = document.getElementById(ID_INBOX);
     if (!containerEl)
         return;
     containerEl.innerHTML = "";

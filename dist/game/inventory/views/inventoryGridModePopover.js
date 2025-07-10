@@ -1,34 +1,31 @@
-import { getFigureById } from "../../../services/figureLibraryService.js";
-import { IMAGE_ROOT } from "../../../common/config.js";
-import { getUnlockedModes } from "../../../services/gameStateService.js";
+import { getFigureById } from "../../../core/services/figureLibraryService.js";
+import { getUnlockedModes } from "../../../core/services/gameStateService.js";
 import { makeSerialKey } from "../../../common/utils.js";
+import { createFigureThumb } from "../../../core/images/imageHandler.js";
 /**
  * 인벤토리 그리드에서 피규어의 모드 선택 팝오버를 띄움
- * @param figureId - 피규어 id
- * @param anchorElement - 기준이 되는 이미지 엘리먼트
  */
 export function showInventoryGridModePopover(figureId, anchorElement) {
-    // 기존 팝오버 모두 닫기
     document.querySelectorAll(".inventory-mode-dialog").forEach(e => e.remove());
     const figure = getFigureById(figureId);
     if (!figure)
         return;
-    // 현재 해금된 모드
     const unlockedModes = getUnlockedModes(figureId);
-    // 팝오버 생성
     const dialog = document.createElement("div");
     dialog.className = "inventory-mode-dialog";
     Object.keys(figure.modes).forEach(modeName => {
-        const modeImg = document.createElement("img");
-        modeImg.src = `${IMAGE_ROOT}${figure.id}-${modeName}.png`;
-        modeImg.alt = `${figure.name} (${modeName})`;
-        modeImg.setAttribute("data-figure-id", figure.id);
-        modeImg.setAttribute("data-mode", modeName);
-        if (unlockedModes.includes(modeName)) {
-            modeImg.classList.add("draggable-inventory-thumb");
-            modeImg.draggable = true;
-            modeImg.style.cursor = "grab";
-            modeImg.addEventListener("dragstart", ev => {
+        const isUnlocked = unlockedModes.includes(modeName);
+        const img = createFigureThumb({
+            id: figure.id,
+            mode: modeName,
+            unlocked: isUnlocked,
+            name: figure.name,
+            outline: true,
+            draggable: true
+        });
+        // 팝오버에서는 dragstart만 따로 추가
+        if (isUnlocked) {
+            img.addEventListener("dragstart", ev => {
                 if (ev.dataTransfer) {
                     const dragData = JSON.stringify({
                         figureId: figure.id,
@@ -39,18 +36,12 @@ export function showInventoryGridModePopover(figureId, anchorElement) {
                 }
             });
         }
-        else {
-            modeImg.classList.add("locked");
-            modeImg.draggable = false;
-            modeImg.style.cursor = "not-allowed";
-        }
-        dialog.appendChild(modeImg);
+        dialog.appendChild(img);
     });
-    // 화면에 붙여서 실제 크기 계산
+    // 이하 위치/표시, 외부 클릭 닫기 등은 이전과 동일
     dialog.style.position = "absolute";
     dialog.style.visibility = "hidden";
     document.body.appendChild(dialog);
-    // 위치 계산
     const rect = anchorElement.getBoundingClientRect();
     const dialogWidth = dialog.offsetWidth;
     const dialogHeight = dialog.offsetHeight;
@@ -72,13 +63,13 @@ export function showInventoryGridModePopover(figureId, anchorElement) {
     dialog.style.left = `${left}px`;
     dialog.style.top = `${top}px`;
     dialog.style.visibility = "visible";
-    // 외부 클릭 시 팝오버 닫기
     setTimeout(() => {
-        document.addEventListener("mousedown", function handler(e) {
+        function handler(e) {
             if (!dialog.contains(e.target)) {
                 dialog.remove();
                 document.removeEventListener("mousedown", handler);
             }
-        });
+        }
+        document.addEventListener("mousedown", handler);
     }, 10);
 }

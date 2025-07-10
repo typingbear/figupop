@@ -1,95 +1,57 @@
-import { renderInventoryGrid } from "./views/inventoryGridView.js";
-import { renderInventoryList } from "./views/inventoryListView.js";
-import { getInventoryFigures } from "../../services/gameStateService.js";
-import { enableInvToPlayDrag } from "./dnd/toPlaygroundDrag.js";
-import { getUIState, setUIState } from "../../services/uiStateService.js";
+import { renderInventory } from "./render/inventoryRenderer.js";
+import { renderInventoryControlBar } from "./views/inventoryControlBar.js";
+import { getUIState, setUIState } from "../../core/services/uiStateService.js";
 export class InventoryManager {
     constructor() {
-        var _a;
+        var _a, _b;
         this.group = document.querySelector("#inventory-group");
         this.toggleBtn = document.querySelector("#inventory-toggle");
-        this.panel = document.querySelector("#inventory");
-        if (this.toggleBtn) {
-            this.toggleBtn.addEventListener("click", () => this.toggle());
-        }
-        // 최초 상태 적용 시 transition 없이!
-        (_a = this.group) === null || _a === void 0 ? void 0 : _a.classList.add("notransition");
+        // 토글 버튼
+        (_a = this.toggleBtn) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => this.toggle());
+        // 최초 상태 동기화 (transition 없이)
+        (_b = this.group) === null || _b === void 0 ? void 0 : _b.classList.add("notransition");
         this.applyUIState();
         setTimeout(() => { var _a; return (_a = this.group) === null || _a === void 0 ? void 0 : _a.classList.remove("notransition"); }, 10);
+        // 최초 렌더
         this.renderControlBar();
-        this.renderInventory();
+        renderInventory();
     }
-    /** 상태값에 따라 패널 오픈/클로즈 동기화 */
     applyUIState() {
-        var _a, _b;
-        const isOpen = getUIState("inventoryOpen");
-        if (isOpen)
-            (_a = this.group) === null || _a === void 0 ? void 0 : _a.classList.remove("closed");
-        else
-            (_b = this.group) === null || _b === void 0 ? void 0 : _b.classList.add("closed");
+        var _a;
+        (_a = this.group) === null || _a === void 0 ? void 0 : _a.classList.toggle("closed", !getUIState("inventoryOpen"));
     }
+    /** 컨트롤바 + 소트 옵션 반영 */
     renderControlBar() {
-        if (!this.panel)
-            return;
-        const exist = this.panel.querySelector(".inventory-control-bar");
-        if (exist)
-            exist.remove();
-        const bar = document.createElement("div");
-        bar.className = "inventory-control-bar";
-        bar.style.display = "flex";
-        bar.style.gap = "8px";
-        bar.style.marginBottom = "12px";
-        const currentView = getUIState("inventoryView");
-        const gridBtn = document.createElement("button");
-        gridBtn.textContent = "그리드뷰";
-        gridBtn.onclick = () => { this.setView("grid"); };
-        if (currentView === "grid")
-            gridBtn.disabled = true;
-        const listBtn = document.createElement("button");
-        listBtn.textContent = "리스트뷰";
-        listBtn.onclick = () => { this.setView("list"); };
-        if (currentView === "list")
-            listBtn.disabled = true;
-        bar.appendChild(gridBtn);
-        bar.appendChild(listBtn);
-        this.panel.prepend(bar);
+        renderInventoryControlBar((view) => this.setView(view), // 뷰 변경
+        (sort) => this.setSort(sort) // 소트 변경 추가!
+        );
     }
+    /** 뷰 변경 */
     setView(view) {
         if (getUIState("inventoryView") !== view) {
             setUIState("inventoryView", view);
             this.renderControlBar();
-            this.renderInventory();
+            renderInventory();
         }
     }
-    renderInventory() {
-        if (!this.panel)
-            return;
-        this.panel.querySelectorAll(".inventory-list,.inventory-grid").forEach(el => el.remove());
-        const unlockedFigures = getInventoryFigures();
-        const currentView = getUIState("inventoryView");
-        if (currentView === "grid") {
-            renderInventoryGrid(this.panel, unlockedFigures);
+    /** 소트 변경 (예: "recent" | "registered" | "name") */
+    setSort(sort) {
+        if (getUIState("inventorySort") !== sort) {
+            setUIState("inventorySort", sort);
+            this.renderControlBar();
+            renderInventory();
         }
-        else {
-            renderInventoryList(this.panel, unlockedFigures);
-        }
-        enableInvToPlayDrag(this.panel, () => getInventoryFigures());
     }
     open() {
-        var _a;
-        (_a = this.group) === null || _a === void 0 ? void 0 : _a.classList.remove("closed");
         setUIState("inventoryOpen", true);
+        this.applyUIState();
     }
     close() {
-        var _a;
-        (_a = this.group) === null || _a === void 0 ? void 0 : _a.classList.add("closed");
         setUIState("inventoryOpen", false);
+        this.applyUIState();
     }
     toggle() {
-        const isOpen = !getUIState("inventoryOpen");
-        if (isOpen)
-            this.open();
-        else
-            this.close();
+        setUIState("inventoryOpen", !getUIState("inventoryOpen"));
+        this.applyUIState();
     }
 }
