@@ -61,6 +61,11 @@ export function enableInvToPlayDrag() {
     // 1) 썸네일 복제(가짜 드래그용)
     const ghost = target.cloneNode(true) as HTMLElement;
     if (!(ghost instanceof HTMLElement)) return;
+
+    // [핵심] 원본 썸네일과 똑같은 크기 복사!
+    ghost.style.width = rect.width + "px";
+    ghost.style.height = rect.height + "px";
+
     ghost.style.position = "fixed";
     ghost.style.left = `${touch.clientX - offsetX}px`;
     ghost.style.top = `${touch.clientY - offsetY}px`;

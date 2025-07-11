@@ -59,6 +59,9 @@ export function enableInvToPlayDrag() {
         const ghost = target.cloneNode(true);
         if (!(ghost instanceof HTMLElement))
             return;
+        // [핵심] 원본 썸네일과 똑같은 크기 복사!
+        ghost.style.width = rect.width + "px";
+        ghost.style.height = rect.height + "px";
         ghost.style.position = "fixed";
         ghost.style.left = `${touch.clientX - offsetX}px`;
         ghost.style.top = `${touch.clientY - offsetY}px`;
