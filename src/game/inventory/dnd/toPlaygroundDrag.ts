@@ -80,22 +80,21 @@ root.addEventListener("touchstart", e => {
     ghost.style.top = `${t.clientY - offsetY}px`;
     ev.preventDefault();
   }
- function onTouchEnd(ev: TouchEvent) {
+function onTouchEnd(ev: TouchEvent) {
   document.body.removeChild(ghost);
   document.removeEventListener("touchmove", onTouchMove);
   document.removeEventListener("touchend", onTouchEnd);
 
-  // === [핵심!] ===
+  // 1️⃣ 손가락 위치 구하기
   const t = ev.changedTouches[0];
   const playground = document.getElementById(ID_PLAYGROUND);
   if (playground) {
     const rect = playground.getBoundingClientRect();
-    // 손가락 위치가 playground 내부라면 drop 처리
     if (
       t.clientX >= rect.left && t.clientX <= rect.right &&
       t.clientY >= rect.top && t.clientY <= rect.bottom
     ) {
-      // enablePlaygroundDrop에 drop 함수가 있다면 직접 호출
+      // 2️⃣ "즉시" drop 함수 직접 호출!
       if (typeof window.__playgroundTouchDrop === "function") {
         window.__playgroundTouchDrop(
           {
