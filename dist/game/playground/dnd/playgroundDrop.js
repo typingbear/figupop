@@ -29,12 +29,8 @@ export function enablePlaygroundDrop() {
     // 인벤토리(혹은 외부)에서 터치드래그 할 때, 
     // 글로벌 변수/상태로 데이터 저장 필요 (enableInvToPlayDrag쪽과 연동)
     window.__playgroundTouchDrop = (data, startX, startY, offsetX, offsetY, ghost) => {
-        // 터치 드래그 시작: 드롭 대기상태
-        currentDropData = JSON.stringify(data);
-        touchGhost = ghost;
-        touchOffsetX = offsetX;
-        touchOffsetY = offsetY;
-        // ghost 썸네일 이미 body에 append되어 있다고 가정
+        // (ghost는 보통 이 시점에서 이미 삭제됨)
+        handleDropData(JSON.stringify(data), startX, startY, container, offsetX, offsetY);
     };
     // 플레이그라운드에 터치 드래그 중일 때, drop 판정
     container.addEventListener("touchmove", (e) => {
