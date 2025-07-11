@@ -44,52 +44,49 @@ export function enableInvToPlayDrag() {
   });
 
   // === 2. 터치 Drag(커스텀) ===
-  root.addEventListener("touchstart", e => {
-    const target = e.target;
-    if (!(target instanceof HTMLElement)) return;
-    if (!target.classList.contains("draggable")) return;
+root.addEventListener("touchstart", e => {
+  const target = e.target;
+  if (!(target instanceof HTMLImageElement)) return; // ★ img 태그만 허용
 
-    const figureId = target.getAttribute("data-figure-id");
-    const mode = target.getAttribute("data-mode");
-    if (!figureId || !mode) return;
+  const figureId = target.getAttribute("data-figure-id");
+  const mode = target.getAttribute("data-mode");
+  if (!figureId || !mode) return;
 
-    const rect = target.getBoundingClientRect();
-    const touch = e.touches[0];
-    const offsetX = touch.clientX - rect.left;
-    const offsetY = touch.clientY - rect.top;
+  const rect = target.getBoundingClientRect();
+  const touch = e.touches[0];
+  const offsetX = touch.clientX - rect.left;
+  const offsetY = touch.clientY - rect.top;
 
-    // 1) 썸네일 복제(가짜 드래그용)
-    const ghost = target.cloneNode(true) as HTMLElement;
-    if (!(ghost instanceof HTMLElement)) return;
+  // img 태그만 복제
+  const ghost = target.cloneNode(true) as HTMLImageElement;
+  ghost.style.width = rect.width + "px";
+  ghost.style.height = rect.height + "px";
+  ghost.style.position = "fixed";
+  ghost.style.left = `${touch.clientX - offsetX}px`;
+  ghost.style.top = `${touch.clientY - offsetY}px`;
+  ghost.style.pointerEvents = "none";
+  ghost.style.opacity = "0.7";
+  ghost.style.zIndex = "9999";
+  ghost.style.background = "transparent"; // 배경 투명화
+  ghost.style.boxShadow = "none"; // 그림자 제거
+  ghost.style.border = "none"; // 테두리 제거(필요시)
+  ghost.style.borderRadius = getComputedStyle(target).borderRadius; // 둥근 모서리 유지
 
-    // [핵심] 원본 썸네일과 똑같은 크기 복사!
-    ghost.style.width = rect.width + "px";
-    ghost.style.height = rect.height + "px";
+  document.body.appendChild(ghost);
 
-    ghost.style.position = "fixed";
-    ghost.style.left = `${touch.clientX - offsetX}px`;
-    ghost.style.top = `${touch.clientY - offsetY}px`;
-    ghost.style.pointerEvents = "none";
-    ghost.style.opacity = "0.7";
-    ghost.style.zIndex = "9999";
-    document.body.appendChild(ghost);
+  function onTouchMove(ev: TouchEvent) {
+    const t = ev.touches[0];
+    ghost.style.left = `${t.clientX - offsetX}px`;
+    ghost.style.top = `${t.clientY - offsetY}px`;
+    ev.preventDefault();
+  }
+  function onTouchEnd(ev: TouchEvent) {
+    document.body.removeChild(ghost);
+    document.removeEventListener("touchmove", onTouchMove);
+    document.removeEventListener("touchend", onTouchEnd);
+  }
+  document.addEventListener("touchmove", onTouchMove, { passive: false });
+  document.addEventListener("touchend", onTouchEnd);
+});
 
-    // 2) 드래그 이동
-    function onTouchMove(ev: TouchEvent) {
-      const t = ev.touches[0];
-      ghost.style.left = `${t.clientX - offsetX}px`;
-      ghost.style.top = `${t.clientY - offsetY}px`;
-      ev.preventDefault();
-    }
-
-    // 3) 드래그 끝 (드롭 처리 등)
-    function onTouchEnd(ev: TouchEvent) {
-      document.body.removeChild(ghost);
-      // 플레이그라운드 영역에 투하 판단/추가는 여기서!
-      document.removeEventListener("touchmove", onTouchMove);
-      document.removeEventListener("touchend", onTouchEnd);
-    }
-    document.addEventListener("touchmove", onTouchMove, { passive: false });
-    document.addEventListener("touchend", onTouchEnd);
-  });
 }
