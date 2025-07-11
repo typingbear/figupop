@@ -1,5 +1,5 @@
 import { makeSerialKey } from "../../../common/utils.js";
-import { ID_INVENTORY } from "../../../common/config.js";
+import { ID_INVENTORY, ID_PLAYGROUND } from "../../../common/config.js";
 
 /**
  * 인벤토리 썸네일에 드래그 부여 (마우스+터치)
@@ -80,11 +80,34 @@ root.addEventListener("touchstart", e => {
     ghost.style.top = `${t.clientY - offsetY}px`;
     ev.preventDefault();
   }
-  function onTouchEnd(ev: TouchEvent) {
-    document.body.removeChild(ghost);
-    document.removeEventListener("touchmove", onTouchMove);
-    document.removeEventListener("touchend", onTouchEnd);
+ function onTouchEnd(ev: TouchEvent) {
+  document.body.removeChild(ghost);
+  document.removeEventListener("touchmove", onTouchMove);
+  document.removeEventListener("touchend", onTouchEnd);
+
+  // === [핵심!] ===
+  const t = ev.changedTouches[0];
+  const playground = document.getElementById(ID_PLAYGROUND);
+  if (playground) {
+    const rect = playground.getBoundingClientRect();
+    // 손가락 위치가 playground 내부라면 drop 처리
+    if (
+      t.clientX >= rect.left && t.clientX <= rect.right &&
+      t.clientY >= rect.top && t.clientY <= rect.bottom
+    ) {
+      // enablePlaygroundDrop에 drop 함수가 있다면 직접 호출
+      if (typeof window.__playgroundTouchDrop === "function") {
+        window.__playgroundTouchDrop(
+          {
+            figureId, mode, serial: makeSerialKey(), offsetX, offsetY, source: "inventory"
+          },
+          t.clientX, t.clientY, offsetX, offsetY, ghost
+        );
+      }
+    }
   }
+}
+
   document.addEventListener("touchmove", onTouchMove, { passive: false });
   document.addEventListener("touchend", onTouchEnd);
 });
