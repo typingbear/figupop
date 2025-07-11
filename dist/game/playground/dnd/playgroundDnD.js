@@ -11,41 +11,104 @@ function getRenderedSize(imgEl) {
 }
 /**
  * 플레이그라운드에서 이미지 직접 드래그-이동 (z-index도 관리)
- */
-export function enablePlaygroundDnD() {
+ */ export function enablePlaygroundDnD() {
     const playgroundEl = document.getElementById(ID_PLAYGROUND);
     let draggingImg = null;
     let draggingSerial = null;
     let startX = 0, startY = 0, origX = 0, origY = 0;
+    let draggingTouchId = null;
+    // ============ [PC: 마우스 DnD] ============
     playgroundEl.addEventListener("mousedown", e => {
         const target = e.target;
         if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")) {
             draggingImg = target;
             draggingSerial = target.getAttribute("data-serial");
-            // ★ z-index 최상위로!
+            // z-index 최상위로!
             const newZ = bringFigureToFront(draggingSerial);
-            if (typeof newZ === "number") {
+            if (typeof newZ === "number")
                 draggingImg.style.zIndex = String(newZ);
-            }
             startX = e.clientX;
             startY = e.clientY;
             origX = parseInt(target.style.left) || 0;
             origY = parseInt(target.style.top) || 0;
-            window.addEventListener("mousemove", onMove);
-            window.addEventListener("mouseup", onUp);
+            window.addEventListener("mousemove", onMoveMouse);
+            window.addEventListener("mouseup", onUpMouse);
             e.preventDefault();
         }
     });
-    function onMove(e) {
+    function onMoveMouse(e) {
+        handleMove(e.clientX, e.clientY);
+    }
+    function onUpMouse() {
+        handleUp();
+        window.removeEventListener("mousemove", onMoveMouse);
+        window.removeEventListener("mouseup", onUpMouse);
+    }
+    // ============ [모바일/태블릿: 터치 DnD] ============
+    playgroundEl.addEventListener("touchstart", e => {
+        if (draggingImg)
+            return; // 멀티터치 방지
+        const touches = e.changedTouches;
+        const target = e.target;
+        if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")) {
+            draggingImg = target;
+            draggingSerial = target.getAttribute("data-serial");
+            // z-index 최상위로!
+            const newZ = bringFigureToFront(draggingSerial);
+            if (typeof newZ === "number")
+                draggingImg.style.zIndex = String(newZ);
+            const t = touches[0];
+            draggingTouchId = t.identifier;
+            startX = t.clientX;
+            startY = t.clientY;
+            origX = parseInt(target.style.left) || 0;
+            origY = parseInt(target.style.top) || 0;
+            window.addEventListener("touchmove", onMoveTouch, { passive: false });
+            window.addEventListener("touchend", onUpTouch);
+            window.addEventListener("touchcancel", onUpTouch);
+            e.preventDefault();
+        }
+    });
+    function onMoveTouch(e) {
+        if (draggingImg == null || draggingTouchId == null)
+            return;
+        for (let i = 0; i < e.changedTouches.length; ++i) {
+            const t = e.changedTouches[i];
+            if (t.identifier === draggingTouchId) {
+                handleMove(t.clientX, t.clientY);
+                e.preventDefault();
+                break;
+            }
+        }
+    }
+    function onUpTouch(e) {
+        if (draggingImg == null || draggingTouchId == null)
+            return;
+        let up = false;
+        for (let i = 0; i < e.changedTouches.length; ++i) {
+            if (e.changedTouches[i].identifier === draggingTouchId) {
+                up = true;
+                break;
+            }
+        }
+        if (up) {
+            handleUp();
+            window.removeEventListener("touchmove", onMoveTouch);
+            window.removeEventListener("touchend", onUpTouch);
+            window.removeEventListener("touchcancel", onUpTouch);
+            draggingTouchId = null;
+        }
+    }
+    // ============ [공통: move/up 처리] ============
+    function handleMove(clientX, clientY) {
         if (!draggingImg || !draggingSerial)
             return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        const playgroundEl = document.getElementById("playground");
+        const dx = clientX - startX;
+        const dy = clientY - startY;
         const fig = getPlaygroundFigures().find(f => f.serial === draggingSerial);
         if (!fig)
             return;
-        // ⭐ 실제 렌더된 이미지 크기로 계산
+        // 실제 렌더 크기로 계산
         const { width, height } = getRenderedSize(draggingImg);
         const rect = playgroundEl.getBoundingClientRect();
         const maxX = rect.width - width;
@@ -70,7 +133,7 @@ export function enablePlaygroundDnD() {
             handlePendingEffect(b, fig);
         }
     }
-    function onUp() {
+    function handleUp() {
         if (draggingImg && draggingSerial) {
             const figures = getPlaygroundFigures();
             const fig = figures.find(f => f.serial === draggingSerial);
@@ -85,8 +148,8 @@ export function enablePlaygroundDnD() {
                     }
                 }
                 // 한 번에 변신 처리
-                const restult = applyPendingTransformBatch(targets);
-                if (restult) {
+                const result = applyPendingTransformBatch(targets);
+                if (result) {
                     renderInventory();
                     renderCatalog();
                 }
@@ -95,8 +158,6 @@ export function enablePlaygroundDnD() {
         }
         draggingImg = null;
         draggingSerial = null;
-        window.removeEventListener("mousemove", onMove);
-        window.removeEventListener("mouseup", onUp);
         // 효과/속성 모두 제거
         playgroundEl.querySelectorAll(".will-transform").forEach(el => el.classList.remove("will-transform"));
         playgroundEl.querySelectorAll("img[data-pending-id]").forEach(el => {
@@ -104,6 +165,7 @@ export function enablePlaygroundDnD() {
             el.removeAttribute("data-pending-mode");
         });
     }
+    // ======= [기존 겹침/효과/변신 로직들은 그대로] =======
     function handlePendingEffect(a, b) {
         const reaction = getReactionResult(a.id, a.mode, b.id, b.mode);
         if (!reaction)
@@ -116,7 +178,6 @@ export function enablePlaygroundDnD() {
         }
     }
     function applyPendingTransformBatch(targets) {
-        // 한 번이라도 새로운 언락이 있으면 true
         let anyUnlocked = false;
         for (const [fig, img] of targets) {
             const pendingId = img.getAttribute("data-pending-id");
@@ -125,9 +186,8 @@ export function enablePlaygroundDnD() {
                 fig.id = pendingId;
                 fig.mode = pendingMode;
                 const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
-                if (result !== "old") {
+                if (result !== "old")
                     anyUnlocked = true;
-                }
             }
         }
         return anyUnlocked;
