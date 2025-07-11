@@ -1,33 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Figupop</title>
-  <link rel="stylesheet" href="src/styles/style.css">
-  <link rel="stylesheet" href="src/styles/images.css">
-  <link rel="stylesheet" href="src/styles/playground.css">
+  <title>Playground Layout</title>
+
+  <link rel="stylesheet" href="src/styles/layout.css">
   <link rel="stylesheet" href="src/styles/inventory.css">
-  <link rel="stylesheet" href="src/styles/catalog.css">
+  <link rel="stylesheet" href="src/styles/playground.css">
   <link rel="stylesheet" href="src/styles/inbox.css">
+  <link rel="stylesheet" href="src/styles/catalog.css">
   <link rel="stylesheet" href="src/styles/toolbox.css">
-  <link rel="stylesheet" href="src/dev/dev.css">
+  <link rel="stylesheet" href="src/styles/images.css">
+
 </head>
 <body>
-  
-  <div id="playground"></div>
-  <div id="inbox" class="overlay-panel"></div>
-   <div id="toolbox" class="overlay-panel"></div>
-  <div id="catalog-group" class="overlay-panel closed">
-    <div id="catalog"></div>
-    <button id="catalog-toggle" aria-label="Toggle Catalog">≡</button>
+  <div id="body-container">
+
+  <div id="toolbox">
+    <div class="toolbox-menu">
+      <button class="toolbox-btn" id="open-catalog-btn" title="도감 열기">☰</button>
+      <button class="toolbox-btn" id="clear-playground-btn" title="전체 삭제">🗑</button>
+      <button class="toolbox-btn" id="grid-playground-btn" title="바둑판 정렬">🔲</button>
+      <button class="toolbox-btn" title="메뉴2">★</button>
+      <button class="toolbox-btn" title="메뉴3">⚙️</button>
+    </div>
   </div>
 
+    <div id="playground-wrapper">
+      <div id="inbox"></div>
+      <div id="playground"></div>
+    </div>
 
-  <div id="inventory-group" class="closed">
     <div id="inventory"></div>
-    <button id="inventory-toggle" aria-label="Toggle Inventory">≡</button>
+
+    <div class="catalog-overlay" id="catalog-overlay">
+      <div class="catalog-panel">
+        <button class="close-btn" id="close-catalog-btn">닫기 ✖</button>
+      
+        <div id="catalog-content" class="category-list" style="padding:32px;"></div>
+      </div>
+    </div>
+
   </div>
 
   <script type="module" src="dist/main.js"></script>
 </body>
+
 </html>

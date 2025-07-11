@@ -1,39 +1,41 @@
+/* ===== Inbox 기본 박스 ===== */
 #inbox {
   position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  min-width: 400px;
-  background: #fff8f4;
-  padding: 22px 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 28px;
-  box-shadow: 0 8px 24px #0001;
-  border: none;
+  left: 54px;
+  top: 24px;
+  width: 150px;
+  min-height: 180px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px #0002;
   z-index: 10;
-}
-
-/* 메인 컨테이너 */
-.inbox-container {
   display: flex;
-  align-items: center;
-  gap: 38px;
-  padding: 0;
-  margin: 0;
-  background: none;
-  box-shadow: none;
-  border-radius: 0;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 10px;
+  border: 2px solid #f0b859;
+  box-sizing: border-box;
 }
 
-/* 박스 버튼 */
+/* 내부 콘텐츠 정렬 */
+.inbox-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* ← 오른쪽 정렬 */
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  gap: 8px;
+}
+
+/* 버튼 스타일 */
 .inbox-box-btn {
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
   outline: none;
+  align-self: flex-end;
 }
 
 .inbox-box-btn:disabled {
@@ -41,7 +43,7 @@
   opacity: 0.4;
 }
 
-/* 박스 이미지 */
+/* 이미지 스타일 */
 .inbox-box-img {
   width: 64px;
   height: 64px;
@@ -61,48 +63,11 @@
   opacity: 1;
 }
 
-
-/* 타이머 영역 */
-.inbox-timer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 80px;
-  margin-left: 20px;
-}
-
-.inbox-timer-label {
-  font-size: 14px;
-  color: #c79e8e;
-  font-weight: 700;
-  margin-bottom: 4px;
-  letter-spacing: 0.1em;
-}
-
-.inbox-timer-value {
-  font-size: 28px;
-  font-family: 'Menlo', 'Consolas', monospace;
-  font-weight: 900;
-  color: #171717;
-  letter-spacing: 0.07em;
-  text-shadow: 0 2px 8px #fff3;
-}
-
+/* 수량 텍스트 정렬 */
 .inbox-box-count {
   display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 28px;
-  font-family: 'Menlo', 'Consolas', monospace;
-  font-weight: 900;
-  color: #f29b6a;
-  background: #fff7ee;
-  padding: 4px 18px 4px 13px;
-  border-radius: 14px;
-  margin-left: 22px;
-  letter-spacing: 0.05em;
-  box-shadow: 0 2px 12px #e7c1a822;
-  border: 2px solid #ffd3b5;
+  align-items: baseline;
+  justify-content: flex-end;
 }
 
 .inbox-box-count .count-x {
@@ -124,24 +89,50 @@
   color: #a3a3a3;
   opacity: 0.75;
 }
-.inbox-timer-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  margin-left: 36px;
+
+/* 타이머 스타일 */
+.inbox-timer {
+  text-align: right;
 }
+
 .inbox-timer-label {
-  font-size: 15px;
+  font-size: 14px;
   color: #c79e8e;
   font-weight: 700;
   margin-bottom: 4px;
   letter-spacing: 0.08em;
 }
 .inbox-timer-value {
-  font-size: 32px;
+  font-size: 30px;
   font-family: 'Menlo', 'Consolas', monospace;
   font-weight: 900;
   color: #171717;
   letter-spacing: 0.07em;
   text-shadow: 0 2px 8px #fff3;
+}
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+  #inbox {
+    left: 14px;
+    bottom: 72px;
+    top: auto;
+    width: 120px;
+    height: auto;
+    min-height: auto;
+    padding: 8px;
+  }
+
+  .inbox-box-img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .inbox-box-count .count-cur {
+    font-size: 24px;
+  }
+
+  .inbox-timer-value {
+    font-size: 24px;
+  }
 }

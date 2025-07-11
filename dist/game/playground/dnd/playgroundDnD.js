@@ -1,7 +1,14 @@
 import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront } from "../../../core/services/gameStateService.js";
-import { getReactionResult, getFigureSize, } from "../../../core/services/figureLibraryService.js";
-import { renderCatalog, renderInventory, renderPlayground } from "../../index/renderIndex.js";
+import { getReactionResult, } from "../../../core/services/figureLibraryService.js";
+import { renderCatalog, renderInventory, renderPlayground } from "../../gameCommon/renderIndex.js";
 import { ID_PLAYGROUND } from "../../../common/config.js";
+function getRenderedSize(imgEl) {
+    const rect = imgEl.getBoundingClientRect();
+    return {
+        width: rect.width,
+        height: rect.height,
+    };
+}
 /**
  * 플레이그라운드에서 이미지 직접 드래그-이동 (z-index도 관리)
  */
@@ -34,26 +41,33 @@ export function enablePlaygroundDnD() {
             return;
         const dx = e.clientX - startX;
         const dy = e.clientY - startY;
-        draggingImg.style.left = `${origX + dx}px`;
-        draggingImg.style.top = `${origY + dy}px`;
-        // Figure 객체에도 좌표 반영
-        const figures = getPlaygroundFigures();
-        const a = figures.find(f => f.serial === draggingSerial);
-        if (!a)
+        const playgroundEl = document.getElementById("playground");
+        const fig = getPlaygroundFigures().find(f => f.serial === draggingSerial);
+        if (!fig)
             return;
-        a.x = origX + dx;
-        a.y = origY + dy;
-        // 효과/속성 모두 제거
+        // ⭐ 실제 렌더된 이미지 크기로 계산
+        const { width, height } = getRenderedSize(draggingImg);
+        const rect = playgroundEl.getBoundingClientRect();
+        const maxX = rect.width - width;
+        const maxY = rect.height - height;
+        let nextX = origX + dx;
+        let nextY = origY + dy;
+        nextX = Math.max(0, Math.min(maxX, nextX));
+        nextY = Math.max(0, Math.min(maxY, nextY));
+        draggingImg.style.left = `${nextX}px`;
+        draggingImg.style.top = `${nextY}px`;
+        fig.x = nextX;
+        fig.y = nextY;
+        // 기존 겹침/이펙트 처리
         playgroundEl.querySelectorAll(".will-transform").forEach(el => el.classList.remove("will-transform"));
         playgroundEl.querySelectorAll("img[data-pending-id]").forEach(el => {
             el.removeAttribute("data-pending-id");
             el.removeAttribute("data-pending-mode");
         });
-        // 겹침 체크 + 효과/속성
-        const b = getOverlappingFigure(a, figures);
+        const b = getOverlappingFigure(fig, getPlaygroundFigures());
         if (b) {
-            handlePendingEffect(a, b);
-            handlePendingEffect(b, a);
+            handlePendingEffect(fig, b);
+            handlePendingEffect(b, fig);
         }
     }
     function onUp() {
@@ -119,14 +133,21 @@ export function enablePlaygroundDnD() {
         return anyUnlocked;
     }
     function getOverlappingFigure(a, figures) {
-        const aSize = getFigureSize(a.id, a.mode);
-        const aLeft = a.x, aTop = a.y, aRight = a.x + aSize.width, aBottom = a.y + aSize.height;
+        const aEl = document.querySelector(`img[data-serial="${a.serial}"]`);
+        if (!aEl)
+            return null;
+        const aRect = aEl.getBoundingClientRect();
         for (const f of figures) {
             if (f.serial === a.serial)
                 continue;
-            const bSize = getFigureSize(f.id, f.mode);
-            const bLeft = f.x, bTop = f.y, bRight = f.x + bSize.width, bBottom = f.y + bSize.height;
-            const isOverlapping = aLeft < bRight && aRight > bLeft && aTop < bBottom && aBottom > bTop;
+            const fEl = document.querySelector(`img[data-serial="${f.serial}"]`);
+            if (!fEl)
+                continue;
+            const fRect = fEl.getBoundingClientRect();
+            const isOverlapping = (aRect.left < fRect.right &&
+                aRect.right > fRect.left &&
+                aRect.top < fRect.bottom &&
+                aRect.bottom > fRect.top);
             if (isOverlapping)
                 return f;
         }

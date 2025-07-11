@@ -4,7 +4,7 @@ import { isModeUnlocked } from "../../../core/services/gameStateService.js";
 import { createFigureThumb } from "../../../core/images/imageHandler.js"; // ← 경로 맞게 조정!
 
 export function renderCatalog() {
-  const panel = document.getElementById(ID_CATEGORY) as HTMLElement | null;
+  const panel = document.getElementById("catalog-content") as HTMLElement | null;
   if (!panel) return;
   panel.innerHTML = "";
 

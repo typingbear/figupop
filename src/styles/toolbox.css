@@ -1,47 +1,51 @@
-#toolbox {
-  position: fixed;
-  top: 0px;         /* 화면 위에서 24px 떨어지게 */
-  left: 400px;        /* 화면 왼쪽에서 24px 떨어지게 */
-  width: 220px;      /* 툴박스 너비 */
-  min-height: 100px; /* 최소 높이 (내용에 따라 늘어남) */
-  background: #20c8eacc; /* 반투명 다크 배경 */
-  border-radius: 18px;
-  box-shadow: 0 4px 16px #0003;
-  padding: 16px 10px;
+/* =================
+   TOOLBOX (툴박스)
+   ================= */
+
+/* --- 툴박스 메뉴 --- */
+.toolbox-menu {
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  
-  transition: box-shadow 0.2s;
-}
-
-#toolbox:hover {
-  box-shadow: 0 8px 24px #0005;
-}
-
-#toolbox button,
-#toolbox .tool-btn {
+  gap: 16px;
   width: 100%;
-  padding: 8px 0;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .toolbox-menu {
+    flex-direction: row;
+    margin-top: 0;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* --- 버튼 스타일 --- */
+.toolbox-btn {
+  width: 36px;
+  height: 36px;
+  background: #222239;
+  border-radius: 12px;
+  color: #fff9;
   border: none;
-  background: #4a90e2;
-  color: white;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  font-size: 1.2em;
   transition: background 0.2s;
 }
-#toolbox button:hover,
-#toolbox .tool-btn:hover {
-  background: #3272b7;
+.toolbox-btn:hover {
+  background: #33335a;
 }
-
-#toolbox .tool-title {
-  font-size: 16px;
-  font-weight: bold;
-  color: #ffe;
-  margin-bottom: 6px;
-  text-align: center;
-  letter-spacing: 1px;
+@media (max-width: 768px) {
+  .toolbox-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1.1em;
+    border-radius: 11px;
+  }
 }

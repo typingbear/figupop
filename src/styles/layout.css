@@ -1,0 +1,118 @@
+/* =============================
+   [LAYOUT 전체 구조]
+   ============================= */
+
+/* --- HTML/BODY 전체 기본 --- */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  min-height: 100vh;
+  background: #f7f7fa;
+  overflow: hidden;
+}
+
+/* --- 바디 컨테이너 --- */
+#body-container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+}
+
+/* --- 플레이그라운드 래퍼 --- */
+#playground-wrapper {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 14px;
+  margin: 0;
+}
+@media (max-width: 768px) {
+  #playground-wrapper {
+    margin: 0;
+    border-radius: 8px;
+  }
+}
+
+/* --- 인벤토리(오른쪽) --- */
+#inventory {
+  background: #fff1e6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-shadow: -2px 0 10px #0001;
+  min-width: 90px;
+  min-height: 0;
+  width: 350px;
+  transition: width 0.2s;
+  z-index: 2;
+  padding: 24px 0 0 15px;
+  border-radius: 14px;
+}
+@media (max-width: 1100px) {
+  #inventory {
+    width: 180px;
+  }
+}
+@media (max-width: 768px) {
+  #inventory {
+    width: 150px;
+    min-width: 40px;
+    padding: 10px 0 0 10px;
+    border-radius: 8px;
+  }
+}
+
+/* --- 툴박스(왼쪽/하단) --- */
+#toolbox {
+  background: #1a1a28;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  position: relative;
+  transition: width 0.2s, left 0.2s, bottom 0.2s, height 0.2s;
+}
+@media (min-width: 1101px) {
+  #toolbox { width: 52px; }
+}
+@media (min-width: 769px) and (max-width: 1100px) {
+  #toolbox { width: 44px; }
+}
+@media (max-width: 768px) {
+  #toolbox {
+    width: 100vw;
+    height: 60px;
+    flex-direction: row;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    background: #1a1a28;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 -2px 8px #0001;
+    min-width: 0;
+    min-height: 60px;
+  }
+}
+
+/* --- 모바일용 컨테이너 방향, 높이 조정 --- */
+@media (max-width: 768px) {
+  #body-container {
+    flex-direction: row;
+    height: calc(100dvh - 58px);
+    width: 100vw;
+    position: relative;
+  }
+}

@@ -45,8 +45,7 @@ export function renderInbox() {
   const timerWrap = document.createElement("div");
   timerWrap.className = "inbox-timer-wrap";
   timerWrap.innerHTML = `
-    <span class="inbox-timer-label">Time Left</span>
-    <span class="inbox-timer-value">${countdown}</span>
+   <span class="inbox-timer-value">${countdown}</span>
   `;
 
   container.appendChild(btn);
