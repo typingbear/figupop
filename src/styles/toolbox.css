@@ -1,0 +1,51 @@
+/* =================
+   TOOLBOX (툴박스)
+   ================= */
+
+/* --- 툴박스 메뉴 --- */
+.toolbox-menu {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  align-items: center;
+}
+@media (max-width: 768px) {
+  .toolbox-menu {
+    flex-direction: row;
+    margin-top: 0;
+    gap: 16px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* --- 버튼 스타일 --- */
+.toolbox-btn {
+  width: 36px;
+  height: 36px;
+  background: #222239;
+  border-radius: 12px;
+  color: #fff9;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2em;
+  transition: background 0.2s;
+}
+.toolbox-btn:hover {
+  background: #33335a;
+}
+@media (max-width: 768px) {
+  .toolbox-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1.1em;
+    border-radius: 11px;
+  }
+}
