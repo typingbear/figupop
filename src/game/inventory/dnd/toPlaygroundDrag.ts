@@ -59,7 +59,7 @@ export function enableInvToPlayDrag() {
     const offsetY = touch.clientY - rect.top;
 
     // 1) 썸네일 복제(가짜 드래그용)
-    const ghost = target.cloneNode(true);
+    const ghost = target.cloneNode(true) as HTMLElement;
     if (!(ghost instanceof HTMLElement)) return;
     ghost.style.position = "fixed";
     ghost.style.left = `${touch.clientX - offsetX}px`;
@@ -70,14 +70,15 @@ export function enableInvToPlayDrag() {
     document.body.appendChild(ghost);
 
     // 2) 드래그 이동
-    function onTouchMove(ev) {
+    function onTouchMove(ev: TouchEvent) {
       const t = ev.touches[0];
       ghost.style.left = `${t.clientX - offsetX}px`;
       ghost.style.top = `${t.clientY - offsetY}px`;
       ev.preventDefault();
     }
+
     // 3) 드래그 끝 (드롭 처리 등)
-    function onTouchEnd(ev) {
+    function onTouchEnd(ev: TouchEvent) {
       document.body.removeChild(ghost);
       // 플레이그라운드 영역에 투하 판단/추가는 여기서!
       document.removeEventListener("touchmove", onTouchMove);
