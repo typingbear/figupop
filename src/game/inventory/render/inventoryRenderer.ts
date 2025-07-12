@@ -2,8 +2,8 @@
 import { getUIState } from "../../../core/services/uiStateService.js";
 import { ID_INVENTORY } from "../../../common/config.js";
 import { enableInvToPlayDrag } from "../dnd/toPlaygroundDrag.js";
-import { addInventoryGridItem,  renderInventoryGrid, updateInventoryGridItem } from "./inventoryGridView.js";
-import { addInventoryListItem,  renderInventoryList, updateInventoryListItem } from "./inventoryListView.js";
+import { addInventoryGridItem,  renderInventoryGrid, updateInventoryGridItem } from "./inventoryGridRender.js";
+import { addInventoryListItem,  renderInventoryList, updateInventoryListItem } from "./inventoryListRender.js";
 import { InventoryFigure } from "../../../common/types.js";
 
 export function renderInventory() {

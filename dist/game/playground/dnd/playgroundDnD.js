@@ -150,14 +150,6 @@ function getRenderedSize(imgEl) {
                 }
                 // 한 번에 변신 처리
                 const result = applyPendingTransformBatch(targets);
-                // if (result) {
-                //   for (const [figItem] of targets) {
-                //     const invFig = getInventoryFigures().find(f => f.id === figItem.id);
-                //     if (invFig) {
-                //       renderInventoryAddOrUpdateItem(invFig); // <-- 이 함수로 부분 갱신!
-                //     }
-                //   }
-                // }
                 // === [여기!] 여러 개 업데이트 ===
                 for (const [figItem] of targets) {
                     renderPlayAddOrUpdateFigure(figItem);

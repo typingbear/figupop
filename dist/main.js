@@ -16,10 +16,4 @@ window.addEventListener("DOMContentLoaded", () => {
             return false;
         }
     });
-    // 2. (옵션) iOS 일부 버전에서 callout 막기용 - 터치 클릭/드래그에 영향 없도록 CSS 병행 권장
-    // document.addEventListener("touchstart", function(e) {
-    //   if (e.target instanceof HTMLImageElement) {
-    //     // e.preventDefault(); // ← 이 줄은 주석! (드래그/클릭이 필요하므로)
-    //   }
-    // }, { passive: false });
 });
