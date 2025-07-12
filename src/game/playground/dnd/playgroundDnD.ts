@@ -8,9 +8,9 @@ import {
   
 } from "../../../core/services/figureLibraryService.js";
 import type { PlaygroundFigure } from "../../../common/types.js";
-import {  renderInventory } from "../../gameCommon/renderIndex.js";
 import { ID_PLAYGROUND } from "../../../common/config.js";
 import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
+import { renderInventory } from "../../inventory/render/inventoryRenderer.js";
 
 
 

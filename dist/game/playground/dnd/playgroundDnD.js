@@ -1,8 +1,8 @@
 import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront } from "../../../core/services/gameStateService.js";
 import { getReactionResult, } from "../../../core/services/figureLibraryService.js";
-import { renderInventory } from "../../gameCommon/renderIndex.js";
 import { ID_PLAYGROUND } from "../../../common/config.js";
 import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
+import { renderInventory } from "../../inventory/render/inventoryRenderer.js";
 function getRenderedSize(imgEl) {
     const rect = imgEl.getBoundingClientRect();
     return {

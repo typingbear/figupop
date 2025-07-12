@@ -1,6 +1,6 @@
 import { ID_PLAYGROUND } from "../../common/config.js";
 import { clearPlaygroundFigures, getPlaygroundFigures, resetToInitialState } from "../../core/services/gameStateService.js";
-import { renderPlayground } from "../gameCommon/renderIndex.js";
+import { renderPlayground } from "../playground/render/playgroundRenderer.js";
 
 export function enableToolbox() {
   const clearBtn = document.getElementById("clear-playground-btn");
