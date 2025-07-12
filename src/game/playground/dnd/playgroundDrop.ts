@@ -1,7 +1,7 @@
 import { ID_PLAYGROUND, NEW_FIGURE_AUDIO } from "../../../common/config.js";
 import { getMaxZIndex, addPlaygroundFigure } from "../../../core/services/gameStateService.js";
 import type { PlaygroundFigure } from "../../../common/types.js";
-import { renderPlayground } from "../render/playgroundRenderer.js";
+import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
 
 /**
  * PC: 드래그앤드랍
@@ -96,39 +96,42 @@ export function enablePlaygroundDrop() {
   });
 
   // ===== PC/모바일 공용: drop데이터 해석&처리
-  function handleDropData(
-    data: string,
-    clientX: number,
-    clientY: number,
-    playgroundEl: HTMLElement,
-    offsetX?: number,
-    offsetY?: number
-  ) {
-    try {
-      const parsed = JSON.parse(data);
-      const { figureId, mode, serial, offsetX: offsetX0, offsetY: offsetY0 } = parsed;
 
-      const rect = playgroundEl.getBoundingClientRect();
-      const offX = offsetX !== undefined ? offsetX : offsetX0 ?? 0;
-      const offY = offsetY !== undefined ? offsetY : offsetY0 ?? 0;
-      const x = clientX - rect.left - offX;
-      const y = clientY - rect.top - offY;
-      const maxZ = getMaxZIndex();
+function handleDropData(
+  data: string,
+  clientX: number,
+  clientY: number,
+  playgroundEl: HTMLElement,
+  offsetX?: number,
+  offsetY?: number
+) {
+  try {
+    const parsed = JSON.parse(data);
+    const { figureId, mode, serial, offsetX: offsetX0, offsetY: offsetY0 } = parsed;
 
-      const fig: PlaygroundFigure = {
-        id: figureId,
-        mode,
-        x,
-        y,
-        serial,
-        zIndex: maxZ + 1
-      };
+    const rect = playgroundEl.getBoundingClientRect();
+    const offX = offsetX !== undefined ? offsetX : offsetX0 ?? 0;
+    const offY = offsetY !== undefined ? offsetY : offsetY0 ?? 0;
+    const x = clientX - rect.left - offX;
+    const y = clientY - rect.top - offY;
+    const maxZ = getMaxZIndex();
 
-      addPlaygroundFigure(fig);
-      renderPlayground();
+    const fig: PlaygroundFigure = {
+      id: figureId,
+      mode,
+      x,
+      y,
+      serial,
+      zIndex: maxZ + 1
+    };
 
-    } catch (err) {
-      console.warn("[Playground Drop] 드롭 데이터 파싱 실패", err);
-    }
+    addPlaygroundFigure(fig); // 상태에는 반드시 반영
+
+    renderPlayAddOrUpdateFigure(fig); // ===★ 여기로 교체 ===
+
+  } catch (err) {
+    console.warn("[Playground Drop] 드롭 데이터 파싱 실패", err);
   }
+}
+
 }

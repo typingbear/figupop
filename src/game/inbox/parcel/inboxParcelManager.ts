@@ -7,8 +7,6 @@ import {
 } from "../../../core/services/gameStateService.js";
 import { makeSerialKey } from "../../../common/utils.js";
 import { renderInventory } from "../../inventory/render/inventoryRenderer.js";
-import { renderCatalog } from "../../catalog/render/catalogRenderer.js";
-import { renderPlayground } from "../../playground/render/playgroundRenderer.js";
 import { SpriteEffectManager } from "../../../core/effects/spriteEffectManager.js";
 
 const PARCEL_FIGURES = getFiguresByKind(FIGURE_KIND_FOR_PARCEL);
@@ -72,6 +70,7 @@ export function addParcel() {
     state.onChange?.();
   }
 }
+// (다른 import는 그대로)
 
 export function removeParcelAndSpawn() {
   const now = getInboxParcels();
@@ -94,24 +93,25 @@ export function removeParcelAndSpawn() {
     const addResult = addOrUnlockInventoryFigure(randomFig.id, "base");
     if (addResult !== "old") {
       renderInventory();
-      renderCatalog();
-        SpriteEffectManager.play("circle", document.body, {
-    size: 192,
-    x: centerX + offsetX,
-    y: centerY + offsetY
-  });
+
+      SpriteEffectManager.play("circle", document.body, {
+        size: 192,
+        x: centerX + offsetX,
+        y: centerY + offsetY
+      });
     }
 
     // 플레이그라운드에 추가
-    addPlaygroundFigure({
+    const fig = {
       id: randomFig.id,
       mode: "base",
       x: centerX + offsetX,
       y: centerY + offsetY,
       serial: makeSerialKey(),
       zIndex: getMaxZIndex() + 1
-    });
-    renderPlayground();
+    };
+    addPlaygroundFigure(fig);
+    renderPlaygroundAddOrUpdateFigure(fig); // 전체 리렌더 대신 이거!
   }
 
   // 택배 리필 카운트다운 관리
@@ -134,3 +134,7 @@ export function resetInboxParcel() {
   startInboxParcel();
   state.onChange?.();
 }
+function renderPlaygroundAddOrUpdateFigure(fig: { id: string; mode: string; x: number; y: number; serial: string; zIndex: number; }) {
+  throw new Error("Function not implemented.");
+}
+

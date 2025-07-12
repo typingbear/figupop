@@ -1,6 +1,6 @@
 import { ID_PLAYGROUND } from "../../../common/config.js";
 import { getMaxZIndex, addPlaygroundFigure } from "../../../core/services/gameStateService.js";
-import { renderPlayground } from "../render/playgroundRenderer.js";
+import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
 export function enablePlaygroundDrop() {
     const container = document.getElementById(ID_PLAYGROUND);
     if (!container) {
@@ -79,8 +79,8 @@ export function enablePlaygroundDrop() {
                 serial,
                 zIndex: maxZ + 1
             };
-            addPlaygroundFigure(fig);
-            renderPlayground();
+            addPlaygroundFigure(fig); // 상태에는 반드시 반영
+            renderPlayAddOrUpdateFigure(fig); // ===★ 여기로 교체 ===
         }
         catch (err) {
             console.warn("[Playground Drop] 드롭 데이터 파싱 실패", err);

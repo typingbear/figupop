@@ -1,8 +1,9 @@
+import { ID_CATEGORY } from "../../../common/config.js";
 import { ALL_FIGURE_MODES } from "../../../core/services/figureLibraryService.js";
 import { isModeUnlocked } from "../../../core/services/gameStateService.js";
 import { createFigureThumb } from "../../../core/images/imageHandler.js"; // ← 경로 맞게 조정!
 export function renderCatalog() {
-    const panel = document.getElementById("catalog-content");
+    const panel = document.getElementById(ID_CATEGORY);
     if (!panel)
         return;
     panel.innerHTML = "";

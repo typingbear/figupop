@@ -44,3 +44,46 @@ export function renderPlayground() {
         container.appendChild(img);
     }
 }
+/**
+ * PlaygroundFigure를 serial 기준으로
+ * - 있으면 업데이트
+ * - 없으면 추가
+ */
+export function renderPlayAddOrUpdateFigure(figData) {
+    var _a;
+    const container = document.getElementById(ID_PLAYGROUND);
+    if (!container)
+        return;
+    const meta = getFigureById(figData.id);
+    const size = getFigureSize(figData.id, figData.mode);
+    if (!meta || !size)
+        return;
+    let img = container.querySelector(`img[data-serial="${figData.serial}"]`);
+    if (!img) {
+        // === 추가 ===
+        img = document.createElement("img");
+        img.className = "playzone-figure-img";
+        img.setAttribute("data-serial", figData.serial);
+        container.appendChild(img);
+    }
+    // === 업데이트 (공통) ===
+    img.style.position = "absolute";
+    img.style.left = `${figData.x}px`;
+    img.style.top = `${figData.y}px`;
+    img.style.width = `${size.width}px`;
+    img.style.height = `${size.height}px`;
+    img.style.zIndex = `${(_a = figData.zIndex) !== null && _a !== void 0 ? _a : 0}`;
+    img.src = `${IMAGE_ROOT}${figData.id}-${figData.mode}.png`;
+    img.alt = `${meta.name} (${figData.mode})`;
+}
+/**
+ * serial 값으로 해당 피규어 이미지를 playground에서 삭제
+ */
+export function renderPlayRemoveFigure(serial) {
+    const container = document.getElementById(ID_PLAYGROUND);
+    if (!container)
+        return;
+    const img = container.querySelector(`img[data-serial="${serial}"]`);
+    if (img)
+        img.remove();
+}

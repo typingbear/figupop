@@ -1,4 +1,3 @@
-export { renderCatalog } from "../catalog/render/catalogRenderer.js";
 export { renderInventory } from "../inventory/render/inventoryRenderer.js";
 export { renderPlayground } from "../playground/render/playgroundRenderer.js";
 

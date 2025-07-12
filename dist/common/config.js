@@ -13,7 +13,7 @@ export const DEFAULT_UI_STATE = {
 /** 주요 DOM 요소 ID를 상수로 정의 */
 export const ID_PLAYGROUND = "playground";
 export const ID_INBOX = "inbox";
-export const ID_CATEGORY = "catalog";
+export const ID_CATEGORY = "catalog-content";
 export const ID_INVENTORY = "inventory";
 export const IMAGE_ROOT = "assets/images/";
 export const OUTLINE_IMAGE_BASE = "assets/images/outline/";

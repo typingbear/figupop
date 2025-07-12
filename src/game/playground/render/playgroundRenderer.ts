@@ -2,6 +2,7 @@
 import { getFigureById, getFigureSize } from "../../../core/services/figureLibraryService.js";
 import { ID_PLAYGROUND, IMAGE_ROOT } from "../../../common/config.js";
 import { getPlaygroundFigures } from "../../../core/services/gameStateService.js";
+import { PlaygroundFigure } from "../../../common/types.js";
 
 /**
  * 플레이그라운드에 피규어 배열을 렌더링 (순수 함수)
@@ -52,4 +53,47 @@ export function renderPlayground() {
 
     container.appendChild(img);
   }
+}
+
+
+/**
+ * PlaygroundFigure를 serial 기준으로
+ * - 있으면 업데이트
+ * - 없으면 추가
+ */
+export function renderPlayAddOrUpdateFigure(figData: PlaygroundFigure) {
+  const container = document.getElementById(ID_PLAYGROUND);
+  if (!container) return;
+
+  const meta = getFigureById(figData.id);
+  const size = getFigureSize(figData.id, figData.mode);
+  if (!meta || !size) return;
+
+  let img = container.querySelector<HTMLImageElement>(`img[data-serial="${figData.serial}"]`);
+  if (!img) {
+    // === 추가 ===
+    img = document.createElement("img");
+    img.className = "playzone-figure-img";
+    img.setAttribute("data-serial", figData.serial);
+    container.appendChild(img);
+  }
+  // === 업데이트 (공통) ===
+  img.style.position = "absolute";
+  img.style.left = `${figData.x}px`;
+  img.style.top = `${figData.y}px`;
+  img.style.width = `${size.width}px`;
+  img.style.height = `${size.height}px`;
+  img.style.zIndex = `${figData.zIndex ?? 0}`;
+  img.src = `${IMAGE_ROOT}${figData.id}-${figData.mode}.png`;
+  img.alt = `${meta.name} (${figData.mode})`;
+}
+
+/**
+ * serial 값으로 해당 피규어 이미지를 playground에서 삭제
+ */
+export function renderPlayRemoveFigure(serial: string) {
+  const container = document.getElementById(ID_PLAYGROUND);
+  if (!container) return;
+  const img = container.querySelector<HTMLImageElement>(`img[data-serial="${serial}"]`);
+  if (img) img.remove();
 }

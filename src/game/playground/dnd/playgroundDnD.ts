@@ -8,8 +8,9 @@ import {
   
 } from "../../../core/services/figureLibraryService.js";
 import type { PlaygroundFigure } from "../../../common/types.js";
-import { renderCatalog, renderInventory, renderPlayground } from "../../gameCommon/renderIndex.js";
+import {  renderInventory } from "../../gameCommon/renderIndex.js";
 import { ID_PLAYGROUND } from "../../../common/config.js";
+import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
 
 
 
@@ -162,43 +163,45 @@ function getRenderedSize(imgEl: HTMLImageElement): { width: number; height: numb
     }
   }
 
-  function handleUp() {
-    if (draggingImg && draggingSerial) {
-      const figures = getPlaygroundFigures();
-      const fig = figures.find(f => f.serial === draggingSerial);
+ function handleUp() {
+  if (draggingImg && draggingSerial) {
+    const figures = getPlaygroundFigures();
+    const fig = figures.find(f => f.serial === draggingSerial);
 
-      if (fig && draggingImg) {
-        // 변신 타깃들 배열 생성 (자기 자신 + 겹친 상대)
-        const targets: Array<[PlaygroundFigure, HTMLImageElement]> = [[fig, draggingImg]];
+    if (fig && draggingImg) {
+      // 변신 타깃들 배열 생성 (자기 자신 + 겹친 상대)
+      const targets: Array<[PlaygroundFigure, HTMLImageElement]> = [[fig, draggingImg]];
 
-        const other = getOverlappingFigure(fig, figures);
-        if (other) {
-          const otherImg = playgroundEl.querySelector(`img[data-serial="${other.serial}"]`);
-          if (otherImg instanceof HTMLImageElement) {
-            targets.push([other, otherImg]);
-          }
+      const other = getOverlappingFigure(fig, figures);
+      if (other) {
+        const otherImg = playgroundEl.querySelector(`img[data-serial="${other.serial}"]`);
+        if (otherImg instanceof HTMLImageElement) {
+          targets.push([other, otherImg]);
         }
+      }
 
-        // 한 번에 변신 처리
-        const result = applyPendingTransformBatch(targets);
+      // 한 번에 변신 처리
+      const result = applyPendingTransformBatch(targets);
 
-        if (result) {
-          renderInventory();
-          renderCatalog();
-        }
-        renderPlayground();
+      if (result) {
+        renderInventory();
+      }
+      // === [여기!] 여러 개 업데이트 ===
+      for (const [figItem] of targets) {
+        renderPlayAddOrUpdateFigure(figItem);
       }
     }
-    draggingImg = null;
-    draggingSerial = null;
-
-    // 효과/속성 모두 제거
-    playgroundEl.querySelectorAll(".will-transform").forEach(el => el.classList.remove("will-transform"));
-    playgroundEl.querySelectorAll("img[data-pending-id]").forEach(el => {
-      el.removeAttribute("data-pending-id");
-      el.removeAttribute("data-pending-mode");
-    });
   }
+  draggingImg = null;
+  draggingSerial = null;
+
+  // 효과/속성 모두 제거
+  playgroundEl.querySelectorAll(".will-transform").forEach(el => el.classList.remove("will-transform"));
+  playgroundEl.querySelectorAll("img[data-pending-id]").forEach(el => {
+    el.removeAttribute("data-pending-id");
+    el.removeAttribute("data-pending-mode");
+  });
+}
 
   // ======= [기존 겹침/효과/변신 로직들은 그대로] =======
   function handlePendingEffect(a: PlaygroundFigure, b: PlaygroundFigure) {

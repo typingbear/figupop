@@ -1,7 +1,8 @@
 import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront } from "../../../core/services/gameStateService.js";
 import { getReactionResult, } from "../../../core/services/figureLibraryService.js";
-import { renderCatalog, renderInventory, renderPlayground } from "../../gameCommon/renderIndex.js";
+import { renderInventory } from "../../gameCommon/renderIndex.js";
 import { ID_PLAYGROUND } from "../../../common/config.js";
+import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
 function getRenderedSize(imgEl) {
     const rect = imgEl.getBoundingClientRect();
     return {
@@ -151,9 +152,11 @@ function getRenderedSize(imgEl) {
                 const result = applyPendingTransformBatch(targets);
                 if (result) {
                     renderInventory();
-                    renderCatalog();
                 }
-                renderPlayground();
+                // === [여기!] 여러 개 업데이트 ===
+                for (const [figItem] of targets) {
+                    renderPlayAddOrUpdateFigure(figItem);
+                }
             }
         }
         draggingImg = null;
