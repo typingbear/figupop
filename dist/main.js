@@ -1,7 +1,7 @@
 import { InventoryManager } from "./game/inventory/inventoryManager.js";
 import { setupCatalogOverlay } from "./game/catalog/catalogManager.js";
 import { InboxManager } from "./game/inbox/inboxManager.js";
-import { PlaygroundManager } from "./game/playground/playgroundManager.js"; // ★ 추가!
+import { PlaygroundManager } from "./game/playground/playgroundManager.js";
 import { enableToolbox } from "./game/toolbox/toolboxMananger.js";
 window.addEventListener("DOMContentLoaded", () => {
     setupCatalogOverlay();
@@ -9,28 +9,17 @@ window.addEventListener("DOMContentLoaded", () => {
     new PlaygroundManager();
     new InboxManager();
     enableToolbox();
-    // 1. PC/모바일: 이미지 우클릭/롱탭 저장메뉴 방지
+    // 1. PC/모바일: 이미지 우클릭/롱탭 저장메뉴 방지 (최대한!)
     document.addEventListener("contextmenu", function (e) {
         if (e.target instanceof HTMLImageElement) {
             e.preventDefault();
             return false;
         }
     });
-    // 2. 모바일: 이미지 롱프레스 방지 (일부 브라우저는 touchstart에 반드시 있어야함)
-    document.addEventListener("touchstart", function (e) {
-        if (e.target instanceof HTMLImageElement) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-    // 3. (선택) 더 강력하게, touchend/touchmove에서도 막기
-    document.addEventListener("touchend", function (e) {
-        if (e.target instanceof HTMLImageElement) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-    document.addEventListener("touchmove", function (e) {
-        if (e.target instanceof HTMLImageElement) {
-            e.preventDefault();
-        }
-    }, { passive: false });
+    // 2. (옵션) iOS 일부 버전에서 callout 막기용 - 터치 클릭/드래그에 영향 없도록 CSS 병행 권장
+    // document.addEventListener("touchstart", function(e) {
+    //   if (e.target instanceof HTMLImageElement) {
+    //     // e.preventDefault(); // ← 이 줄은 주석! (드래그/클릭이 필요하므로)
+    //   }
+    // }, { passive: false });
 });
