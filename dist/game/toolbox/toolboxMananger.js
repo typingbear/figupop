@@ -1,9 +1,10 @@
 import { ID_PLAYGROUND } from "../../common/config.js";
-import { clearPlaygroundFigures, getPlaygroundFigures } from "../../core/services/gameStateService.js";
+import { clearPlaygroundFigures, getPlaygroundFigures, resetToInitialState } from "../../core/services/gameStateService.js";
 import { renderPlayground } from "../gameCommon/renderIndex.js";
 export function enableToolbox() {
     const clearBtn = document.getElementById("clear-playground-btn");
     const gridBtn = document.getElementById("grid-playground-btn");
+    const resetBtn = document.getElementById("reset-inventory-btn");
     if (clearBtn) {
         clearBtn.addEventListener("click", () => {
             clearPlaygroundFigures();
@@ -14,6 +15,12 @@ export function enableToolbox() {
         gridBtn.addEventListener("click", () => {
             arrangeFiguresGridCenter();
             renderPlayground();
+        });
+    }
+    if (resetBtn) {
+        resetBtn.addEventListener("click", () => {
+            resetToInitialState();
+            location.reload();
         });
     }
 }
