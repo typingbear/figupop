@@ -1,6 +1,6 @@
 // src/services/gameStateService.js
 
-import type { GameState, PlaygroundFigure, InventoryFigure } from "../../common/types.js";
+import type { GameState, PlaygroundFigure, InventoryFigure, AddOrUnlockResult } from "../../common/types.js";
 import { GAME_STATE_STORAGE_KEY, NEW_FIGURE_AUDIO, OLD_FIGURE_AUDIO, PARCEL_LIMIT, UNLOCK_FIGURE_AUDIO } from "../../common/config.js";
 import { gameStates } from "../../data/initialGameState.js";
 import { playSound } from "../../common/utils.js";
@@ -82,7 +82,7 @@ export function isModeUnlocked(figureId: string, mode: string): boolean {
 export function addOrUnlockInventoryFigure(
   figureId: string,
   mode: string
-): "new-figure" | "new-mode" | "old" {
+): AddOrUnlockResult {
   let entry = data.inventoryFigures.find(f => f.id === figureId);
 
   if (!entry) {

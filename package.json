@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "image-size": "^2.0.2",
+    "lottie-web": "^5.13.0",
     "sharp": "^0.34.2"
   }
 }

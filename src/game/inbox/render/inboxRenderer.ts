@@ -35,7 +35,7 @@ export function renderInbox() {
   // 개수 뱃지
   const countBox = document.createElement("div");
   countBox.className = "inbox-box-count";
-  countBox.innerHTML = `
+  countBox.innerHTML = ` 
     <span class="count-x">×</span>
     <span class="count-cur">${boxCount}</span>
     <span class="count-max">/${PARCEL_LIMIT}</span>
@@ -45,8 +45,7 @@ export function renderInbox() {
   const timerWrap = document.createElement("div");
   timerWrap.className = "inbox-timer-wrap";
   timerWrap.innerHTML = `
-   <span class="inbox-timer-value">${countdown}</span>
-  `;
+   <span class="inbox-timer-value">${countdown}</span>`;
 
   container.appendChild(btn);
   container.appendChild(countBox);
@@ -58,5 +57,6 @@ export function renderInbox() {
   btn.onclick = () => {
     removeParcelAndSpawn();
     renderInbox(); // 상태 변경 후 다시 그리기 (subscribe에서도 호출해도 됨)
+   
   };
 }

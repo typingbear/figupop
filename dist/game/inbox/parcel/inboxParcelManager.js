@@ -3,8 +3,9 @@ import { PARCEL_TIME, PARCEL_LIMIT, FIGURE_KIND_FOR_PARCEL } from "../../../comm
 import { getFiguresByKind } from "../../../core/services/figureLibraryService.js";
 import { addOrUnlockInventoryFigure, addPlaygroundFigure, getMaxZIndex, getInventoryFigures, getInboxParcels, setInboxParcels } from "../../../core/services/gameStateService.js";
 import { makeSerialKey } from "../../../common/utils.js";
-import { renderInventory } from "../../inventory/render/inventoryRenderer.js";
 import { SpriteEffectManager } from "../../../core/effects/spriteEffectManager.js";
+import { renderPlayAddOrUpdateFigure } from "../../playground/render/playgroundRenderer.js";
+import { renderInventoryInsertItem, renderInventoryUpdateItem } from "../../inventory/render/inventoryRenderer.js";
 const PARCEL_FIGURES = getFiguresByKind(FIGURE_KIND_FOR_PARCEL);
 const state = {
     deliveryCountdown: PARCEL_TIME,
@@ -65,7 +66,6 @@ export function addParcel() {
         (_a = state.onChange) === null || _a === void 0 ? void 0 : _a.call(state);
     }
 }
-// (다른 import는 그대로)
 export function removeParcelAndSpawn() {
     var _a;
     const now = getInboxParcels();
@@ -84,14 +84,19 @@ export function removeParcelAndSpawn() {
         const offsetY = Math.floor(Math.random() * 81) - 40; // -40 ~ +40 px
         // 피규어 인벤토리에 추가/언락, openedAt 자동 반영됨
         const addResult = addOrUnlockInventoryFigure(randomFig.id, "base");
-        if (addResult !== "old") {
-            renderInventory();
-            SpriteEffectManager.play("circle", document.body, {
-                size: 192,
-                x: centerX + offsetX,
-                y: centerY + offsetY
-            });
+        const invFig = getInventoryFigures().find(f => f.id === randomFig.id);
+        if (addResult === "new-figure" && invFig) {
+            renderInventoryInsertItem(invFig);
         }
+        else if (addResult === "new-mode" && invFig) {
+            renderInventoryUpdateItem(invFig);
+        }
+        // addResult === "old"는 아무것도 안 함
+        SpriteEffectManager.play("circle", document.body, {
+            size: 192,
+            x: centerX + offsetX,
+            y: centerY + offsetY
+        });
         // 플레이그라운드에 추가
         const fig = {
             id: randomFig.id,
@@ -102,7 +107,7 @@ export function removeParcelAndSpawn() {
             zIndex: getMaxZIndex() + 1
         };
         addPlaygroundFigure(fig);
-        renderPlaygroundAddOrUpdateFigure(fig); // 전체 리렌더 대신 이거!
+        renderPlayAddOrUpdateFigure(fig); // 전체 리렌더 대신 이거!
     }
     // 택배 리필 카운트다운 관리
     if (getInboxParcels() < PARCEL_LIMIT && state.intervalId === null) {
@@ -123,7 +128,4 @@ export function resetInboxParcel() {
     state.deliveryCountdown = PARCEL_TIME;
     startInboxParcel();
     (_a = state.onChange) === null || _a === void 0 ? void 0 : _a.call(state);
-}
-function renderPlaygroundAddOrUpdateFigure(fig) {
-    throw new Error("Function not implemented.");
 }

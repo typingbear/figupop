@@ -1,8 +1,8 @@
-import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront } from "../../../core/services/gameStateService.js";
+import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront, getInventoryFigures } from "../../../core/services/gameStateService.js";
 import { getReactionResult, } from "../../../core/services/figureLibraryService.js";
 import { ID_PLAYGROUND } from "../../../common/config.js";
 import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
-import { renderInventory } from "../../inventory/render/inventoryRenderer.js";
+import { renderInventoryInsertItem, renderInventoryUpdateItem } from "../../inventory/render/inventoryRenderer.js";
 function getRenderedSize(imgEl) {
     const rect = imgEl.getBoundingClientRect();
     return {
@@ -150,9 +150,14 @@ function getRenderedSize(imgEl) {
                 }
                 // 한 번에 변신 처리
                 const result = applyPendingTransformBatch(targets);
-                if (result) {
-                    renderInventory();
-                }
+                // if (result) {
+                //   for (const [figItem] of targets) {
+                //     const invFig = getInventoryFigures().find(f => f.id === figItem.id);
+                //     if (invFig) {
+                //       renderInventoryAddOrUpdateItem(invFig); // <-- 이 함수로 부분 갱신!
+                //     }
+                //   }
+                // }
                 // === [여기!] 여러 개 업데이트 ===
                 for (const [figItem] of targets) {
                     renderPlayAddOrUpdateFigure(figItem);
@@ -189,8 +194,19 @@ function getRenderedSize(imgEl) {
                 fig.id = pendingId;
                 fig.mode = pendingMode;
                 const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
-                if (result !== "old")
+                const invFig = getInventoryFigures().find(f => f.id === pendingId);
+                if (!invFig)
+                    continue;
+                // === add/update 함수만 분기!
+                if (result === "new-figure") {
+                    renderInventoryInsertItem(invFig);
                     anyUnlocked = true;
+                }
+                else if (result === "new-mode") {
+                    renderInventoryUpdateItem(invFig);
+                    anyUnlocked = true;
+                }
+                // "old"는 아무것도 안 함
             }
         }
         return anyUnlocked;
