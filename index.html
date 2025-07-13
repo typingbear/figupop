@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="src/styles/inbox.css">
   <link rel="stylesheet" href="src/styles/catalog.css">
   <link rel="stylesheet" href="src/styles/toolbox.css">
+  <link rel="stylesheet" href="src/styles/setting.css">
   <link rel="stylesheet" href="src/styles/images.css">
 
 </head>
@@ -24,9 +25,8 @@
       <button class="toolbox-btn" id="clear-playground-btn" title="전체 삭제">🗑</button>
       <button class="toolbox-btn" id="grid-playground-btn" title="바둑판 정렬">🔲</button>
       <button class="toolbox-btn" id="reset-inventory-btn" title="reset">★</button>
-      <button class="toolbox-btn" title="메뉴3">⚙️</button>
+      <button class="toolbox-btn" id="open-settings-btn" title="설정">⚙️</button>
       <button class="toolbox-btn" title="메뉴4">?</button>
-
     </div>
   </div>
 
@@ -44,6 +44,34 @@
         <div id="catalog-content" class="category-list" style="padding:32px;"></div>
       </div>
     </div>
+
+<div id="sound-settings-modal" class="modal">
+  <h2>🔊 사운드 설정</h2>
+  <div>
+    <label for="sfxVolume">효과음 볼륨</label>
+    <div class="slider-row">
+      <input type="range" id="sfxVolume" min="0" max="100" value="80">
+      <span class="slider-value-group">
+        <span id="sfxVolumeValue">80</span><span>%</span>
+      </span>
+    </div>
+  </div>
+  <div>
+    <label for="bgmVolume">배경음 볼륨</label>
+    <div class="slider-row">
+      <input type="range" id="bgmVolume" min="0" max="100" value="60">
+      <span class="slider-value-group">
+        <span id="bgmVolumeValue">60</span><span>%</span>
+      </span>
+    </div>
+  </div>
+  <div class="modal-btn-row">
+    <button id="sound-settings-save-btn">저장</button>
+    <button id="sound-settings-cancel-btn">취소</button>
+  </div>
+</div>
+
+
 
   </div>
 

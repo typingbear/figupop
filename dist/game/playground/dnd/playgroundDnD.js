@@ -1,8 +1,10 @@
 import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront, getInventoryFigures } from "../../../core/services/gameStateService.js";
 import { getReactionResult, } from "../../../core/services/figureLibraryService.js";
-import { ID_PLAYGROUND } from "../../../common/config.js";
+import { ID_PLAYGROUND, NEW_FIGURE_AUDIO, OLD_FIGURE_AUDIO, UNLOCK_FIGURE_AUDIO } from "../../../common/config.js";
 import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
 import { renderInventoryInsertItem, renderInventoryUpdateItem } from "../../inventory/render/inventoryRenderer.js";
+import { playSound } from "../../../common/utils.js";
+import { SpriteEffectManager } from "../../../core/effects/spriteEffectManager.js";
 function getRenderedSize(imgEl) {
     const rect = imgEl.getBoundingClientRect();
     return {
@@ -127,6 +129,8 @@ function getRenderedSize(imgEl) {
         playgroundEl.querySelectorAll("img[data-pending-id]").forEach(el => {
             el.removeAttribute("data-pending-id");
             el.removeAttribute("data-pending-mode");
+            el.removeAttribute("data-pending-sound");
+            el.removeAttribute("data-pending-effect");
         });
         const b = getOverlappingFigure(fig, getPlaygroundFigures());
         if (b) {
@@ -163,10 +167,13 @@ function getRenderedSize(imgEl) {
         playgroundEl.querySelectorAll("img[data-pending-id]").forEach(el => {
             el.removeAttribute("data-pending-id");
             el.removeAttribute("data-pending-mode");
+            el.removeAttribute("data-pending-sound");
+            el.removeAttribute("data-pending-effect");
         });
     }
     // ======= [기존 겹침/효과/변신 로직들은 그대로] =======
     function handlePendingEffect(a, b) {
+        var _a, _b;
         const reaction = getReactionResult(a.id, a.mode, b.id, b.mode);
         if (!reaction)
             return;
@@ -175,6 +182,8 @@ function getRenderedSize(imgEl) {
             img === null || img === void 0 ? void 0 : img.classList.add("will-transform");
             img === null || img === void 0 ? void 0 : img.setAttribute("data-pending-id", reaction.resultFigureId);
             img === null || img === void 0 ? void 0 : img.setAttribute("data-pending-mode", reaction.resultMode);
+            img === null || img === void 0 ? void 0 : img.setAttribute("data-pending-sound", (_a = reaction.sound) !== null && _a !== void 0 ? _a : '');
+            img === null || img === void 0 ? void 0 : img.setAttribute("data-pending-effect", (_b = reaction.effect) !== null && _b !== void 0 ? _b : '');
         }
     }
     function applyPendingTransformBatch(targets) {
@@ -182,10 +191,37 @@ function getRenderedSize(imgEl) {
         for (const [fig, img] of targets) {
             const pendingId = img.getAttribute("data-pending-id");
             const pendingMode = img.getAttribute("data-pending-mode");
+            const pendingSound = img.getAttribute("data-pending-sound");
+            const pendingEffect = img.getAttribute("data-pending-effect");
             if (pendingId && pendingMode) {
                 fig.id = pendingId;
                 fig.mode = pendingMode;
                 const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
+                if (pendingSound && pendingSound.trim() !== '') {
+                    playSound(pendingSound);
+                }
+                else {
+                    if (result === "new-figure") {
+                        playSound(NEW_FIGURE_AUDIO);
+                    }
+                    else if (result === "new-mode") {
+                        playSound(UNLOCK_FIGURE_AUDIO);
+                    }
+                    else {
+                        playSound(OLD_FIGURE_AUDIO);
+                    }
+                }
+                if (pendingEffect && pendingEffect.trim() !== '') {
+                    // 이미지의 중앙 좌표 구하기
+                    const rect = img.getBoundingClientRect();
+                    const x = rect.left + rect.width / 2 + window.scrollX;
+                    const y = rect.top + rect.height / 2 + window.scrollY;
+                    SpriteEffectManager.play(pendingEffect, document.body, {
+                        size: 192,
+                        x,
+                        y,
+                    });
+                }
                 const invFig = getInventoryFigures().find(f => f.id === pendingId);
                 if (!invFig)
                     continue;

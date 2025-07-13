@@ -24,7 +24,6 @@ export function showInventoryGridModePopover(figureId: string, anchorElement: HT
       mode: modeName,
       unlocked: isUnlocked,
       name: figure.name,
-      outline: true,
       draggable: true
     });
 

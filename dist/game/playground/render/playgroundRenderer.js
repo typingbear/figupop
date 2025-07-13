@@ -73,6 +73,7 @@ export function renderPlayAddOrUpdateFigure(figData) {
     img.style.width = `${size.width}px`;
     img.style.height = `${size.height}px`;
     img.style.zIndex = `${(_a = figData.zIndex) !== null && _a !== void 0 ? _a : 0}`;
+    img.style.transform = "translate(-50%, -50%)"; // ★ 추가!
     img.src = `${IMAGE_ROOT}${figData.id}-${figData.mode}.png`;
     img.alt = `${meta.name} (${figData.mode})`;
 }

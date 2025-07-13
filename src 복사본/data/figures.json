@@ -1,0 +1,296 @@
+{
+  "figures": [
+    {
+      "id": "l_basketball",
+      "name": "L_basketball",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 200,
+          "height": 200
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_beer",
+      "name": "L_beer",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 3328,
+          "height": 3328
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_berries",
+      "name": "L_berries",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        },
+        "strawberry": {
+          "width": 612,
+          "height": 408
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_book",
+      "name": "L_book",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 640,
+          "height": 415
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_bow",
+      "name": "L_bow",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_boy",
+      "name": "L_boy",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        },
+        "cowboy": {
+          "width": 1024,
+          "height": 1536
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_cow",
+      "name": "L_cow",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 612,
+          "height": 408
+        },
+        "milk": {
+          "width": 408,
+          "height": 612
+        },
+        "milkshake": {
+          "width": 487,
+          "height": 640
+        }
+      },
+      "reactions": [{"mode":"base","with":"l_hand.base", "result":"milk"},
+    {"mode":"milk","with":"l_hand.handshake", "result":"milkshake"}]
+    },
+    {
+      "id": "l_face",
+      "name": "L_face",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_foot",
+      "name": "L_foot",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_hand",
+      "name": "L_hand",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        },
+        "fist": {
+          "width": 640,
+          "height": 427
+        },
+        "handshake": {
+          "width": 640,
+          "height": 640
+        }
+      },
+      "reactions": [{"mode":"base","with":"l_hand.base", "result":"fist"}]
+    },
+    {
+      "id": "l_knife",
+      "name": "L_knife",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 154,
+          "height": 128
+        },
+        "scissors": {
+          "width": 1024,
+          "height": 1024
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_man",
+      "name": "L_man",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        },
+        "fireman": {
+          "width": 456,
+          "height": 640
+        },
+        "walk": {
+          "width": 1024,
+          "height": 1536
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_melon",
+      "name": "L_melon",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        },
+        "watermelon": {
+          "width": 500,
+          "height": 500
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_moon",
+      "name": "L_moon",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 640,
+          "height": 640
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_paper",
+      "name": "L_paper",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 640,
+          "height": 640
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_rain",
+      "name": "L_rain",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        },
+        "rainbow": {
+          "width": 640,
+          "height": 300
+        }
+      },
+      "reactions": [{"mode":"base","with":"l_bow", "result":"rainbow"}]
+    },
+    {
+      "id": "l_rock",
+      "name": "L_rock",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 3810,
+          "height": 2143
+        }
+      },
+      "reactions": []
+    },
+    {
+      "id": "l_woman",
+      "name": "L_woman",
+      "kind": "prime",
+      "modes": {
+        "base": {
+          "width": 1024,
+          "height": 1024
+        }
+      },
+      "reactions": []
+    },
+     {
+      "id": "egg",
+      "name": "Egg",
+      "kind": "prime",
+      "desc": "",
+      "modes": { "base": { "width": 736, "height": 834 },
+       "mode1": { "width": 736, "height": 571 }, 
+       "mode2": { "width": 736, "height": 736 },
+       "penguin": { "width": 140, "height": 128 },
+       "parrot": { "width": 129, "height": 128 } },
+       "reactions": [
+        { "mode": "base", "with": "rock", "result": "mode1" },
+        { "mode": "mode1", "with": "fire", "result": "mode2", "sound": "reaction.mp3" }
+      ]
+    },
+    {
+      "id": "rock",
+      "name": "Rock",
+      "kind": "prime",
+      "desc": "",
+      "modes": { "base": { "width": 640, "height": 640 } },
+      "reactions": []
+    },
+    {
+      "id": "fire",
+      "name": "Fire",
+      "kind": "prime",
+      "desc": "",
+      "modes": { "base": { "width": 736, "height": 736 } },
+      "reactions": []
+    }
+  ]
+}

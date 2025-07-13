@@ -1,7 +1,6 @@
 // src/services/gameStateService.js
-import { GAME_STATE_STORAGE_KEY, NEW_FIGURE_AUDIO, OLD_FIGURE_AUDIO, PARCEL_LIMIT, UNLOCK_FIGURE_AUDIO } from "../../common/config.js";
+import { GAME_STATE_STORAGE_KEY, PARCEL_LIMIT } from "../../common/config.js";
 import { gameStates } from "../../data/initialGameState.js";
-import { playSound } from "../../common/utils.js";
 // --- 내부 상태 변수 (전역적 싱글턴)
 let data = loadFromStorage();
 // --- 유틸
@@ -78,16 +77,13 @@ export function addOrUnlockInventoryFigure(figureId, mode) {
         };
         data.inventoryFigures.push(entry);
         saveToGameStateStorage();
-        playSound(NEW_FIGURE_AUDIO);
         return "new-figure";
     }
     if (entry.unlockedModes.includes(mode)) {
-        playSound(OLD_FIGURE_AUDIO);
         return "old";
     }
     entry.unlockedModes.push(mode);
     saveToGameStateStorage();
-    playSound(UNLOCK_FIGURE_AUDIO);
     return "new-mode";
 }
 // [인박스(택배) 관련]

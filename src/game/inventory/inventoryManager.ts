@@ -1,6 +1,7 @@
 import { renderInventory } from "./render/inventoryRenderer.js";
 import { renderInventoryControlBar } from "./views/inventoryControlBar.js";
 import { getUIState, setUIState } from "../../core/services/uiStateService.js";
+import { InventorySortType } from "../../common/types/uiStateTypes.js";
 
 export class InventoryManager {
   private group = document.querySelector("#inventory-group");
@@ -41,15 +42,13 @@ export class InventoryManager {
     }
   }
 
-  /** 소트 변경 (예: "recent" | "registered" | "name") */
-  setSort(sort: string) {
-    if (getUIState("inventorySort") !== sort) {
-      setUIState("inventorySort", sort);
-      this.renderControlBar();
-      renderInventory();
-    }
+setSort(sort: InventorySortType) {
+  if (getUIState("inventorySort") !== sort) {
+    setUIState("inventorySort", sort);
+    this.renderControlBar();
+    renderInventory();
   }
-
+}
   open() {
     setUIState("inventoryOpen", true);
     this.applyUIState();

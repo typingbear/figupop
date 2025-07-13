@@ -1,5 +1,5 @@
 import { getInventoryFigures } from "./gameStateService.js";
-import { getFigureById } from "./figureLibraryService.js";
+import { getFigureById, getPrimeFigures } from "./figureLibraryService.js";
 /**
  * 정렬 옵션에 맞는 인벤토리 피규어 배열 반환
  * @param sortType "recent"|"registered"|"name"
@@ -27,4 +27,11 @@ export function getSortedInventoryFigures(sortType = "registered") {
             break;
     }
     return figures;
+}
+export function pickRandomUnownedPrimeFigure() {
+    const ownedIds = new Set(getInventoryFigures().map(f => f.id));
+    const unownedPrimes = getPrimeFigures().filter(f => !ownedIds.has(f.id));
+    if (unownedPrimes.length === 0)
+        return null;
+    return unownedPrimes[Math.floor(Math.random() * unownedPrimes.length)];
 }

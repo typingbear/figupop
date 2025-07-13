@@ -3,6 +3,20 @@ import { ID_INVENTORY } from "../../../common/config.js";
 import { showInventoryGridModePopover } from "../views/inventoryGridModePopover.js";
 import { createFigureThumb } from "../../../core/images/imageHandler.js";
 import { getSortedInventory } from "../views/inventoryViewCommon.js";
+// 현재 열린 팝오버의 figureId 저장 (없으면 null)
+let currentPopoverFigureId = null;
+function handleThumbClick(figureId, img) {
+    // 기존 팝오버를 모두 닫음
+    document.querySelectorAll('.inventory-mode-dialog').forEach(e => e.remove());
+    // 이미 같은 피규어의 팝오버가 열려 있었으면 닫고 return
+    if (currentPopoverFigureId === figureId) {
+        currentPopoverFigureId = null;
+        return;
+    }
+    // 새로 열기
+    showInventoryGridModePopover(figureId, img);
+    currentPopoverFigureId = figureId;
+}
 export function renderInventoryGrid() {
     const container = document.getElementById(ID_INVENTORY);
     if (!container)
@@ -25,8 +39,7 @@ export function renderInventoryGrid() {
             mode: "base",
             unlocked: isUnlocked,
             name: fig.name,
-            onClick: (img) => showInventoryGridModePopover(invFig.id, img),
-            outline: true,
+            onClick: (img) => handleThumbClick(invFig.id, img),
             draggable: true
         });
         item.appendChild(img);
@@ -58,8 +71,7 @@ export function addInventoryGridItem(invFig) {
         mode: "base",
         unlocked: isUnlocked,
         name: fig.name,
-        onClick: (img) => showInventoryGridModePopover(invFig.id, img),
-        outline: true,
+        onClick: (img) => handleThumbClick(invFig.id, img),
         draggable: true,
     });
     item.appendChild(newImg);
@@ -90,8 +102,7 @@ export function updateInventoryGridItem(invFig) {
         mode: "base",
         unlocked: isUnlocked,
         name: fig.name,
-        onClick: (img) => showInventoryGridModePopover(invFig.id, img),
-        outline: true,
+        onClick: (img) => handleThumbClick(invFig.id, img),
         draggable: true,
     });
     // 실제로 img 교체

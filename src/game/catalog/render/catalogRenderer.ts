@@ -16,7 +16,6 @@ export function renderCatalog() {
       mode: entry.mode,
       unlocked,
       name: entry.name,
-      outline: true,     // 항상 outline 지원
       draggable: false,  // 카탈로그는 드래그 불필요
     });
     img.classList.add("catalog-thumb"); // 카탈로그 전용 추가 스타일

@@ -34,7 +34,6 @@ export class InventoryManager {
             renderInventory();
         }
     }
-    /** 소트 변경 (예: "recent" | "registered" | "name") */
     setSort(sort) {
         if (getUIState("inventorySort") !== sort) {
             setUIState("inventorySort", sort);

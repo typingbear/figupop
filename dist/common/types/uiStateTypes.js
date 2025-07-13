@@ -1,7 +1,8 @@
-const uiState = {
+export const defaultUIState = {
     inventoryOpen: true,
     inventoryView: "grid",
-    inventorySort: "recent", // ← 이름순, 원하는 값으로
+    inventorySort: "recent",
     catalogOpen: false,
+    sfxVolume: 80,
+    bgmVolume: 60,
 };
-export {};

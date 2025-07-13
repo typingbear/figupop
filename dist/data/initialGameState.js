@@ -1,88 +1,39 @@
 export const gameStates = {
-    "inboxParcels": 0,
+    "inboxParcels": 4,
     "playgroundFigures": [
         {
-            "serial": "lfp28uswm9k2",
-            "id": "chick",
+            "id": "l_basketball",
             "mode": "base",
-            "x": 145,
-            "y": 320,
-            "zIndex": 3
+            "x": 532,
+            "y": 299,
+            "serial": "smd0xbhac-r07kd0",
+            "zIndex": 2
         },
         {
-            "serial": "lfp29ab2kz1d",
-            "id": "bear",
+            "id": "l_rain",
             "mode": "base",
-            "x": 200,
-            "y": 200,
+            "x": 332,
+            "y": 299,
+            "serial": "smd0xbhac-r07kd1",
             "zIndex": 2
         }
     ],
     "inventoryFigures": [
         {
-            "id": "frog",
+            "id": "l_basketball",
             "currentMode": "base",
             "unlockedModes": [
                 "base"
             ],
-            "openedAt": "2025-07-09T11:00:00.000Z"
+            "openedAt": "2025-07-13T00:15:43.427Z"
         },
         {
-            "id": "chick",
-            "currentMode": "base",
-            "unlockedModes": [
-                "base",
-                "mode1"
-            ],
-            "openedAt": "2025-07-09T12:30:00.000Z"
-        },
-        {
-            "id": "bear",
+            "id": "l_rain",
             "currentMode": "base",
             "unlockedModes": [
                 "base"
             ],
-            "openedAt": "2025-07-09T13:15:00.000Z"
-        },
-        {
-            "id": "rock",
-            "currentMode": "base",
-            "unlockedModes": [
-                "base"
-            ],
-            "openedAt": "2025-07-08T09:40:00.000Z"
-        },
-        {
-            "id": "fire",
-            "currentMode": "base",
-            "unlockedModes": [
-                "base"
-            ],
-            "openedAt": "2025-07-08T10:20:00.000Z"
-        },
-        {
-            "id": "shoe",
-            "currentMode": "base",
-            "unlockedModes": [
-                "base"
-            ],
-            "openedAt": "2025-07-08T11:55:00.000Z"
-        },
-        {
-            "id": "shark",
-            "currentMode": "base",
-            "unlockedModes": [
-                "base"
-            ],
-            "openedAt": "2025-07-09T14:00:00.000Z"
-        },
-        {
-            "id": "sun",
-            "currentMode": "base",
-            "unlockedModes": [
-                "base"
-            ],
-            "openedAt": "2025-07-09T14:00:00.000Z"
+            "openedAt": "2025-07-13T00:15:43.427Z"
         }
     ]
 };

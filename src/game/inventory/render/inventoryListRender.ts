@@ -36,8 +36,7 @@ export function renderInventoryList() {
         mode,
         unlocked: isUnlocked,
         name: fig.name,
-        outline: true,
-            draggable:true
+        draggable: true
       });
       modeBar.appendChild(img);
     });
@@ -75,7 +74,6 @@ export function addInventoryListItem(invFig: InventoryFigure) {
       mode,
       unlocked: isUnlocked,
       name: fig.name,
-      outline: true,
       draggable: true,
     });
     modeBar.appendChild(img);
@@ -109,7 +107,6 @@ export function updateInventoryListItem(invFig: InventoryFigure) {
       mode,
       unlocked: isUnlocked,
       name: fig.name,
-      outline: true,
       draggable: true,
     });
 

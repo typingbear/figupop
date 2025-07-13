@@ -4,6 +4,8 @@ import type { Figure, FigureModeEntry } from "../../common/types.js";
 
 // 전체 피규어 (불변 배열)
 export const FIGURE_LIST: Figure[] = figures;
+// prime kind 피규어 개수(처음 1회만 계산, 변하지 않음)
+export const PRIME_FIGURE_COUNT: number = FIGURE_LIST.filter(f => f.kind === 'prime').length;
 
 // 모든 피규어의 모든 모드 (한 번만 펼쳐서 상수로 만듦)
 export const ALL_FIGURE_MODES: FigureModeEntry[] = (() => {
@@ -24,6 +26,7 @@ export const ALL_FIGURE_MODES: FigureModeEntry[] = (() => {
   }
   return arr;
 })();
+
 
 // kind별로 묶은 맵 (최초 1회만 생성)
 export const FIGURE_KIND_MAP: Map<string, Figure[]> = (() => {
@@ -69,7 +72,7 @@ export function getReactionResult(
   aMode: string,
   bId: string,
   bMode: string
-): { resultFigureId: string; resultMode: string; sound?: string } | null {
+): { resultFigureId: string; resultMode: string; sound?: string; effect?: string } | null {
   const aFigure = getFigureById(aId);
   if (!aFigure || !Array.isArray(aFigure.reactions)) return null;
 
@@ -93,11 +96,18 @@ export function getReactionResult(
       resultMode = otherMode;
     }
 
+    // effect까지 포함해서 리턴!
     return {
       resultFigureId,
       resultMode,
       sound: reaction.sound,
+      effect: reaction.effect,   // ★ 이 부분만 추가!
     };
   }
   return null;
+}
+
+
+export function getPrimeFigures() {
+  return FIGURE_LIST.filter(f => f.kind === "prime");
 }

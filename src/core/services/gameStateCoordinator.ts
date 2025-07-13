@@ -1,5 +1,5 @@
 import { getInventoryFigures } from "./gameStateService.js";
-import { getFigureById } from "./figureLibraryService.js";
+import { getFigureById, getPrimeFigures } from "./figureLibraryService.js";
 import { InventorySortType } from "../../common/types/uiStateTypes.js";
 
 /**
@@ -29,4 +29,11 @@ export function getSortedInventoryFigures(sortType: InventorySortType = "registe
       break;
   }
   return figures;
+}
+
+export function pickRandomUnownedPrimeFigure() {
+  const ownedIds = new Set(getInventoryFigures().map(f => f.id));
+  const unownedPrimes = getPrimeFigures().filter(f => !ownedIds.has(f.id));
+  if (unownedPrimes.length === 0) return null;
+  return unownedPrimes[Math.floor(Math.random() * unownedPrimes.length)];
 }

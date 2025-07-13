@@ -2,6 +2,8 @@
 import { figures } from "../../data/figures.js";
 // 전체 피규어 (불변 배열)
 export const FIGURE_LIST = figures;
+// prime kind 피규어 개수(처음 1회만 계산, 변하지 않음)
+export const PRIME_FIGURE_COUNT = FIGURE_LIST.filter(f => f.kind === 'prime').length;
 // 모든 피규어의 모든 모드 (한 번만 펼쳐서 상수로 만듦)
 export const ALL_FIGURE_MODES = (() => {
     const arr = [];
@@ -77,11 +79,16 @@ export function getReactionResult(aId, aMode, bId, bMode) {
             resultFigureId = otherId;
             resultMode = otherMode;
         }
+        // effect까지 포함해서 리턴!
         return {
             resultFigureId,
             resultMode,
             sound: reaction.sound,
+            effect: reaction.effect, // ★ 이 부분만 추가!
         };
     }
     return null;
+}
+export function getPrimeFigures() {
+    return FIGURE_LIST.filter(f => f.kind === "prime");
 }

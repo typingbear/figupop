@@ -1,0 +1,65 @@
+import { ID_PLAYGROUND } from "../../common/config.js";
+import { clearPlaygroundFigures, getPlaygroundFigures, resetToInitialState } from "../../core/services/gameStateService.js";
+import { renderPlayground } from "../playground/render/playgroundRenderer.js";
+
+export function enableToolbox() {
+  const clearBtn = document.getElementById("clear-playground-btn");
+  const gridBtn = document.getElementById("grid-playground-btn");
+  const resetBtn = document.getElementById("reset-inventory-btn");
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      clearPlaygroundFigures();
+      renderPlayground();
+    });
+  }
+
+  if (gridBtn) {
+    gridBtn.addEventListener("click", () => {
+      arrangeFiguresGridCenter();
+      renderPlayground();
+    });
+  }
+
+ if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+    
+     resetToInitialState();
+      location.reload();
+    });
+  }
+
+
+}
+
+// === 바둑판 정렬 ===
+function arrangeFiguresGridCenter() {
+  const figures = getPlaygroundFigures();
+  if (figures.length === 0) return;
+
+  const playground = document.getElementById(ID_PLAYGROUND) as HTMLElement;
+  const playgroundWidth = playground?.clientWidth || 900;
+  const playgroundHeight = playground?.clientHeight || 700;
+
+  const nCol = 5;
+  const margin = 24;
+  const size = 120;
+
+  const nRow = Math.ceil(figures.length / nCol);
+  const gridWidth = nCol * size + (nCol - 1) * margin;
+  const gridHeight = nRow * size + (nRow - 1) * margin;
+
+  const startX = Math.max(0, Math.round((playgroundWidth - gridWidth) / 2));
+  const startY = Math.max(0, Math.round((playgroundHeight - gridHeight) / 2));
+
+  let col = 0, row = 0;
+  for (const fig of figures) {
+    fig.x = startX + col * (size + margin);
+    fig.y = startY + row * (size + margin);
+    col++;
+    if (col >= nCol) {
+      col = 0;
+      row++;
+    }
+  }
+}

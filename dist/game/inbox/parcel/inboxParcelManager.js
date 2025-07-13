@@ -1,11 +1,12 @@
 // src/game/inbox/parcel/inboxParcelManager.ts
-import { PARCEL_TIME, PARCEL_LIMIT, FIGURE_KIND_FOR_PARCEL } from "../../../common/config.js";
+import { PARCEL_TIME, PARCEL_LIMIT, FIGURE_KIND_FOR_PARCEL, NEW_FIGURE_AUDIO, UNLOCK_FIGURE_AUDIO, NEW_FIGURE_EFFECT } from "../../../common/config.js";
 import { getFiguresByKind } from "../../../core/services/figureLibraryService.js";
 import { addOrUnlockInventoryFigure, addPlaygroundFigure, getMaxZIndex, getInventoryFigures, getInboxParcels, setInboxParcels } from "../../../core/services/gameStateService.js";
-import { makeSerialKey } from "../../../common/utils.js";
+import { makeSerialKey, playSound } from "../../../common/utils.js";
 import { SpriteEffectManager } from "../../../core/effects/spriteEffectManager.js";
 import { renderPlayAddOrUpdateFigure } from "../../playground/render/playgroundRenderer.js";
 import { renderInventoryInsertItem, renderInventoryUpdateItem } from "../../inventory/render/inventoryRenderer.js";
+import { pickRandomUnownedPrimeFigure } from "../../../core/services/gameStateCoordinator.js";
 const PARCEL_FIGURES = getFiguresByKind(FIGURE_KIND_FOR_PARCEL);
 const state = {
     deliveryCountdown: PARCEL_TIME,
@@ -72,31 +73,43 @@ export function removeParcelAndSpawn() {
     if (now <= 0)
         return;
     setInboxParcels(now - 1);
-    // 아직 없는 피규어만 필터
-    const ownedIds = new Set(getInventoryFigures().map(f => f.id));
-    const notOwnedList = PARCEL_FIGURES.filter(f => !ownedIds.has(f.id));
-    if (notOwnedList.length > 0) {
-        // 무작위 미소유 피규어 선택
-        const randomFig = notOwnedList[Math.floor(Math.random() * notOwnedList.length)];
+    // === [NEW] 미소유 프라임 피규어 1개 랜덤 선택 ===
+    const randomFig = pickRandomUnownedPrimeFigure();
+    if (randomFig) {
         const centerX = Math.round(window.innerWidth / 2 - 60);
         const centerY = Math.round(window.innerHeight / 2 - 60);
-        const offsetX = Math.floor(Math.random() * 141) - 70; // -70 ~ +70 px
-        const offsetY = Math.floor(Math.random() * 81) - 40; // -40 ~ +40 px
-        // 피규어 인벤토리에 추가/언락, openedAt 자동 반영됨
+        const offsetX = Math.floor(Math.random() * 141) - 70;
+        const offsetY = Math.floor(Math.random() * 81) - 40;
+        // 인벤토리에 추가/언락
         const addResult = addOrUnlockInventoryFigure(randomFig.id, "base");
         const invFig = getInventoryFigures().find(f => f.id === randomFig.id);
-        if (addResult === "new-figure" && invFig) {
-            renderInventoryInsertItem(invFig);
+        if (randomFig.sound && randomFig.sound.trim() !== '') {
+            playSound(randomFig.sound);
         }
-        else if (addResult === "new-mode" && invFig) {
-            renderInventoryUpdateItem(invFig);
+        else {
+            if (addResult === "new-figure" && invFig) {
+                playSound(NEW_FIGURE_AUDIO);
+                renderInventoryInsertItem(invFig);
+            }
+            else if (addResult === "new-mode" && invFig) {
+                playSound(UNLOCK_FIGURE_AUDIO);
+                renderInventoryUpdateItem(invFig);
+            }
         }
-        // addResult === "old"는 아무것도 안 함
-        SpriteEffectManager.play("circle", document.body, {
-            size: 192,
-            x: centerX + offsetX,
-            y: centerY + offsetY
-        });
+        if (randomFig.effect && randomFig.effect.trim() !== '') {
+            SpriteEffectManager.play(randomFig.effect, document.body, {
+                size: 192,
+                x: centerX + offsetX,
+                y: centerY + offsetY
+            });
+        }
+        else {
+            SpriteEffectManager.play(NEW_FIGURE_EFFECT, document.body, {
+                size: 192,
+                x: centerX + offsetX,
+                y: centerY + offsetY
+            });
+        }
         // 플레이그라운드에 추가
         const fig = {
             id: randomFig.id,
@@ -107,7 +120,7 @@ export function removeParcelAndSpawn() {
             zIndex: getMaxZIndex() + 1
         };
         addPlaygroundFigure(fig);
-        renderPlayAddOrUpdateFigure(fig); // 전체 리렌더 대신 이거!
+        renderPlayAddOrUpdateFigure(fig);
     }
     // 택배 리필 카운트다운 관리
     if (getInboxParcels() < PARCEL_LIMIT && state.intervalId === null) {

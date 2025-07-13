@@ -20,7 +20,6 @@ export function showInventoryGridModePopover(figureId, anchorElement) {
             mode: modeName,
             unlocked: isUnlocked,
             name: figure.name,
-            outline: true,
             draggable: true
         });
         // 팝오버에서는 dragstart만 따로 추가

@@ -84,16 +84,17 @@ export function renderPlayAddOrUpdateFigure(figData: PlaygroundFigure) {
   img.style.width = `${size.width}px`;
   img.style.height = `${size.height}px`;
   img.style.zIndex = `${figData.zIndex ?? 0}`;
+  img.style.transform = "translate(-50%, -50%)"; // ★ 추가!
   img.src = `${IMAGE_ROOT}${figData.id}-${figData.mode}.png`;
   img.alt = `${meta.name} (${figData.mode})`;
 }
 
-/**
- * serial 값으로 해당 피규어 이미지를 playground에서 삭제
- */
-export function renderPlayRemoveFigure(serial: string) {
-  const container = document.getElementById(ID_PLAYGROUND);
-  if (!container) return;
-  const img = container.querySelector<HTMLImageElement>(`img[data-serial="${serial}"]`);
-  if (img) img.remove();
-}
+  /**
+   * serial 값으로 해당 피규어 이미지를 playground에서 삭제
+   */
+  export function renderPlayRemoveFigure(serial: string) {
+    const container = document.getElementById(ID_PLAYGROUND);
+    if (!container) return;
+    const img = container.querySelector<HTMLImageElement>(`img[data-serial="${serial}"]`);
+    if (img) img.remove();
+  }

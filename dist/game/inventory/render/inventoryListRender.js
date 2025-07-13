@@ -29,7 +29,6 @@ export function renderInventoryList() {
                 mode,
                 unlocked: isUnlocked,
                 name: fig.name,
-                outline: true,
                 draggable: true
             });
             modeBar.appendChild(img);
@@ -63,7 +62,6 @@ export function addInventoryListItem(invFig) {
             mode,
             unlocked: isUnlocked,
             name: fig.name,
-            outline: true,
             draggable: true,
         });
         modeBar.appendChild(img);
@@ -94,7 +92,6 @@ export function updateInventoryListItem(invFig) {
             mode,
             unlocked: isUnlocked,
             name: fig.name,
-            outline: true,
             draggable: true,
         });
         // 실제로 img 교체

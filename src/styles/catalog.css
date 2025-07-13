@@ -1,5 +1,3 @@
-/* ===== catalog.css ===== */
-
 /* === [전체 오버레이] === */
 .catalog-overlay {
   position: fixed;
@@ -63,6 +61,11 @@
 }
 #catalog-content .thumb-img {
   width: 56px; height: 56px;
+}
+
+#catalog-content .thumb-img.base-mode {
+  border: 1.5px solid #edb6b6;
+ 
 }
 
 /* === [반응형: 태블릿] === */

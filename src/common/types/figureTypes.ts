@@ -12,6 +12,7 @@ export type FigureReaction = {
   with: string;
   result: string;
   sound?: string;
+  effect?: string;
 };
 
 export type Figure = {
@@ -20,6 +21,8 @@ export type Figure = {
   kind: string;
   modes: FigureModeMap;
   reactions: FigureReaction[];
+  sound?: string;
+  effect?: string;
   desc?: string;
 };
 
