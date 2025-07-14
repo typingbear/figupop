@@ -212,12 +212,13 @@ function getRenderedSize(imgEl) {
                     }
                 }
                 if (pendingEffect && pendingEffect.trim() !== '') {
-                    // 이미지의 중앙 좌표 구하기
+                    // 이미지의 중앙 좌표와 렌더된 크기로 이펙트 사이즈 맞추기!
                     const rect = img.getBoundingClientRect();
                     const x = rect.left + rect.width / 2 + window.scrollX;
                     const y = rect.top + rect.height / 2 + window.scrollY;
+                    const effectSize = Math.max(rect.width, rect.height);
                     SpriteEffectManager.play(pendingEffect, document.body, {
-                        size: 192,
+                        size: effectSize, // ★ 고정값 대신 이미지 크기
                         x,
                         y,
                     });

@@ -1,6 +1,6 @@
 // src/game/inbox/parcel/inboxParcelManager.ts
-import { PARCEL_TIME, PARCEL_LIMIT, FIGURE_KIND_FOR_PARCEL, NEW_FIGURE_AUDIO, UNLOCK_FIGURE_AUDIO, NEW_FIGURE_EFFECT } from "../../../common/config.js";
-import { getFiguresByKind } from "../../../core/services/figureLibraryService.js";
+import { PARCEL_TIME, PARCEL_LIMIT, FIGURE_KIND_FOR_PARCEL, NEW_FIGURE_AUDIO, UNLOCK_FIGURE_AUDIO, NEW_FIGURE_EFFECT, ID_PLAYGROUND } from "../../../common/config.js";
+import { getFiguresByKind, getResponsiveFigureSize } from "../../../core/services/figureLibraryService.js";
 import {
   addOrUnlockInventoryFigure, addPlaygroundFigure, getMaxZIndex,
   getInventoryFigures, getInboxParcels, setInboxParcels
@@ -73,7 +73,6 @@ export function addParcel() {
   }
 }
 
-
 export function removeParcelAndSpawn() {
   const now = getInboxParcels();
   if (now <= 0) return;
@@ -83,10 +82,29 @@ export function removeParcelAndSpawn() {
   const randomFig = pickRandomUnownedPrimeFigure();
 
   if (randomFig) {
-    const centerX = Math.round(window.innerWidth / 2 - 60);
-    const centerY = Math.round(window.innerHeight / 2 - 60);
+    // ✅ 반응형 이미지 크기 구하기 (예정된 실제 렌더링 크기)
+    const { width: imgW, height: imgH } = getResponsiveFigureSize(randomFig.id, "base");
+
+    // === 플레이그라운드 중앙 계산 ===
+    const playground = document.getElementById(ID_PLAYGROUND);
+    let centerX, centerY;
+    if (playground) {
+      const rect = playground.getBoundingClientRect();
+      centerX = rect.left + rect.width / 2 + window.scrollX;
+      centerY = rect.top + rect.height / 2 + window.scrollY;
+    } else {
+      // fallback: window 중심
+      centerX = Math.round(window.innerWidth / 2);
+      centerY = Math.round(window.innerHeight / 2);
+    }
+
+    // ★ 중앙 기준 랜덤 오프셋 (이미지 중심!)
     const offsetX = Math.floor(Math.random() * 141) - 70;
     const offsetY = Math.floor(Math.random() * 81) - 40;
+
+    // 실제 "중심좌표" (이펙트, 이미지 둘다 이걸 씀)
+    const spawnX = centerX + offsetX;
+    const spawnY = centerY + offsetY;
 
     // 인벤토리에 추가/언락
     const addResult = addOrUnlockInventoryFigure(randomFig.id, "base");
@@ -94,9 +112,7 @@ export function removeParcelAndSpawn() {
 
     if (randomFig.sound && randomFig.sound.trim() !== '') {
       playSound(randomFig.sound);
-    }
-    else {
-
+    } else {
       if (addResult === "new-figure" && invFig) {
         playSound(NEW_FIGURE_AUDIO);
         renderInventoryInsertItem(invFig);
@@ -105,31 +121,40 @@ export function removeParcelAndSpawn() {
         renderInventoryUpdateItem(invFig);
       }
     }
+
+    // ★ 이펙트 크기를 이미지 크기에 맞게 조정!
+    const effectSize = Math.max(imgW, imgH);
+
     if (randomFig.effect && randomFig.effect.trim() !== '') {
-      
       SpriteEffectManager.play(randomFig.effect, document.body, {
-        size: 192,
-        x:centerX + offsetX,
-        y: centerY + offsetY
+        size: effectSize,
+        x: spawnX,
+        y: spawnY,
       });
-    }
-    else{
-       SpriteEffectManager.play(NEW_FIGURE_EFFECT, document.body, {
-        size: 192,
-        x:centerX + offsetX,
-        y: centerY + offsetY
+    } else {
+      SpriteEffectManager.play(NEW_FIGURE_EFFECT, document.body, {
+        size: effectSize,
+        x: spawnX,
+        y: spawnY,
       });
     }
 
+    // 플레이그라운드에 추가 (x, y = 이미지 중심 좌표)
+    // 💡 플레이그라운드 내부 좌표(px, 중앙 = (0,0) 아님!):
+    let figureX = spawnX, figureY = spawnY;
+    if (playground) {
+      const rect = playground.getBoundingClientRect();
+      figureX = spawnX - rect.left - window.scrollX;
+      figureY = spawnY - rect.top - window.scrollY;
+    }
 
-    // 플레이그라운드에 추가
     const fig = {
       id: randomFig.id,
       mode: "base",
-      x: centerX + offsetX,
-      y: centerY + offsetY,
+      x: figureX,
+      y: figureY,
       serial: makeSerialKey(),
-      zIndex: getMaxZIndex() + 1
+      zIndex: getMaxZIndex() + 1,
     };
     addPlaygroundFigure(fig);
     renderPlayAddOrUpdateFigure(fig);
@@ -142,6 +167,7 @@ export function removeParcelAndSpawn() {
   }
   state.onChange?.();
 }
+
 
 export function isParcelFull() {
   return getInboxParcels() >= PARCEL_LIMIT;

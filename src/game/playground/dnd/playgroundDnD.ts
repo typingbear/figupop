@@ -221,64 +221,61 @@ function getRenderedSize(imgEl: HTMLImageElement): { width: number; height: numb
     }
   }
 
-  function applyPendingTransformBatch(targets: Array<[PlaygroundFigure, HTMLImageElement]>): boolean {
-    let anyUnlocked = false;
-    for (const [fig, img] of targets) {
-      const pendingId = img.getAttribute("data-pending-id");
-      const pendingMode = img.getAttribute("data-pending-mode");
-      const pendingSound = img.getAttribute("data-pending-sound");
-      const pendingEffect = img.getAttribute("data-pending-effect");
-      if (pendingId && pendingMode) {
-        fig.id = pendingId;
-        fig.mode = pendingMode;
+ function applyPendingTransformBatch(targets: Array<[PlaygroundFigure, HTMLImageElement]>): boolean {
+  let anyUnlocked = false;
+  for (const [fig, img] of targets) {
+    const pendingId = img.getAttribute("data-pending-id");
+    const pendingMode = img.getAttribute("data-pending-mode");
+    const pendingSound = img.getAttribute("data-pending-sound");
+    const pendingEffect = img.getAttribute("data-pending-effect");
+    if (pendingId && pendingMode) {
+      fig.id = pendingId;
+      fig.mode = pendingMode;
 
-        const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
+      const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
 
-        if (pendingSound && pendingSound.trim() !== '') {
-          playSound(pendingSound);
-        }
-        else {
-          if (result === "new-figure") {
-            playSound(NEW_FIGURE_AUDIO);
-          } else if (result === "new-mode") {
-            playSound(UNLOCK_FIGURE_AUDIO);
-          }
-          else {
-            playSound(OLD_FIGURE_AUDIO);
-          }
-        }
-        if (pendingEffect && pendingEffect.trim() !== '') {
-          // 이미지의 중앙 좌표 구하기
-          const rect = img.getBoundingClientRect();
-          const x = rect.left + rect.width / 2 + window.scrollX;
-          const y = rect.top + rect.height / 2 + window.scrollY;
-
-          SpriteEffectManager.play(pendingEffect, document.body, {
-            size: 192,
-            x,
-            y,
-          });
-        }
-
-        const invFig = getInventoryFigures().find(f => f.id === pendingId);
-        if (!invFig) continue;
-
-
-        // === add/update 함수만 분기!
+      if (pendingSound && pendingSound.trim() !== '') {
+        playSound(pendingSound);
+      } else {
         if (result === "new-figure") {
-          renderInventoryInsertItem(invFig);
-          anyUnlocked = true;
+          playSound(NEW_FIGURE_AUDIO);
         } else if (result === "new-mode") {
-          renderInventoryUpdateItem(invFig);
-          anyUnlocked = true;
+          playSound(UNLOCK_FIGURE_AUDIO);
+        } else {
+          playSound(OLD_FIGURE_AUDIO);
         }
-        // "old"는 아무것도 안 함
-
       }
 
+      if (pendingEffect && pendingEffect.trim() !== '') {
+        // 이미지의 중앙 좌표와 렌더된 크기로 이펙트 사이즈 맞추기!
+        const rect = img.getBoundingClientRect();
+        const x = rect.left + rect.width / 2 + window.scrollX;
+        const y = rect.top + rect.height / 2 + window.scrollY;
+        const effectSize = Math.max(rect.width, rect.height);
+
+        SpriteEffectManager.play(pendingEffect, document.body, {
+          size: effectSize,  // ★ 고정값 대신 이미지 크기
+          x,
+          y,
+        });
+      }
+
+      const invFig = getInventoryFigures().find(f => f.id === pendingId);
+      if (!invFig) continue;
+
+      // === add/update 함수만 분기!
+      if (result === "new-figure") {
+        renderInventoryInsertItem(invFig);
+        anyUnlocked = true;
+      } else if (result === "new-mode") {
+        renderInventoryUpdateItem(invFig);
+        anyUnlocked = true;
+      }
+      // "old"는 아무것도 안 함
     }
-    return anyUnlocked;
   }
+  return anyUnlocked;
+}
 
   function getOverlappingFigure(a: PlaygroundFigure, figures: PlaygroundFigure[]): PlaygroundFigure | null {
     const aEl = document.querySelector(`img[data-serial="${a.serial}"]`) as HTMLImageElement | null;

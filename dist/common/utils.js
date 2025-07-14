@@ -21,3 +21,11 @@ export function formatTimer(seconds) {
     const s = ("0" + (seconds % 60)).slice(-2);
     return `${m}:${s}`;
 }
+export function getDeviceType() {
+    const w = window.innerWidth;
+    if (w <= 768)
+        return "mobile";
+    if (w <= 1100)
+        return "tablet";
+    return "pc";
+}

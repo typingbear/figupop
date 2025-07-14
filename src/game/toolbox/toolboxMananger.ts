@@ -6,6 +6,7 @@ import {
 } from "../../core/services/gameStateService.js";
 import { renderPlayground } from "../playground/render/playgroundRenderer.js";
 import { getUIState, setUIState } from "../../core/services/uiStateService.js";
+import { getResponsiveFigureSize } from "../../core/services/figureLibraryService.js";
 
 // === [설정 모달 관련] ===
 
@@ -113,25 +114,52 @@ function arrangeFiguresGridCenter() {
   const playgroundWidth = playground?.clientWidth || 900;
   const playgroundHeight = playground?.clientHeight || 700;
 
-  const nCol = 5;
-  const margin = 24;
-  const size = 120;
+  // 1. 피규어 크기 계산 (반응형)
+  // (여기선 모두 같은 사이즈라고 가정. 실제로 다르면 개별적으로 getResponsiveFigureSize 사용)
+  const sampleSize = figures[0];
+  // 실제 환경에서는 figure마다 다를 수 있으므로 필요시 반복문에서 각각 계산
+  const { width: figW, height: figH } = getResponsiveFigureSize(sampleSize.id, sampleSize.mode);
+
+  // 2. 컬럼 개수 자동 결정 (최대 7, 최소 2)
+  // (한 줄에 너무 적거나 많으면 보기 불편하니까)
+  let nCol = Math.max(2, Math.min(7, Math.floor(playgroundWidth / (figW + 10))));
+  nCol = Math.min(nCol, figures.length); // 피규어 개수보다 많을 수 없음
 
   const nRow = Math.ceil(figures.length / nCol);
-  const gridWidth = nCol * size + (nCol - 1) * margin;
-  const gridHeight = nRow * size + (nRow - 1) * margin;
 
-  const startX = Math.max(0, Math.round((playgroundWidth - gridWidth) / 2));
-  const startY = Math.max(0, Math.round((playgroundHeight - gridHeight) / 2));
+  // 3. 그리드 셀 크기(겹쳐도 됨) 계산: 여유가 없으면 margin 줄이고, 필요시 겹침 허용
+  let margin = 20;
+  let gridWidth = nCol * figW + (nCol - 1) * margin;
+  let gridHeight = nRow * figH + (nRow - 1) * margin;
 
-  let col = 0, row = 0;
-  for (const fig of figures) {
-    fig.x = startX + col * (size + margin);
-    fig.y = startY + row * (size + margin);
-    col++;
-    if (col >= nCol) {
-      col = 0;
-      row++;
+  // 만약 playground보다 크면 margin 줄이고, 그래도 안되면 figW/H도 강제로 줄임(겹침)
+  if (gridWidth > playgroundWidth) {
+    margin = Math.max(4, Math.floor((playgroundWidth - nCol * figW) / Math.max(1, nCol - 1)));
+    gridWidth = nCol * figW + (nCol - 1) * margin;
+    // 그래도 넘치면 figW도 줄임
+    if (gridWidth > playgroundWidth) {
+      const fitFigW = Math.floor((playgroundWidth - (nCol - 1) * margin) / nCol);
+      // 비율 유지
+      const ratio = figW / figH;
+      const fitFigH = Math.floor(fitFigW / ratio);
+      gridWidth = nCol * fitFigW + (nCol - 1) * margin;
+      gridHeight = nRow * fitFigH + (nRow - 1) * margin;
+
+      // 아래 루프에서 이 값을 사용
+      for (let i = 0; i < figures.length; i++) {
+        const col = i % nCol;
+        const row = Math.floor(i / nCol);
+        figures[i].x = Math.max(0, Math.round((playgroundWidth - gridWidth) / 2)) + col * (fitFigW + margin);
+        figures[i].y = Math.max(0, Math.round((playgroundHeight - gridHeight) / 2)) + row * (fitFigH + margin);
+      }
+      return;
     }
+  }
+  // 기본 케이스: 겹치지 않고 margin 유지 가능
+  for (let i = 0; i < figures.length; i++) {
+    const col = i % nCol;
+    const row = Math.floor(i / nCol);
+    figures[i].x = Math.max(0, Math.round((playgroundWidth - gridWidth) / 2)) + col * (figW + margin);
+    figures[i].y = Math.max(0, Math.round((playgroundHeight - gridHeight) / 2)) + row * (figH + margin);
   }
 }

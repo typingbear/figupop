@@ -24,3 +24,9 @@ export function playSound(src: string) {
     return `${m}:${s}`;
   }
 
+export function getDeviceType(): "pc" | "tablet" | "mobile" {
+  const w = window.innerWidth;
+  if (w <= 768) return "mobile";
+  if (w <= 1100) return "tablet";
+  return "pc";
+}

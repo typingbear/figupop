@@ -1,5 +1,7 @@
 // src/services/figureLibrary.ts
 import { figures } from "../../data/figures.js";
+import { FIGURE_MAX_SIZE } from "../../common/config.js";
+import { getDeviceType } from "../../common/utils.js";
 // 전체 피규어 (불변 배열)
 export const FIGURE_LIST = figures;
 // prime kind 피규어 개수(처음 1회만 계산, 변하지 않음)
@@ -91,4 +93,40 @@ export function getReactionResult(aId, aMode, bId, bMode) {
 }
 export function getPrimeFigures() {
     return FIGURE_LIST.filter(f => f.kind === "prime");
+}
+/**
+ * 반응형(PC/태블릿/모바일)에 따라 실제 img가 그려질 width, height(px) 계산
+ * @param id      Figure의 id
+ * @param mode    mode명
+ * @returns       { width, height } 최종 그려질 크기(px)
+ */
+export function getResponsiveFigureSize(id, mode) {
+    const device = getDeviceType();
+    const maxW = FIGURE_MAX_SIZE[device];
+    const maxH = FIGURE_MAX_SIZE[device];
+    const { width: origW, height: origH } = getFigureSize(id, mode);
+    const ratio = origW / origH;
+    let width = origW, height = origH;
+    // 원본보다 크면 제한
+    if (origW > maxW || origH > maxH) {
+        if (ratio >= 1) {
+            // 가로가 긴 경우
+            width = maxW;
+            height = Math.round(maxW / ratio);
+            if (height > maxH) {
+                height = maxH;
+                width = Math.round(maxH * ratio);
+            }
+        }
+        else {
+            // 세로가 긴 경우
+            height = maxH;
+            width = Math.round(maxH * ratio);
+            if (width > maxW) {
+                width = maxW;
+                height = Math.round(maxW / ratio);
+            }
+        }
+    }
+    return { width, height };
 }
