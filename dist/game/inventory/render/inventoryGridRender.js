@@ -1,7 +1,7 @@
 import { getFigureById } from "../../../core/services/figureLibraryService.js";
 import { ID_INVENTORY } from "../../../common/config.js";
 import { showInventoryGridModePopover } from "../views/inventoryGridModePopover.js";
-import { createFigureThumb } from "../../../core/images/imageHandler.js";
+import { createInventoryFigureThumb } from "../../../core/images/imageHandler.js";
 import { getSortedInventory } from "../views/inventoryViewCommon.js";
 // 현재 열린 팝오버의 figureId 저장 (없으면 null)
 let currentPopoverFigureId = null;
@@ -34,13 +34,11 @@ export function renderInventoryGrid() {
             return;
         const isUnlocked = invFig.unlockedModes.includes("base");
         const item = document.createElement("div");
-        const img = createFigureThumb({
-            id: fig.id,
+        const img = createInventoryFigureThumb({
+            figure: fig,
             mode: "base",
             unlocked: isUnlocked,
-            name: fig.name,
             onClick: (img) => handleThumbClick(invFig.id, img),
-            draggable: true
         });
         item.appendChild(img);
         grid.appendChild(item);
@@ -66,13 +64,11 @@ export function addInventoryGridItem(invFig) {
     item.className = "inventory-grid-item";
     // 굳이 data-id는 안 붙여도 OK (img로 찾을 수 있으니)
     // 썸네일
-    const newImg = createFigureThumb({
-        id: fig.id,
+    const newImg = createInventoryFigureThumb({
+        figure: fig,
         mode: "base",
         unlocked: isUnlocked,
-        name: fig.name,
         onClick: (img) => handleThumbClick(invFig.id, img),
-        draggable: true,
     });
     item.appendChild(newImg);
     grid.appendChild(item);
@@ -97,13 +93,11 @@ export function updateInventoryGridItem(invFig) {
     if (isCurrentlyUnlocked === isUnlocked)
         return;
     // 새 썸네일 생성
-    const newImg = createFigureThumb({
-        id: fig.id,
+    const newImg = createInventoryFigureThumb({
+        figure: fig,
         mode: "base",
         unlocked: isUnlocked,
-        name: fig.name,
         onClick: (img) => handleThumbClick(invFig.id, img),
-        draggable: true,
     });
     // 실제로 img 교체
     img.replaceWith(newImg);

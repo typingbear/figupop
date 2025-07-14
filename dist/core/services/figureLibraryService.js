@@ -8,6 +8,7 @@ export const FIGURE_LIST = figures;
 export const PRIME_FIGURE_COUNT = FIGURE_LIST.filter(f => f.kind === 'prime').length;
 // 모든 피규어의 모든 모드 (한 번만 펼쳐서 상수로 만듦)
 export const ALL_FIGURE_MODES = (() => {
+    var _a;
     const arr = [];
     for (const fig of FIGURE_LIST) {
         for (const mode in fig.modes) {
@@ -19,7 +20,7 @@ export const ALL_FIGURE_MODES = (() => {
                 width: fig.modes[mode].width,
                 height: fig.modes[mode].height,
                 kind: fig.kind,
-                desc: fig.desc,
+                desc: (_a = fig.modes[mode].desc) !== null && _a !== void 0 ? _a : '',
             });
         }
     }
@@ -81,13 +82,9 @@ export function getReactionResult(aId, aMode, bId, bMode) {
             resultFigureId = otherId;
             resultMode = otherMode;
         }
-        // effect까지 포함해서 리턴!
-        return {
-            resultFigureId,
-            resultMode,
-            sound: reaction.sound,
-            effect: reaction.effect, // ★ 이 부분만 추가!
-        };
+        // reaction 모든 필드 + result id/mode 추가!
+        return Object.assign(Object.assign({}, reaction), { resultFigureId,
+            resultMode });
     }
     return null;
 }

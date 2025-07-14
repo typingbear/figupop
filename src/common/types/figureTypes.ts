@@ -4,6 +4,7 @@ export type FigureModeMap = {
   [mode: string]: {
     width: number | null;
     height: number | null;
+    desc?: string | null;
   };
 };
 
@@ -13,8 +14,13 @@ export type FigureReaction = {
   result: string;
   sound?: string;
   effect?: string;
-};
+  removeOther?: boolean; // true면 "상대방은 사라짐"
 
+};
+export type FigureReactionResult = FigureReaction & {
+  resultFigureId: string;
+  resultMode: string;
+};
 export type Figure = {
   id: string;
   name: string;

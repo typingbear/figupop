@@ -1,6 +1,6 @@
 import { getFigureById } from "../../../core/services/figureLibraryService.js";
 import { ID_INVENTORY } from "../../../common/config.js";
-import { createFigureThumb } from "../../../core/images/imageHandler.js";
+import { createInventoryFigureThumb } from "../../../core/images/imageHandler.js";
 import { getSortedInventory } from "../views/inventoryViewCommon.js";
 // 인벤토리 리스트(세로/가로 스크롤) 렌더링
 export function renderInventoryList() {
@@ -24,12 +24,10 @@ export function renderInventoryList() {
         modeBar.className = "inventory-mode-bar";
         Object.keys(fig.modes).forEach(mode => {
             const isUnlocked = invFig.unlockedModes.includes(mode);
-            const img = createFigureThumb({
-                id: fig.id,
+            const img = createInventoryFigureThumb({
+                figure: fig,
                 mode,
                 unlocked: isUnlocked,
-                name: fig.name,
-                draggable: true
             });
             modeBar.appendChild(img);
         });
@@ -57,12 +55,10 @@ export function addInventoryListItem(invFig) {
     modeBar.className = "inventory-mode-bar";
     Object.keys(fig.modes).forEach(mode => {
         const isUnlocked = invFig.unlockedModes.includes(mode);
-        const img = createFigureThumb({
-            id: fig.id,
+        const img = createInventoryFigureThumb({
+            figure: fig,
             mode,
             unlocked: isUnlocked,
-            name: fig.name,
-            draggable: true,
         });
         modeBar.appendChild(img);
     });
@@ -87,12 +83,10 @@ export function updateInventoryListItem(invFig) {
         const mode = oldImg.getAttribute("data-mode");
         const isUnlocked = invFig.unlockedModes.includes(mode);
         // 새 썸네일 생성 (기존 클릭/드래그/locked 등 완전 동일하게)
-        const newImg = createFigureThumb({
-            id: fig.id,
+        const newImg = createInventoryFigureThumb({
+            figure: fig,
             mode,
             unlocked: isUnlocked,
-            name: fig.name,
-            draggable: true,
         });
         // 실제로 img 교체
         oldImg.replaceWith(newImg);

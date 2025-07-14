@@ -9,7 +9,8 @@ export const figures: Figure[] = [
     "modes": {
       "base": {
         "width": 200,
-        "height": 200
+        "height": 200,
+        "desc": "basketball"
       }
     },
     "reactions": [
@@ -29,7 +30,8 @@ export const figures: Figure[] = [
     "modes": {
       "base": {
         "width": 3328,
-        "height": 3328
+        "height": 3328,
+        "desc": "beer"
       }
     },
     "reactions": []
@@ -119,7 +121,9 @@ export const figures: Figure[] = [
       {
         "mode": "milk",
         "with": "l_hand.handshake",
-        "result": "milkshake"
+        "result": "milkshake",
+        "removeOther": true,
+        "effect": "circle"
       }
     ]
   },
@@ -169,8 +173,16 @@ export const figures: Figure[] = [
       {
         "mode": "base",
         "with": "l_hand.base",
-        "result": "fist",
-        "effect": "circle"
+        "result": "handshake",
+        "effect": "circle",
+        "removeOther": true
+      },
+      {
+        "mode": "fist",
+        "with": "l_hand.fist",
+        "result": "base",
+        "effect": "circle",
+        "removeOther": true
       }
     ]
   },
@@ -359,7 +371,8 @@ export const figures: Figure[] = [
     "modes": {
       "base": {
         "width": 736,
-        "height": 736
+        "height": 736,
+        "desc": "fire"
       }
     },
     "reactions": []

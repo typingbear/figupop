@@ -1,6 +1,6 @@
 // src/services/figureLibrary.ts
 import { figures } from "../../data/figures.js";
-import type { Figure, FigureModeEntry } from "../../common/types.js";
+import type { Figure, FigureModeEntry, FigureReactionResult } from "../../common/types.js";
 import { FIGURE_MAX_SIZE } from "../../common/config.js";
 import { getDeviceType } from "../../common/utils.js";
 
@@ -22,7 +22,7 @@ export const ALL_FIGURE_MODES: FigureModeEntry[] = (() => {
         width: fig.modes[mode].width,
         height: fig.modes[mode].height,
         kind: fig.kind,
-        desc: fig.desc,
+        desc: fig.modes[mode].desc ?? '',
       });
     }
   }
@@ -75,7 +75,7 @@ export function getReactionResult(
   aMode: string,
   bId: string,
   bMode: string
-): { resultFigureId: string; resultMode: string; sound?: string; effect?: string } | null {
+): FigureReactionResult | null {
   const aFigure = getFigureById(aId);
   if (!aFigure || !Array.isArray(aFigure.reactions)) return null;
 
@@ -99,16 +99,16 @@ export function getReactionResult(
       resultMode = otherMode;
     }
 
-    // effect까지 포함해서 리턴!
+    // reaction 모든 필드 + result id/mode 추가!
     return {
+      ...reaction,
       resultFigureId,
       resultMode,
-      sound: reaction.sound,
-      effect: reaction.effect,   // ★ 이 부분만 추가!
     };
   }
   return null;
 }
+
 
 
 export function getPrimeFigures() {

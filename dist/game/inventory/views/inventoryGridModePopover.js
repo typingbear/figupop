@@ -1,7 +1,7 @@
 import { getFigureById } from "../../../core/services/figureLibraryService.js";
 import { getUnlockedModes } from "../../../core/services/gameStateService.js";
 import { makeSerialKey } from "../../../common/utils.js";
-import { createFigureThumb } from "../../../core/images/imageHandler.js";
+import { createInventoryFigureThumb } from "../../../core/images/imageHandler.js";
 /**
  * 인벤토리 그리드에서 피규어의 모드 선택 팝오버를 띄움
  */
@@ -15,12 +15,10 @@ export function showInventoryGridModePopover(figureId, anchorElement) {
     dialog.className = "inventory-mode-dialog";
     Object.keys(figure.modes).forEach(modeName => {
         const isUnlocked = unlockedModes.includes(modeName);
-        const img = createFigureThumb({
-            id: figure.id,
+        const img = createInventoryFigureThumb({
+            figure: figure,
             mode: modeName,
             unlocked: isUnlocked,
-            name: figure.name,
-            draggable: true
         });
         // 팝오버에서는 dragstart만 따로 추가
         if (isUnlocked) {

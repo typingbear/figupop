@@ -3,6 +3,7 @@ import { setupCatalogOverlay } from "./game/catalog/catalogManager.js";
 import { InboxManager } from "./game/inbox/inboxManager.js";
 import { PlaygroundManager } from "./game/playground/playgroundManager.js";
 import { enableToolbox } from "./game/toolbox/toolboxMananger.js";
+import { removePlaygroundFigureBySerial } from "./core/services/gameStateService.js";
 
 window.addEventListener("DOMContentLoaded", () => {
     setupCatalogOverlay();
@@ -18,6 +19,4 @@ window.addEventListener("DOMContentLoaded", () => {
         return false;
       }
     });
-
-   
 });

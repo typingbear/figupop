@@ -7,7 +7,8 @@
       "modes": {
         "base": {
           "width": 200,
-          "height": 200
+          "height": 200,
+          "desc": "basketball"
         }
       },
       "reactions": [{"mode":"base","with":"l_rain", "result":"l_boy.base", "effect":"circle"}]
@@ -20,7 +21,8 @@
       "modes": {
         "base": {
           "width": 3328,
-          "height": 3328
+          "height": 3328,
+          "desc": "beer"
         }
       },
       "reactions": []
@@ -102,7 +104,7 @@
         }
       },
       "reactions": [{"mode":"base","with":"l_hand.base", "result":"milk"},
-    {"mode":"milk","with":"l_hand.handshake", "result":"milkshake"}]
+    {"mode":"milk","with":"l_hand.handshake", "result":"milkshake","removeOther":true,"effect":"circle"}]
     },
     {
       "id": "l_face",
@@ -146,7 +148,8 @@
           "height": 640
         }
       },
-      "reactions": [{"mode":"base","with":"l_hand.base", "result":"fist","effect":"circle"}]
+      "reactions": [{"mode":"base","with":"l_hand.base", "result":"handshake","effect":"circle","removeOther":true},
+      {"mode":"fist","with":"l_hand.fist", "result":"base","effect":"circle","removeOther":true}]
     },
     {
       "id": "l_knife",
@@ -292,7 +295,9 @@
       "name": "Fire",
       "kind": "prime",
       "desc": "",
-      "modes": { "base": { "width": 736, "height": 736 } },
+      "modes": { "base": { "width": 736, "height": 736 ,
+          "desc": "fire"
+      } },
       "reactions": []
     }
   ]

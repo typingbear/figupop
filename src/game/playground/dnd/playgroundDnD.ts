@@ -2,18 +2,19 @@ import {
   getPlaygroundFigures,
   addOrUnlockInventoryFigure,
   bringFigureToFront,
-  getInventoryFigures
+  getInventoryFigures,
+  removePlaygroundFigureBySerial
 } from "../../../core/services/gameStateService.js";
 import {
   getReactionResult,
 
 } from "../../../core/services/figureLibraryService.js";
-import type { PlaygroundFigure } from "../../../common/types.js";
+import type { FigureReaction, PlaygroundFigure } from "../../../common/types.js";
 import { ID_PLAYGROUND, NEW_FIGURE_AUDIO, OLD_FIGURE_AUDIO, UNLOCK_FIGURE_AUDIO } from "../../../common/config.js";
 import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
 import { renderInventoryInsertItem, renderInventoryUpdateItem } from "../../inventory/render/inventoryRenderer.js";
 import { playSound } from "../../../common/utils.js";
-import { SpriteEffectManager } from "../../../core/effects/spriteEffectManager.js";
+import { playSpriteEffect } from "../../../core/effects/spriteEffectManager.js";
 
 
 
@@ -126,6 +127,49 @@ function getRenderedSize(imgEl: HTMLImageElement): { width: number; height: numb
     }
   }
 
+  function getOverlappingFigure(a: PlaygroundFigure, figures: PlaygroundFigure[]): PlaygroundFigure | null {
+    const aEl = document.querySelector(`img[data-serial="${a.serial}"]`) as HTMLImageElement | null;
+    if (!aEl) return null;
+    const aRect = aEl.getBoundingClientRect();
+    for (const f of figures) {
+      if (f.serial === a.serial) continue;
+      const fEl = document.querySelector(`img[data-serial="${f.serial}"]`) as HTMLImageElement | null;
+      if (!fEl) continue;
+      const fRect = fEl.getBoundingClientRect();
+      const isOverlapping = (
+        aRect.left < fRect.right &&
+        aRect.right > fRect.left &&
+        aRect.top < fRect.bottom &&
+        aRect.bottom > fRect.top
+      );
+      if (isOverlapping) return f;
+    }
+    return null;
+  }
+  // ======= [기존 겹침/효과/변신 로직들은 그대로] =======
+  function handlePendingEffect(a: PlaygroundFigure, b: PlaygroundFigure) {
+    const reaction = getReactionResult(a.id, a.mode, b.id, b.mode);
+    if (!reaction) return;
+    if (reaction.resultFigureId !== a.id || reaction.resultMode !== a.mode) {
+      const img = playgroundEl.querySelector(`img[data-serial="${a.serial}"]`);
+      img?.classList.add("will-transform");
+      img?.setAttribute("data-pending-id", reaction.resultFigureId);
+      img?.setAttribute("data-pending-mode", reaction.resultMode);
+      img?.setAttribute("data-pending-sound", reaction.sound ?? '');
+      img?.setAttribute("data-pending-effect", reaction.effect ?? '');
+
+      // === 상대방 serial만 저장!
+      if (reaction.removeOther) {
+        img?.setAttribute("data-remove-other", b.serial);
+      } else {
+        img?.removeAttribute("data-remove-other");
+      }
+
+
+    }
+  }
+
+
   // ============ [공통: move/up 처리] ============
   function handleMove(clientX: number, clientY: number) {
     if (!draggingImg || !draggingSerial) return;
@@ -159,6 +203,7 @@ function getRenderedSize(imgEl: HTMLImageElement): { width: number; height: numb
       el.removeAttribute("data-pending-mode");
       el.removeAttribute("data-pending-sound");
       el.removeAttribute("data-pending-effect");
+      el.removeAttribute("data-remove-other");
     });
 
     const b = getOverlappingFigure(fig, getPlaygroundFigures());
@@ -169,33 +214,50 @@ function getRenderedSize(imgEl: HTMLImageElement): { width: number; height: numb
   }
 
   function handleUp() {
-    if (draggingImg && draggingSerial) {
-      const figures = getPlaygroundFigures();
-      const fig = figures.find(f => f.serial === draggingSerial);
+    if (!draggingImg || !draggingSerial) return;
 
-      if (fig && draggingImg) {
-        // 변신 타깃들 배열 생성 (자기 자신 + 겹친 상대)
-        const targets: Array<[PlaygroundFigure, HTMLImageElement]> = [[fig, draggingImg]];
+    const figures = getPlaygroundFigures();
+    const figA = figures.find(f => f.serial === draggingSerial);
+    const figB = figA ? getOverlappingFigure(figA, figures) : null;
+    const imgB = figB ? playgroundEl.querySelector(`img[data-serial="${figB.serial}"]`) : null;
 
-        const other = getOverlappingFigure(fig, figures);
-        if (other) {
-          const otherImg = playgroundEl.querySelector(`img[data-serial="${other.serial}"]`);
-          if (otherImg instanceof HTMLImageElement) {
-            targets.push([other, otherImg]);
-          }
-        }
+    // 서로를 지우라고 동시에 명령한 경우 체크
+    let bothWantToDeleteEachOther = false;
+    if (figA && figB && draggingImg && imgB instanceof HTMLImageElement) {
+      const aRemoveOther = draggingImg.getAttribute("data-remove-other");
+      const bRemoveOther = imgB.getAttribute("data-remove-other");
+      bothWantToDeleteEachOther = (
+        aRemoveOther === figB.serial &&
+        bRemoveOther === figA.serial
+      );
+    }
 
-        // 한 번에 변신 처리
-        const result = applyPendingTransformBatch(targets);
+    // A 처리 (드래그 주체)
+    if (figA && draggingImg) {
+      applyPendingTransformSingle(
+        figA,
+        draggingImg,
+        bothWantToDeleteEachOther,
+        "first"
+      );
+      renderPlayAddOrUpdateFigure(figA);
+    }
 
-        // === [여기!] 여러 개 업데이트 ===
-        for (const [figItem] of targets) {
-          renderPlayAddOrUpdateFigure(figItem);
-        }
+    // B 처리
+    if (figB && imgB instanceof HTMLImageElement) {
+      applyPendingTransformSingle(
+        figB,
+        imgB,
+        bothWantToDeleteEachOther,
+        "second"
+      );
+      // 실제로 데이터/DOM에 살아있는 경우에만 render
+      const stillExists = getPlaygroundFigures().some(f => f.serial === figB.serial);
+      const stillImg = playgroundEl.querySelector(`img[data-serial="${figB.serial}"]`);
+      if (stillExists && stillImg) {
+        renderPlayAddOrUpdateFigure(figB);
       }
     }
-    draggingImg = null;
-    draggingSerial = null;
 
     // 효과/속성 모두 제거
     playgroundEl.querySelectorAll(".will-transform").forEach(el => el.classList.remove("will-transform"));
@@ -204,96 +266,69 @@ function getRenderedSize(imgEl: HTMLImageElement): { width: number; height: numb
       el.removeAttribute("data-pending-mode");
       el.removeAttribute("data-pending-sound");
       el.removeAttribute("data-pending-effect");
+      el.removeAttribute("data-remove-other");
+      el.removeAttribute("data-remove-self");
     });
+
+    draggingImg = null;
+    draggingSerial = null;
   }
 
-  // ======= [기존 겹침/효과/변신 로직들은 그대로] =======
-  function handlePendingEffect(a: PlaygroundFigure, b: PlaygroundFigure) {
-    const reaction = getReactionResult(a.id, a.mode, b.id, b.mode);
-    if (!reaction) return;
-    if (reaction.resultFigureId !== a.id || reaction.resultMode !== a.mode) {
-      const img = playgroundEl.querySelector(`img[data-serial="${a.serial}"]`);
-      img?.classList.add("will-transform");
-      img?.setAttribute("data-pending-id", reaction.resultFigureId);
-      img?.setAttribute("data-pending-mode", reaction.resultMode);
-      img?.setAttribute("data-pending-sound", reaction.sound ?? '');
-      img?.setAttribute("data-pending-effect", reaction.effect ?? '');
+  /**
+   * @param isDragged 내가 드래그 주체인지
+   * @param skipRemoveOther '둘 다 서로를 가리킬 때, 드래그 주체는 상대방을 삭제하지 않는다'는 특수 상황을 위한 플래그
+   */
+  function applyPendingTransformSingle(
+    fig: PlaygroundFigure,
+    img: HTMLImageElement,
+    bothWantToDeleteEachOther: boolean = false,
+    side: String = "first"
+  ) {
+    if (bothWantToDeleteEachOther && (side == 'second')) return;
+
+    // 상대 삭제
+    const removeOtherSerial = img.getAttribute("data-remove-other");
+    // skipRemoveOther=true(특수 상황, 드래그 주체면 삭제하지 않음) + 드래그 주체만 해당
+    if (removeOtherSerial && (!(bothWantToDeleteEachOther && (side == 'second')))) {
+      removePlaygroundFigureBySerial(removeOtherSerial);
+      const el = document.querySelector(`img[data-serial="${removeOtherSerial}"]`);
+      if (el) el.remove();
     }
-  }
 
- function applyPendingTransformBatch(targets: Array<[PlaygroundFigure, HTMLImageElement]>): boolean {
-  let anyUnlocked = false;
-  for (const [fig, img] of targets) {
+    // 변신/효과/사운드
     const pendingId = img.getAttribute("data-pending-id");
     const pendingMode = img.getAttribute("data-pending-mode");
     const pendingSound = img.getAttribute("data-pending-sound");
     const pendingEffect = img.getAttribute("data-pending-effect");
+
     if (pendingId && pendingMode) {
       fig.id = pendingId;
       fig.mode = pendingMode;
-
       const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
 
-      if (pendingSound && pendingSound.trim() !== '') {
-        playSound(pendingSound);
-      } else {
-        if (result === "new-figure") {
-          playSound(NEW_FIGURE_AUDIO);
-        } else if (result === "new-mode") {
-          playSound(UNLOCK_FIGURE_AUDIO);
-        } else {
-          playSound(OLD_FIGURE_AUDIO);
-        }
-      }
+      // 사운드
+      if (pendingSound && pendingSound.trim() !== '') playSound(pendingSound);
+      else if (result === "new-figure") playSound(NEW_FIGURE_AUDIO);
+      else if (result === "new-mode") playSound(UNLOCK_FIGURE_AUDIO);
+      else playSound(OLD_FIGURE_AUDIO);
 
+      // 이펙트
       if (pendingEffect && pendingEffect.trim() !== '') {
-        // 이미지의 중앙 좌표와 렌더된 크기로 이펙트 사이즈 맞추기!
         const rect = img.getBoundingClientRect();
-        const x = rect.left + rect.width / 2 + window.scrollX;
-        const y = rect.top + rect.height / 2 + window.scrollY;
-        const effectSize = Math.max(rect.width, rect.height);
-
-        SpriteEffectManager.play(pendingEffect, document.body, {
-          size: effectSize,  // ★ 고정값 대신 이미지 크기
-          x,
-          y,
+        playSpriteEffect(pendingEffect, {
+          size: Math.max(rect.width, rect.height),
+          centerX: rect.left + rect.width / 2 + window.scrollX,
+          centerY: rect.top + rect.height / 2 + window.scrollY,
         });
       }
 
+      // 인벤토리 UI
       const invFig = getInventoryFigures().find(f => f.id === pendingId);
-      if (!invFig) continue;
-
-      // === add/update 함수만 분기!
-      if (result === "new-figure") {
-        renderInventoryInsertItem(invFig);
-        anyUnlocked = true;
-      } else if (result === "new-mode") {
-        renderInventoryUpdateItem(invFig);
-        anyUnlocked = true;
+      if (invFig) {
+        if (result === "new-figure") renderInventoryInsertItem(invFig);
+        else if (result === "new-mode") renderInventoryUpdateItem(invFig);
       }
-      // "old"는 아무것도 안 함
     }
   }
-  return anyUnlocked;
-}
 
-  function getOverlappingFigure(a: PlaygroundFigure, figures: PlaygroundFigure[]): PlaygroundFigure | null {
-    const aEl = document.querySelector(`img[data-serial="${a.serial}"]`) as HTMLImageElement | null;
-    if (!aEl) return null;
-    const aRect = aEl.getBoundingClientRect();
-    for (const f of figures) {
-      if (f.serial === a.serial) continue;
-      const fEl = document.querySelector(`img[data-serial="${f.serial}"]`) as HTMLImageElement | null;
-      if (!fEl) continue;
-      const fRect = fEl.getBoundingClientRect();
-      const isOverlapping = (
-        aRect.left < fRect.right &&
-        aRect.right > fRect.left &&
-        aRect.top < fRect.bottom &&
-        aRect.bottom > fRect.top
-      );
-      if (isOverlapping) return f;
-    }
-    return null;
-  }
 }

@@ -1,5 +1,5 @@
 import { ID_PLAYGROUND } from "../../common/config.js";
-import { clearPlaygroundFigures, getPlaygroundFigures, resetToInitialState } from "../../core/services/gameStateService.js";
+import { clearPlaygroundFigures, getPlaygroundFigures, removePlaygroundFigureBySerial, resetToInitialState } from "../../core/services/gameStateService.js";
 import { renderPlayground } from "../playground/render/playgroundRenderer.js";
 import { getUIState, setUIState } from "../../core/services/uiStateService.js";
 import { getResponsiveFigureSize } from "../../core/services/figureLibraryService.js";
@@ -135,4 +135,19 @@ function arrangeFiguresGridCenter() {
         figures[i].x = Math.max(0, Math.round((playgroundWidth - gridWidth) / 2)) + col * (figW + margin);
         figures[i].y = Math.max(0, Math.round((playgroundHeight - gridHeight) / 2)) + row * (figH + margin);
     }
+}
+//TODO 우클릭삭제 나중에 다른방식으로 수정
+const playgroundEl = document.getElementById("playground");
+if (playgroundEl) {
+    playgroundEl.addEventListener("contextmenu", function (e) {
+        const target = e.target;
+        if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")) {
+            e.preventDefault();
+            const serial = target.getAttribute("data-serial");
+            if (!serial)
+                return;
+            removePlaygroundFigureBySerial(serial);
+            target.remove();
+        }
+    });
 }
