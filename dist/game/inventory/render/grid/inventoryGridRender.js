@@ -20,13 +20,14 @@ const INVENTORY_CONTENT = document.getElementById("inventory_content");
 /**
  * 그리드 렌더링 (Grid)
  */
-export function renderInventoryGrid() {
+export function renderInventoryGrid(filteredInventory) {
     if (!INVENTORY_CONTENT)
         return;
     INVENTORY_CONTENT.innerHTML = ""; // 기존 내용 제거
     const grid = document.createElement("div");
     grid.className = "inventory-grid";
-    const inventory = getSortedInventory();
+    // filteredInventory가 있으면 그걸, 없으면 전체를 쓴다
+    const inventory = filteredInventory !== null && filteredInventory !== void 0 ? filteredInventory : getSortedInventory();
     inventory.forEach(invFig => {
         const fig = getFigureById(invFig.id);
         if (!fig)
@@ -48,13 +49,14 @@ export function renderInventoryGrid() {
 /**
  * 리스트 렌더링 (List)
  */
-export function renderInventoryList() {
+export function renderInventoryList(filteredInventory) {
     if (!INVENTORY_CONTENT)
         return;
     INVENTORY_CONTENT.innerHTML = ""; // 기존 내용 제거
     const list = document.createElement("ul");
     list.className = "inventory-list";
-    const inventory = getSortedInventory();
+    // filteredInventory가 있으면 그걸, 없으면 전체를 쓴다
+    const inventory = filteredInventory !== null && filteredInventory !== void 0 ? filteredInventory : getSortedInventory();
     inventory.forEach(invFig => {
         const fig = getFigureById(invFig.id);
         if (!fig)

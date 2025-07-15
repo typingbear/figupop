@@ -35,3 +35,20 @@ export function pickRandomUnownedPrimeFigure() {
         return null;
     return unownedPrimes[Math.floor(Math.random() * unownedPrimes.length)];
 }
+// [함수] 키워드로 인벤토리+이름 부분검색
+export function searchInventoryFiguresByName(keyword) {
+    const kw = keyword.trim().toLowerCase();
+    if (!kw)
+        return []; // 키워드 없으면 빈 배열
+    // 1. 내 인벤토리 전체
+    const myInventory = getInventoryFigures();
+    // 2. 전체 FIGURE_LIST에서 이름에 키워드 포함된 것만 추림
+    const filtered = myInventory
+        .map(inv => {
+        const meta = getFigureById(inv.id);
+        return meta && meta.name.toLowerCase().includes(kw)
+            ? Object.assign(Object.assign({}, inv), meta) : null;
+    })
+        .filter(Boolean);
+    return filtered;
+}

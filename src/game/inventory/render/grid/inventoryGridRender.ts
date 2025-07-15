@@ -30,7 +30,7 @@ const INVENTORY_CONTENT = document.getElementById("inventory_content");
 /**
  * 그리드 렌더링 (Grid)
  */
-export function renderInventoryGrid() {
+export function renderInventoryGrid(filteredInventory?: InventoryFigure[]) {
   if (!INVENTORY_CONTENT) return;
 
   INVENTORY_CONTENT.innerHTML = ""; // 기존 내용 제거
@@ -38,7 +38,8 @@ export function renderInventoryGrid() {
   const grid = document.createElement("div");
   grid.className = "inventory-grid";
 
-  const inventory = getSortedInventory();
+  // filteredInventory가 있으면 그걸, 없으면 전체를 쓴다
+  const inventory = filteredInventory ?? getSortedInventory();
   inventory.forEach(invFig => {
     const fig = getFigureById(invFig.id);
     if (!fig) return;
@@ -61,10 +62,11 @@ export function renderInventoryGrid() {
   INVENTORY_CONTENT.appendChild(grid);
 }
 
+
 /**
  * 리스트 렌더링 (List)
  */
-export function renderInventoryList() {
+export function renderInventoryList(filteredInventory?: InventoryFigure[]) {
   if (!INVENTORY_CONTENT) return;
 
   INVENTORY_CONTENT.innerHTML = ""; // 기존 내용 제거
@@ -72,7 +74,8 @@ export function renderInventoryList() {
   const list = document.createElement("ul");
   list.className = "inventory-list";
 
-  const inventory = getSortedInventory();
+  // filteredInventory가 있으면 그걸, 없으면 전체를 쓴다
+  const inventory = filteredInventory ?? getSortedInventory();
   inventory.forEach(invFig => {
     const fig = getFigureById(invFig.id);
     if (!fig) return;

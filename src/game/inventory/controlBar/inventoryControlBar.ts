@@ -1,11 +1,11 @@
 import { getUIState } from "../../../core/services/uiStateService.js";
 import type { InventorySortType } from "../../../common/types/storage/uiStateTypes.js";
 import { PANEL_INVENTORY } from "../../../common/config.js";
+import { renderInventoryGrid, renderInventoryList } from "../render/grid/inventoryGridRender.js";
+import { searchInventoryFiguresByName } from "../../../core/services/gameStateCoordinator.js";
 
 /**
- * 하드코딩된 인벤토리 컨트롤바에 상태/이벤트 바인딩만 한다
- * @param onChangeView - "grid" | "list"
- * @param onChangeSort - "recent" | "registered" | "name"
+ * 인벤토리 컨트롤바 렌더러
  */
 export function renderInventoryControlBar(
   onChangeView: (view: "grid" | "list") => void,
@@ -28,7 +28,6 @@ export function renderInventoryControlBar(
   // 2. 버튼 상태 및 이벤트
   gridBtn.disabled = currentView === "grid";
   listBtn.disabled = currentView === "list";
-
   gridBtn.onclick = () => onChangeView("grid");
   listBtn.onclick = () => onChangeView("list");
 
@@ -38,6 +37,26 @@ export function renderInventoryControlBar(
   });
   sortSelect.onchange = () => onChangeSort(sortSelect.value as InventorySortType);
 
-  // 4. 검색 input 바인딩 등 필요시 추가
-  // searchInput.oninput = ...
+  // 4. 검색 input 바인딩 추가
+  searchInput.oninput = () => {
+    console.log("[Inventory] Search input changed:", searchInput.value);
+    const keyword = searchInput.value.trim();
+    if (!keyword) {
+      // 입력 없으면 전체 인벤토리 다시 보여주기
+      if (currentView === "grid") renderInventoryGrid();
+      else renderInventoryList();
+      return;
+    }
+    // 검색해서 필터링된 결과만 보여주기
+    const filteredMeta = searchInventoryFiguresByName(keyword);
+    // InventoryFigure만 추려서 전달 (메타필드와 혼합된 경우 아래처럼 추출)
+    const filtered = filteredMeta.map(meta => ({
+      id: meta.id,
+      currentMode: meta.currentMode,
+      unlockedModes: meta.unlockedModes,
+      openedAt: meta.openedAt
+    }));
+    if (currentView === "grid") renderInventoryGrid(filtered);
+    else renderInventoryList(filtered);
+  };
 }
