@@ -58,8 +58,6 @@ body {
   width: 350px;
   transition: width 0.2s;
   z-index: 2;
-  padding2: 24px 0 0 15px;
-
   overflow-y: auto;
   height: 100vh;
 }

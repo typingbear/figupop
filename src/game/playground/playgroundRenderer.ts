@@ -3,6 +3,28 @@ import {  IMAGE_ROOT, PANEL_PLAYGROUND } from "../../common/config.js";
 import { getPlaygroundFigures } from "../../core/services/gameStateService.js";
 import { Entity } from "../../common/types/game/playgroundTypes.js";
 
+function setupPlayzoneFigureImg(
+  img: HTMLImageElement,
+  entity: Entity,
+) {
+  // 여기서 직접!
+  const meta = getFigureById(entity.id);
+  const size = getResponsiveFigureSize(entity.id, entity.mode);
+
+  if (!meta || !size) return;
+
+  img.className = "playzone-figure-img";
+  img.src = `${IMAGE_ROOT}${entity.id}-${entity.mode}.png`;
+  img.alt = `${meta.name} (${entity.mode})`;
+  img.style.left = `${entity.x}px`;
+  img.style.top = `${entity.y}px`;
+  img.style.width = `${size.width}px`;
+  img.style.height = `${size.height}px`;
+  img.style.zIndex = `${entity.zIndex ?? 0}`;
+  if (entity.serial) img.setAttribute("data-serial", entity.serial);
+}
+
+
 export function renderPlayground() {
 
   PANEL_PLAYGROUND.innerHTML = "";
@@ -27,25 +49,4 @@ export function AddOrUpdatePlayItemRender(entity: Entity) {
   setupPlayzoneFigureImg(img, entity);
 }
 
-
-function setupPlayzoneFigureImg(
-  img: HTMLImageElement,
-  entity: Entity,
-) {
-  // 여기서 직접!
-  const meta = getFigureById(entity.id);
-  const size = getResponsiveFigureSize(entity.id, entity.mode);
-
-  if (!meta || !size) return;
-
-  img.className = "playzone-figure-img";
-  img.src = `${IMAGE_ROOT}${entity.id}-${entity.mode}.png`;
-  img.alt = `${meta.name} (${entity.mode})`;
-  img.style.left = `${entity.x}px`;
-  img.style.top = `${entity.y}px`;
-  img.style.width = `${size.width}px`;
-  img.style.height = `${size.height}px`;
-  img.style.zIndex = `${entity.zIndex ?? 0}`;
-  if (entity.serial) img.setAttribute("data-serial", entity.serial);
-}
 
