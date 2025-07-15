@@ -1,5 +1,5 @@
 // 이 파일은 자동 생성됨. spritsEffects.json -> spritsEffects.ts 변환
-import type { SpritesEffect } from "../common/types";
+import type { SpritesEffect } from "./types";
 
 export const spritesEffects: SpritesEffect = {
   "scratch": {

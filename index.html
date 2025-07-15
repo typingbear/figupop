@@ -1,92 +1,140 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YJ6FB34K4Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-YJ6FB34K4Y"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
 
-  gtag('config', 'G-YJ6FB34K4Y');
-</script>
-  <meta charset="UTF-8">
-  
-  <title>Playground Layout</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="src/styles/layout.css">
-  <link rel="stylesheet" href="src/styles/inventory.css">
-  <link rel="stylesheet" href="src/styles/playground.css">
-  <link rel="stylesheet" href="src/styles/inbox.css">
-  <link rel="stylesheet" href="src/styles/catalog.css">
-  <link rel="stylesheet" href="src/styles/toolbox.css">
-  <link rel="stylesheet" href="src/styles/setting.css">
-  <link rel="stylesheet" href="src/styles/images.css">
-  <link rel="stylesheet" href="src/styles/splite.css">
+      gtag("config", "G-YJ6FB34K4Y");
+    </script>
+    <meta charset="UTF-8" />
 
-</head>
-<body>
-  
-  <div id="body-container">
-
-  <div id="toolbox">
-    <div class="toolbox-menu">
-      <button class="toolbox-btn" id="open-catalog-btn" title="도감 열기">☰</button>
-      <button class="toolbox-btn" id="clear-playground-btn" title="전체 삭제">🗑</button>
-      <button class="toolbox-btn" id="grid-playground-btn" title="바둑판 정렬">🔲</button>
-      <button class="toolbox-btn" id="reset-inventory-btn" title="reset">★</button>
-      <button class="toolbox-btn" id="open-settings-btn" title="설정">⚙️</button>
-      <button class="toolbox-btn" title="메뉴4">?</button>
-    </div>
-  </div>
-
-    <div id="playground-wrapper">
-      <div id="inbox"></div>
-      <div id="playground"></div>
-    </div>
-
-    <div id="inventory">      </div>
-
-    <div class="catalog-overlay" id="catalog-overlay">
-      <div class="catalog-panel">
-        <button class="close-btn" id="close-catalog-btn">닫기 ✖</button>
-      
-        <div id="catalog-content" class="category-list" style="padding:32px;"></div>
+    <title>Playground Layout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="src/styles/layout.css" />
+    <link rel="stylesheet" href="src/styles/playground.css" />
+    <link rel="stylesheet" href="src/styles/inbox.css" />
+    <link rel="stylesheet" href="src/styles/catalog.css" />
+    <link rel="stylesheet" href="src/styles/toolbox.css" />
+    <link rel="stylesheet" href="src/styles/images.css" />
+    <link rel="stylesheet" href="src/styles/splite.css" />
+    <link rel="stylesheet" href="src/styles/customDialog.css" />
+    <link rel="stylesheet" href="src/styles/inventory.css" />
+    <link rel="stylesheet" href="src/styles/inventoryControlBar.css" />
+  </head>
+  <body>
+    <div id="body-container">
+      <div id="toolbox">
+        <div class="toolbox-menu">
+          <button class="toolbox-btn" id="open-catalog-btn" title="도감 열기">
+            <img src="assets/ui/menu/library.png" alt="도감 열기" />
+          </button>
+          <button
+            class="toolbox-btn"
+            id="clear-playground-btn"
+            title="전체 삭제"
+          >
+            <img src="assets/ui/menu/trashcan.png" alt="전체 삭제" />
+          </button>
+          <button
+            class="toolbox-btn"
+            id="grid-playground-btn"
+            title="바둑판 정렬"
+          >
+            <img src="assets/ui/menu/arrange.png" alt="바둑판 정렬" />
+          </button>
+          <button class="toolbox-btn" id="reset-inventory-btn" title="reset">
+            <img src="assets/ui/menu/return.png" alt="reset" />
+          </button>
+          <button class="toolbox-btn" id="open-settings-btn" title="설정">
+            <img src="assets/ui/menu/gear.png" alt="설정" />
+          </button>
+          <button class="toolbox-btn" title="메뉴4">?</button>
+        </div>
       </div>
+
+      <div id="playground-wrapper">
+        <div id="inbox"></div>
+        <div id="playground"></div>
+      </div>
+
+      <div id="inventory">
+        <!-- 컨트롤바 -->
+        <div class="inventory-control-bar">
+          <div class="inventory-control-bar-row inventory-toggle-group">
+            <button class="inventory-toggle-btn" id="inventory-grid-btn">
+              Grid
+            </button>
+            <button class="inventory-toggle-btn" id="inventory-list-btn">
+              List
+            </button>
+          </div>
+          <div class="inventory-control-bar-row">
+            <select class="inventory-sort-select" id="inventory-sort-select">
+              <option value="recent">Recent</option>
+              <option value="registered">Registered</option>
+              <option value="name">Name</option>
+            </select>
+          </div>
+          <div class="inventory-control-bar-row inventory-search-wrapper">
+            <input
+              type="text"
+              class="inventory-search-input"
+              id="inventory-search-input"
+              placeholder="Search..."
+            />
+            <svg
+              class="inventory-search-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <circle
+                cx="9"
+                cy="9"
+                r="7"
+                stroke="#999"
+                stroke-width="2"
+                fill="none"
+              />
+              <line
+                x1="14.2"
+                y1="14.2"
+                x2="18"
+                y2="18"
+                stroke="#999"
+                stroke-width="2"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <!-- 인벤토리 리스트 (예시) -->
+        <div id="inventory_content"></div>
+      </div>
+
+      <div class="catalog-overlay" id="catalog-overlay">
+        <div class="catalog-panel">
+          <button class="close-btn" id="close-catalog-btn">닫기 ✖</button>
+
+          <div
+            id="catalog-content"
+            class="category-list"
+            style="padding: 32px"
+          ></div>
+        </div>
+      </div>
+
+      <div id="settings-modal" class="modal"></div>
     </div>
 
-<div id="sound-settings-modal" class="modal">
-  <h2>🔊 사운드 설정</h2>
-  <div>
-    <label for="sfxVolume">효과음 볼륨</label>
-    <div class="slider-row">
-      <input type="range" id="sfxVolume" min="0" max="100" value="80">
-      <span class="slider-value-group">
-        <span id="sfxVolumeValue">80</span><span>%</span>
-      </span>
-    </div>
-  </div>
-  <div>
-    <label for="bgmVolume">배경음 볼륨</label>
-    <div class="slider-row">
-      <input type="range" id="bgmVolume" min="0" max="100" value="60">
-      <span class="slider-value-group">
-        <span id="bgmVolumeValue">60</span><span>%</span>
-      </span>
-    </div>
-  </div>
-  <div class="modal-btn-row">
-    <button id="sound-settings-save-btn">저장</button>
-    <button id="sound-settings-cancel-btn">취소</button>
-  </div>
-</div>
-
-
-
-  </div>
-
-  <script type="module" src="dist/main.js"></script>
-
-</body>
-
+    <script type="module" src="dist/main.js"></script>
+  </body>
 </html>

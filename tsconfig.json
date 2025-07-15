@@ -10,5 +10,5 @@
     "rootDir": "./src",            // 추가: 소스 폴더
     "outDir": "./dist"             // 추가: JS 출력 폴더
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/data/types.ts"]
 }

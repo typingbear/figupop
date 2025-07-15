@@ -1,7 +1,7 @@
 import { renderInventory } from "./render/inventoryRenderer.js";
-import { renderInventoryControlBar } from "./views/inventoryControlBar.js";
+import { renderInventoryControlBar } from "./controlBar/inventoryControlBar.js";
 import { getUIState, setUIState } from "../../core/services/uiStateService.js";
-import { InventorySortType } from "../../common/types/uiStateTypes.js";
+import { InventorySortType } from "../../common/types/storage/uiStateTypes.js";
 
 export class InventoryManager {
   private group = document.querySelector("#inventory-group");

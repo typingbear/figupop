@@ -1,14 +1,16 @@
 // src/services/gameStateService.js
 
-import type { GameState, PlaygroundFigure, InventoryFigure, AddOrUnlockResult } from "../../common/types.js";
-import { GAME_STATE_STORAGE_KEY, NEW_FIGURE_AUDIO, OLD_FIGURE_AUDIO, PARCEL_LIMIT, UNLOCK_FIGURE_AUDIO } from "../../common/config.js";
+import { GAME_STATE_STORAGE_KEY, PARCEL_LIMIT } from "../../common/config.js";
+import { AddOrUnlockResult, InventoryFigure } from "../../common/types/game/inventoryTypes.js";
+import { Entity } from "../../common/types/game/playgroundTypes.js";
+import { GameState } from "../../common/types/storage/gameStateTypes.js";
 import { gameStates } from "../../data/initialGameState.js";
 
 // --- 내부 상태 변수 (전역적 싱글턴)
 let data: GameState = loadFromStorage();
 
 // --- 유틸
-function saveToGameStateStorage() {
+export function saveToGameStateStorage() {
   localStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify(data));
 }
 
@@ -32,8 +34,8 @@ function loadFromStorage(): GameState {
 export function getGameState() { return data; }
 
 // [플레이그라운드 관련]
-export function getPlaygroundFigures(): PlaygroundFigure[] { return data.playgroundFigures; }
-export function addPlaygroundFigure(figure: PlaygroundFigure) {
+export function getPlaygroundFigures(): Entity[] { return data.playgroundFigures; }
+export function addPlaygroundFigure(figure: Entity) {
   data.playgroundFigures.push(figure);
   saveToGameStateStorage();
 }

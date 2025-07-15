@@ -1,11 +1,10 @@
+/* --- 공통 썸네일 이미지 --- */
 img {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
-
   pointer-events: auto;
 }
-
 
 .thumb-img {
   border-radius: 8px;
@@ -18,19 +17,50 @@ img {
   user-select: none;
 }
 
-.thumb-img.draggable:active { cursor: grabbing; }
 .thumb-img.locked {
   filter: blur(1.3px) grayscale(40%);
   opacity: 0.38;
-  pointer-events: none;
   background: #f5f5f5 !important;
 }
-.thumb-img.draggable:hover:not(.locked) {
-  box-shadow: 0 2px 10px #ffb68633, 0 0 0 4px #ffd1b355;
-  border: 2px solid #ffb686;
-  outline: 2px solid #ffd1b3;
+
+.thumb-img:hover {
+  box-shadow: 0 2px 10px #0002 !important;
+  border: 2px solid #ffb4a2 !important;
 }
 
-#catalog-content .thumb-img.locked {
-  pointer-events: auto !important;    /* 카테고리 영역에서만 이벤트 가능 */
+.ghost-drag-img {
+  position: fixed !important;
+  pointer-events: none;
+  opacity: 0.7;
+  z-index: 9999;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
 }
+
+ /* --- 인벤토리 썸네일 이미지 --- */
+ .inventory-thumb.locked {
+  pointer-events: none ;  
+} 
+ .inventory-thumb.draggable:active { cursor: grabbing !important; }
+
+/* --- 카테고리 썸네일 이미지 --- */
+.category-thumb.base-mode {
+  border: 2px solid #c1b2ff;
+}
+.category-thumb.locked {
+  pointer-events: auto ;  
+} 
+
+/* --- 플레이그라운드 이미지 --- */
+#playground .playzone-figure-img {
+  position: absolute;
+  object-fit: contain;
+  pointer-events: auto;
+  user-select: none;
+  cursor: grab;
+  transition: width 0.2s ease, height 0.2s ease;
+  box-sizing: border-box;
+}
+

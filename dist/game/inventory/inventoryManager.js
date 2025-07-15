@@ -1,5 +1,5 @@
 import { renderInventory } from "./render/inventoryRenderer.js";
-import { renderInventoryControlBar } from "./views/inventoryControlBar.js";
+import { renderInventoryControlBar } from "./controlBar/inventoryControlBar.js";
 import { getUIState, setUIState } from "../../core/services/uiStateService.js";
 export class InventoryManager {
     constructor() {

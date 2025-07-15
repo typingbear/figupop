@@ -1,16 +1,15 @@
 // src/game/inventory/renderInventory.ts
 import { getUIState } from "../../../core/services/uiStateService.js";
-import { ID_INVENTORY } from "../../../common/config.js";
+import {  PANEL_INVENTORY } from "../../../common/config.js";
 import { enableInvToPlayDrag } from "../dnd/toPlaygroundDrag.js";
-import { addInventoryGridItem,  renderInventoryGrid, updateInventoryGridItem } from "./inventoryGridRender.js";
-import { addInventoryListItem,  renderInventoryList, updateInventoryListItem } from "./inventoryListRender.js";
-import { InventoryFigure } from "../../../common/types.js";
+import { addInventoryGridItem,  renderInventoryGrid, updateInventoryGridItem } from "./grid/inventoryGridRender.js";
+import { addInventoryListItem,  renderInventoryList, updateInventoryListItem } from "./list/inventoryListRender.js";
+import { InventoryFigure } from "../../../common/types/game/inventoryTypes.js";
 
 export function renderInventory() {
-  const panel = document.getElementById(ID_INVENTORY);
-  if (!panel) return;
+
   // 기존 그리드/리스트 요소만 제거 (컨트롤바는 유지)
-  panel.querySelectorAll(".inventory-list,.inventory-grid").forEach(el => el.remove());
+   PANEL_INVENTORY.querySelectorAll(".inventory-list,.inventory-grid").forEach(el => el.remove());
 
   const currentView = getUIState("inventoryView");
   if (currentView === "grid") {

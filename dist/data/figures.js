@@ -266,7 +266,8 @@ export const figures = [
         "modes": {
             "base": {
                 "width": 1024,
-                "height": 1024
+                "height": 1024,
+                "desc": "rain"
             },
             "rainbow": {
                 "width": 640,
@@ -310,7 +311,6 @@ export const figures = [
         "id": "egg",
         "name": "Egg",
         "kind": "prime",
-        "desc": "",
         "modes": {
             "base": {
                 "width": 736,
@@ -336,7 +336,7 @@ export const figures = [
         "reactions": [
             {
                 "mode": "base",
-                "with": "rock",
+                "with": "l_rock",
                 "result": "mode1"
             },
             {
@@ -348,23 +348,9 @@ export const figures = [
         ]
     },
     {
-        "id": "rock",
-        "name": "Rock",
-        "kind": "prime",
-        "desc": "",
-        "modes": {
-            "base": {
-                "width": 640,
-                "height": 640
-            }
-        },
-        "reactions": []
-    },
-    {
         "id": "fire",
         "name": "Fire",
         "kind": "prime",
-        "desc": "",
         "modes": {
             "base": {
                 "width": 736,

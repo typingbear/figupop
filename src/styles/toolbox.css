@@ -41,6 +41,15 @@
 .toolbox-btn:hover {
   background: #33335a;
 }
+.toolbox-btn img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+  pointer-events: none;
+}
+
 @media (max-width: 768px) {
   .toolbox-btn {
     width: 38px;

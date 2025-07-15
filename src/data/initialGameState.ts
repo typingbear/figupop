@@ -1,5 +1,5 @@
 // 이 파일은 자동 생성됨. initialGameState.json -> initialGameState.ts 변환
-import type { GameState } from "../common/types";
+import type { GameState } from "./types";
 
 export const gameStates: GameState = {
   "inboxParcels": 4,

@@ -1,4 +1,4 @@
-import { renderCatalog } from "./render/catalogRenderer.js";
+import { renderCatalog } from "./catalogRenderer.js";
 
 export function setupCatalogOverlay(): void {
   const openBtn = document.getElementById('open-catalog-btn') as HTMLElement | null;

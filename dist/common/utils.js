@@ -1,4 +1,3 @@
-import { AUDIO_ROOT } from "./config.js";
 import { getUIState } from "../core/services/uiStateService.js"; // 볼륨값 가져오기
 //serialKey 생성 함수
 export function makeSerialKey() {
@@ -7,7 +6,7 @@ export function makeSerialKey() {
 export function playSound(src) {
     var _a;
     try {
-        const audio = new Audio(AUDIO_ROOT + src);
+        const audio = new Audio(src);
         const sfxVolume = (_a = getUIState("sfxVolume")) !== null && _a !== void 0 ? _a : 80; // 0~100 (퍼센트)
         audio.volume = sfxVolume / 100; // 0~1로 변환
         audio.play();
@@ -28,4 +27,33 @@ export function getDeviceType() {
     if (w <= 1100)
         return "tablet";
     return "pc";
+}
+export function getRenderedSize(imgEl) {
+    const rect = imgEl.getBoundingClientRect();
+    return {
+        width: rect.width,
+        height: rect.height,
+    };
+}
+export function showConfirmDialog(message, onConfirm) {
+    var _a, _b;
+    const dialog = document.createElement("div");
+    dialog.className = "custom-confirm-dialog";
+    dialog.innerHTML = `
+    <div class="custom-confirm-content">
+      <div class="custom-confirm-message">${message}</div>
+      <div class="custom-confirm-actions">
+        <button class="custom-confirm-btn confirm">Confirm</button>
+        <button class="custom-confirm-btn cancel">Cancel</button>
+      </div>
+    </div>
+  `;
+    document.body.appendChild(dialog);
+    (_a = dialog.querySelector(".confirm")) === null || _a === void 0 ? void 0 : _a.addEventListener("click", () => {
+        document.body.removeChild(dialog);
+        onConfirm();
+    });
+    (_b = dialog.querySelector(".cancel")) === null || _b === void 0 ? void 0 : _b.addEventListener("click", () => {
+        document.body.removeChild(dialog);
+    });
 }

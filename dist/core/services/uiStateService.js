@@ -1,5 +1,5 @@
 import { UI_STATE_STORAGE_KEY } from "../../common/config.js";
-import { defaultUIState } from "../../common/types/uiStateTypes.js"; // defaultUIState 꼭 import
+import { defaultUIState } from "../../common/types/storage/uiStateTypes.js"; // defaultUIState 꼭 import
 // 내부 상태 캐시
 let state = loadUIState();
 function loadUIState() {

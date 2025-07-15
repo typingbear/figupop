@@ -32,42 +32,39 @@ export function createInventoryFigureThumb({ figure, mode, unlocked, onClick, })
     return img;
 }
 export function createCategoryFigureThumb(entry) {
-    const { figureId: id, name, mode, desc } = entry;
-    const unlocked = isModeUnlocked(entry.figureId, entry.mode);
+    // 명확하게 변수 구분
+    const { id, figureId, name, mode, desc } = entry;
+    const unlocked = isModeUnlocked(figureId, mode);
     const img = document.createElement("img");
     img.className = "thumb-img";
     if (mode === "base")
         img.classList.add("base-mode");
     if (!unlocked) {
-        img.src = `${OUTLINE_IMAGE_BASE}${id}-${mode}-outline.png`;
+        img.src = `${OUTLINE_IMAGE_BASE}${figureId}-${mode}-outline.png`;
         img.classList.add("locked");
     }
     else {
-        img.src = `${IMAGE_ROOT}${id}-${mode}.png`;
+        img.src = `${IMAGE_ROOT}${figureId}-${mode}.png`;
     }
     img.draggable = false;
     img.alt = `${name} (${mode})`;
-    img.setAttribute("data-figure-id", id);
+    img.setAttribute("data-figure-id", figureId); // FigureModeEntry에 타입 있음
     img.setAttribute("data-mode", mode);
-    // desc 카드 절대 위치
+    // desc는 옵셔널이니 타입가드
     let descCard = null;
-    // 💡 unlocked 여부와 무관하게 desc 이벤트 등록!
-    if (desc && desc.trim() !== "") {
-        img.addEventListener("mouseenter", e => {
+    if (desc === null || desc === void 0 ? void 0 : desc.trim()) {
+        img.addEventListener("mouseenter", () => {
             if (descCard && descCard.isConnected)
                 return;
             descCard = document.createElement("div");
             descCard.className = "figure-thumb-desc-card absolute-overlay-card";
-            // 🔒 락일 때 설명에 표시 추가
-            descCard.innerHTML = desc;
-            // 위치 계산 (img 바로 아래, 가운데 정렬)
+            descCard.innerHTML = desc; // 타입 명확하게
+            // 위치계산 등은 생략 (동일)
             const rect = img.getBoundingClientRect();
-            descCard.style.position = "absolute";
             descCard.style.left = `${rect.left + rect.width / 2}px`;
-            descCard.style.top = `${rect.bottom + 8}px`;
-            descCard.style.transform = "translateX(-50%)";
+            descCard.style.top = `${rect.bottom}px`;
             document.body.appendChild(descCard);
-            // 카드가 화면 밖이면 위치 보정
+            // 화면 밖 보정 등 생략 (동일)
             const cardRect = descCard.getBoundingClientRect();
             if (cardRect.right > window.innerWidth) {
                 descCard.style.left = `${window.innerWidth - cardRect.width / 2 - 8}px`;

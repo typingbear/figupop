@@ -1,13 +1,10 @@
-import { ID_CATEGORY } from "../../../common/config.js";
+import { PANEL_CATEGORY } from "../../../common/config.js";
 import { ALL_FIGURE_MODES } from "../../../core/services/figureLibraryService.js";
-import { createCategoryFigureThumb } from "../../../core/images/imageHandler.js"; // ← 경로 맞게 조정!
+import { createCategoryFigureThumb } from "./categoryImageHandler.js";
 export function renderCatalog() {
-    const panel = document.getElementById(ID_CATEGORY);
-    if (!panel)
-        return;
-    panel.innerHTML = "";
+    PANEL_CATEGORY.innerHTML = "";
     ALL_FIGURE_MODES.forEach(entry => {
         const img = createCategoryFigureThumb(entry);
-        panel.appendChild(img);
+        PANEL_CATEGORY.appendChild(img);
     });
 }

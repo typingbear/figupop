@@ -1,17 +1,10 @@
-import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront, getInventoryFigures, removePlaygroundFigureBySerial } from "../../../core/services/gameStateService.js";
+import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront, getInventoryFigures, removePlaygroundFigureBySerial, saveToGameStateStorage } from "../../../core/services/gameStateService.js";
 import { getReactionResult, } from "../../../core/services/figureLibraryService.js";
-import { ID_PLAYGROUND, NEW_FIGURE_AUDIO, OLD_FIGURE_AUDIO, UNLOCK_FIGURE_AUDIO } from "../../../common/config.js";
-import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
+import { AUDIO_ROOT, ID_PLAYGROUND, NEW_FIGURE_AUDIO, OLD_FIGURE_AUDIO, UNLOCK_FIGURE_AUDIO, DRAG_FIGURE_AUDIO, DROP_FIGURE_AUDIO } from "../../../common/config.js";
 import { renderInventoryInsertItem, renderInventoryUpdateItem } from "../../inventory/render/inventoryRenderer.js";
-import { playSound } from "../../../common/utils.js";
+import { getRenderedSize, playSound } from "../../../common/utils.js";
 import { playSpriteEffect } from "../../../core/effects/spriteEffectManager.js";
-function getRenderedSize(imgEl) {
-    const rect = imgEl.getBoundingClientRect();
-    return {
-        width: rect.width,
-        height: rect.height,
-    };
-}
+import { AddOrUpdatePlayItemRender } from "../playgroundRenderer.js";
 /**
  * 플레이그라운드에서 이미지 직접 드래그-이동 (z-index도 관리)
  */ export function enablePlaygroundDnD() {
@@ -26,6 +19,8 @@ function getRenderedSize(imgEl) {
         if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")) {
             draggingImg = target;
             draggingSerial = target.getAttribute("data-serial");
+            // 드래그 시작 사운드
+            playSound(DRAG_FIGURE_AUDIO);
             // z-index 최상위로!
             const newZ = bringFigureToFront(draggingSerial);
             if (typeof newZ === "number")
@@ -56,6 +51,8 @@ function getRenderedSize(imgEl) {
         if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")) {
             draggingImg = target;
             draggingSerial = target.getAttribute("data-serial");
+            // 드래그 시작 사운드
+            playSound(DRAG_FIGURE_AUDIO);
             // z-index 최상위로!
             const newZ = bringFigureToFront(draggingSerial);
             if (typeof newZ === "number")
@@ -151,8 +148,8 @@ function getRenderedSize(imgEl) {
             return;
         const dx = clientX - startX;
         const dy = clientY - startY;
-        const fig = getPlaygroundFigures().find(f => f.serial === draggingSerial);
-        if (!fig)
+        const entity = getPlaygroundFigures().find(f => f.serial === draggingSerial);
+        if (!entity)
             return;
         // 실제 렌더 크기로 계산
         const { width, height } = getRenderedSize(draggingImg);
@@ -165,71 +162,81 @@ function getRenderedSize(imgEl) {
         nextY = Math.max(0, Math.min(maxY, nextY));
         draggingImg.style.left = `${nextX}px`;
         draggingImg.style.top = `${nextY}px`;
-        fig.x = nextX;
-        fig.y = nextY;
+        entity.x = nextX;
+        entity.y = nextY;
         // 기존 겹침/이펙트 처리
         playgroundEl.querySelectorAll(".will-transform").forEach(el => el.classList.remove("will-transform"));
         playgroundEl.querySelectorAll("img[data-pending-id]").forEach(el => {
-            el.removeAttribute("data-pending-id");
-            el.removeAttribute("data-pending-mode");
-            el.removeAttribute("data-pending-sound");
-            el.removeAttribute("data-pending-effect");
-            el.removeAttribute("data-remove-other");
+            clearPendingAttributes(el);
         });
-        const b = getOverlappingFigure(fig, getPlaygroundFigures());
+        const b = getOverlappingFigure(entity, getPlaygroundFigures());
         if (b) {
-            handlePendingEffect(fig, b);
-            handlePendingEffect(b, fig);
+            handlePendingEffect(entity, b);
+            handlePendingEffect(b, entity);
         }
     }
     function handleUp() {
         if (!draggingImg || !draggingSerial)
             return;
-        const figures = getPlaygroundFigures();
-        const figA = figures.find(f => f.serial === draggingSerial);
-        const figB = figA ? getOverlappingFigure(figA, figures) : null;
-        const imgB = figB ? playgroundEl.querySelector(`img[data-serial="${figB.serial}"]`) : null;
+        const entities = getPlaygroundFigures();
+        const entityA = entities.find(f => f.serial === draggingSerial);
+        const entityB = entityA ? getOverlappingFigure(entityA, entities) : null;
+        const imgB = entityB ? playgroundEl.querySelector(`img[data-serial="${entityB.serial}"]`) : null;
         // 서로를 지우라고 동시에 명령한 경우 체크
         let bothWantToDeleteEachOther = false;
-        if (figA && figB && draggingImg && imgB instanceof HTMLImageElement) {
+        if (entityA && entityB && draggingImg && imgB instanceof HTMLImageElement) {
             const aRemoveOther = draggingImg.getAttribute("data-remove-other");
             const bRemoveOther = imgB.getAttribute("data-remove-other");
-            bothWantToDeleteEachOther = (aRemoveOther === figB.serial &&
-                bRemoveOther === figA.serial);
+            bothWantToDeleteEachOther = (aRemoveOther === entityB.serial &&
+                bRemoveOther === entityA.serial);
+        }
+        // 아무 일도 안 생긴 경우 드롭 사운드 (겹침이 있어도 변신/효과/삭제가 없으면 사운드)
+        let noAction = false;
+        if (!entityB) {
+            noAction = true;
+        }
+        else if (draggingImg && imgB instanceof HTMLImageElement) {
+            const aPending = draggingImg.getAttribute("data-pending-id") || draggingImg.getAttribute("data-pending-effect") || draggingImg.getAttribute("data-remove-other");
+            const bPending = imgB.getAttribute("data-pending-id") || imgB.getAttribute("data-pending-effect") || imgB.getAttribute("data-remove-other");
+            if (!aPending && !bPending)
+                noAction = true;
+        }
+        if (noAction) {
+            playSound(DROP_FIGURE_AUDIO);
+            // 위치 정보 저장 (단순 이동만 있을 때)
+            if (entityA)
+                AddOrUpdatePlayItemRender(entityA);
+            if (entityB)
+                AddOrUpdatePlayItemRender(entityB);
+            // 위치 변경 즉시 저장
+            saveToGameStateStorage();
         }
         // A 처리 (드래그 주체)
-        if (figA && draggingImg) {
-            applyPendingTransformSingle(figA, draggingImg, bothWantToDeleteEachOther, "first");
-            renderPlayAddOrUpdateFigure(figA);
+        if (entityA && draggingImg) {
+            applyPendingTransformSingle(entityA, draggingImg, bothWantToDeleteEachOther, "first");
+            AddOrUpdatePlayItemRender(entityA);
         }
         // B 처리
-        if (figB && imgB instanceof HTMLImageElement) {
-            applyPendingTransformSingle(figB, imgB, bothWantToDeleteEachOther, "second");
+        if (entityB && imgB instanceof HTMLImageElement) {
+            applyPendingTransformSingle(entityB, imgB, bothWantToDeleteEachOther, "second");
             // 실제로 데이터/DOM에 살아있는 경우에만 render
-            const stillExists = getPlaygroundFigures().some(f => f.serial === figB.serial);
-            const stillImg = playgroundEl.querySelector(`img[data-serial="${figB.serial}"]`);
+            const stillExists = getPlaygroundFigures().some(f => f.serial === entityB.serial);
+            const stillImg = playgroundEl.querySelector(`img[data-serial="${entityB.serial}"]`);
             if (stillExists && stillImg) {
-                renderPlayAddOrUpdateFigure(figB);
+                AddOrUpdatePlayItemRender(entityB);
             }
         }
         // 효과/속성 모두 제거
         playgroundEl.querySelectorAll(".will-transform").forEach(el => el.classList.remove("will-transform"));
         playgroundEl.querySelectorAll("img[data-pending-id]").forEach(el => {
-            el.removeAttribute("data-pending-id");
-            el.removeAttribute("data-pending-mode");
-            el.removeAttribute("data-pending-sound");
-            el.removeAttribute("data-pending-effect");
-            el.removeAttribute("data-remove-other");
-            el.removeAttribute("data-remove-self");
+            clearPendingAttributes(el);
         });
-        draggingImg = null;
-        draggingSerial = null;
     }
     /**
      * @param isDragged 내가 드래그 주체인지
      * @param skipRemoveOther '둘 다 서로를 가리킬 때, 드래그 주체는 상대방을 삭제하지 않는다'는 특수 상황을 위한 플래그
      */
-    function applyPendingTransformSingle(fig, img, bothWantToDeleteEachOther = false, side = "first") {
+    function applyPendingTransformSingle(entity, img, bothWantToDeleteEachOther = false, side = "first") {
         if (bothWantToDeleteEachOther && (side == 'second'))
             return;
         // 상대 삭제
@@ -247,12 +254,12 @@ function getRenderedSize(imgEl) {
         const pendingSound = img.getAttribute("data-pending-sound");
         const pendingEffect = img.getAttribute("data-pending-effect");
         if (pendingId && pendingMode) {
-            fig.id = pendingId;
-            fig.mode = pendingMode;
+            entity.id = pendingId;
+            entity.mode = pendingMode;
             const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
             // 사운드
             if (pendingSound && pendingSound.trim() !== '')
-                playSound(pendingSound);
+                playSound(AUDIO_ROOT + pendingSound);
             else if (result === "new-figure")
                 playSound(NEW_FIGURE_AUDIO);
             else if (result === "new-mode")
@@ -268,14 +275,23 @@ function getRenderedSize(imgEl) {
                     centerY: rect.top + rect.height / 2 + window.scrollY,
                 });
             }
-            // 인벤토리 UI
-            const invFig = getInventoryFigures().find(f => f.id === pendingId);
-            if (invFig) {
+            // 인벤토리 UI 업데이트
+            const inventoryFig = getInventoryFigures().find(f => f.id === pendingId);
+            if (inventoryFig) {
                 if (result === "new-figure")
-                    renderInventoryInsertItem(invFig);
+                    renderInventoryInsertItem(inventoryFig);
                 else if (result === "new-mode")
-                    renderInventoryUpdateItem(invFig);
+                    renderInventoryUpdateItem(inventoryFig);
             }
+            // 변신/삭제 등 변화가 있으면 즉시 저장
+            saveToGameStateStorage();
         }
+    }
+    function clearPendingAttributes(el) {
+        el.removeAttribute("data-pending-id");
+        el.removeAttribute("data-pending-mode");
+        el.removeAttribute("data-pending-sound");
+        el.removeAttribute("data-pending-effect");
+        el.removeAttribute("data-remove-other");
     }
 }

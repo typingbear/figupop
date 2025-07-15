@@ -1,8 +1,8 @@
 // src/services/figureLibrary.ts
 import { figures } from "../../data/figures.js";
-import type { Figure, FigureModeEntry, FigureReactionResult } from "../../common/types.js";
 import { FIGURE_MAX_SIZE } from "../../common/config.js";
 import { getDeviceType } from "../../common/utils.js";
+import { Figure, FigureModeEntry, FigureReactionResult } from "../../common/types/storage/figureTypes.js";
 
 // 전체 피규어 (불변 배열)
 export const FIGURE_LIST: Figure[] = figures;

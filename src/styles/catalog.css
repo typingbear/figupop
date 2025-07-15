@@ -52,7 +52,7 @@
   to   { opacity: 1; transform: scale(1); }
 }
 
-/* === [카탈로그 그리드 영역] === */
+/* === [카탈로그 영역] === */
 #catalog-content {
   display: grid;
   grid-template-columns: repeat(8, 1fr); /* PC (넓은 화면) */
@@ -63,10 +63,7 @@
   width: 56px; height: 56px;
 }
 
-#catalog-content .thumb-img.base-mode {
-  border: 1.5px solid #edb6b6;
- 
-}
+
 
 /* === [반응형: 태블릿] === */
 @media (max-width: 1100px) {
@@ -102,6 +99,7 @@
   position: absolute;
   z-index: 20000;
   pointer-events: auto;
+  transform: translate(-50%, 8px);
 }
 
 .figure-thumb-desc-card {

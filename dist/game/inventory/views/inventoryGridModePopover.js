@@ -1,7 +1,7 @@
 import { getFigureById } from "../../../core/services/figureLibraryService.js";
 import { getUnlockedModes } from "../../../core/services/gameStateService.js";
 import { makeSerialKey } from "../../../common/utils.js";
-import { createInventoryFigureThumb } from "../../../core/images/imageHandler.js";
+import { createInventoryFigureThumb } from "../render/inventoryImageHandler.js";
 /**
  * 인벤토리 그리드에서 피규어의 모드 선택 팝오버를 띄움
  */

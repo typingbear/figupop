@@ -4,7 +4,7 @@ import { gameStates } from "../../data/initialGameState.js";
 // --- 내부 상태 변수 (전역적 싱글턴)
 let data = loadFromStorage();
 // --- 유틸
-function saveToGameStateStorage() {
+export function saveToGameStateStorage() {
     localStorage.setItem(GAME_STATE_STORAGE_KEY, JSON.stringify(data));
 }
 function loadFromStorage() {

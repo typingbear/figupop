@@ -1,7 +1,7 @@
 import { getFigureById } from "../../../core/services/figureLibraryService.js";
 import { ID_INVENTORY } from "../../../common/config.js";
 import { showInventoryGridModePopover } from "../views/inventoryGridModePopover.js";
-import { createInventoryFigureThumb } from "../../../core/images/imageHandler.js";
+import { createInventoryFigureThumb } from "./inventoryImageHandler.js";
 import { getSortedInventory } from "../views/inventoryViewCommon.js";
 // 현재 열린 팝오버의 figureId 저장 (없으면 null)
 let currentPopoverFigureId = null;

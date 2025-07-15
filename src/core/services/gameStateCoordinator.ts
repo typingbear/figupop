@@ -1,6 +1,6 @@
 import { getInventoryFigures } from "./gameStateService.js";
 import { getFigureById, getPrimeFigures } from "./figureLibraryService.js";
-import { InventorySortType } from "../../common/types/uiStateTypes.js";
+import { InventorySortType } from "../../common/types/storage/uiStateTypes.js";
 
 /**
  * 정렬 옵션에 맞는 인벤토리 피규어 배열 반환

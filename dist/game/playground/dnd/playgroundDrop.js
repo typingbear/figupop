@@ -1,7 +1,8 @@
-import { ID_PLAYGROUND } from "../../../common/config.js";
+import { DROP_FIGURE_AUDIO, ID_PLAYGROUND } from "../../../common/config.js";
 import { getMaxZIndex, addPlaygroundFigure } from "../../../core/services/gameStateService.js";
-import { renderPlayAddOrUpdateFigure } from "../render/playgroundRenderer.js";
 import { getResponsiveFigureSize } from "../../../core/services/figureLibraryService.js";
+import { AddOrUpdatePlayItemRender } from "../playgroundRenderer.js";
+import { playSound } from "../../../common/utils.js";
 export function enablePlaygroundDrop() {
     const container = document.getElementById(ID_PLAYGROUND);
     if (!container) {
@@ -26,11 +27,18 @@ export function enablePlaygroundDrop() {
     function handleDropData(data, clientX, clientY, playgroundEl) {
         try {
             const parsed = JSON.parse(data);
-            const { figureId, mode, serial } = parsed;
+            const { figureId, mode, serial, offsetX = 0, offsetY = 0 } = parsed;
             const rect = playgroundEl.getBoundingClientRect();
             const { width: imgW, height: imgH } = getResponsiveFigureSize(figureId, mode);
-            const x = clientX - rect.left - imgW / 2;
-            const y = clientY - rect.top - imgH / 2;
+            // offsetX, offsetY가 있으면 해당 위치에 정확히 놓기 (비율 보정)
+            let adjOffsetX = offsetX;
+            let adjOffsetY = offsetY;
+            if (parsed.source === "inventory" && parsed.rectW && parsed.rectH) {
+                adjOffsetX = offsetX * (imgW / parsed.rectW);
+                adjOffsetY = offsetY * (imgH / parsed.rectH);
+            }
+            const x = clientX - rect.left - adjOffsetX;
+            const y = clientY - rect.top - adjOffsetY;
             const fig = {
                 id: figureId,
                 mode,
@@ -39,8 +47,9 @@ export function enablePlaygroundDrop() {
                 serial,
                 zIndex: getMaxZIndex() + 1
             };
+            playSound(DROP_FIGURE_AUDIO);
             addPlaygroundFigure(fig);
-            renderPlayAddOrUpdateFigure(fig);
+            AddOrUpdatePlayItemRender(fig);
         }
         catch (err) {
             console.warn("[Playground Drop] 드롭 데이터 파싱 실패", err);

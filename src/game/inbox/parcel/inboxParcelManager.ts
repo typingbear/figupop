@@ -1,5 +1,5 @@
 // src/game/inbox/parcel/inboxParcelManager.ts
-import { PARCEL_TIME, PARCEL_LIMIT, FIGURE_KIND_FOR_PARCEL, NEW_FIGURE_AUDIO, NEW_FIGURE_EFFECT, ID_PLAYGROUND } from "../../../common/config.js";
+import { PARCEL_TIME, PARCEL_LIMIT, FIGURE_KIND_FOR_PARCEL, NEW_FIGURE_AUDIO, NEW_FIGURE_EFFECT, ID_PLAYGROUND, AUDIO_ROOT } from "../../../common/config.js";
 import { getFiguresByKind, getResponsiveFigureSize } from "../../../core/services/figureLibraryService.js";
 import {
   addOrUnlockInventoryFigure, addPlaygroundFigure, getMaxZIndex,
@@ -7,9 +7,9 @@ import {
 } from "../../../core/services/gameStateService.js";
 import { makeSerialKey, playSound } from "../../../common/utils.js";
 import { playSpriteEffect } from "../../../core/effects/spriteEffectManager.js";
-import { renderPlayAddOrUpdateFigure } from "../../playground/render/playgroundRenderer.js";
-import { renderInventoryInsertItem, renderInventoryUpdateItem } from "../../inventory/render/inventoryRenderer.js";
+import { renderInventoryInsertItem } from "../../inventory/render/inventoryRenderer.js";
 import { pickRandomUnownedPrimeFigure } from "../../../core/services/gameStateCoordinator.js";
+import { AddOrUpdatePlayItemRender } from "../../playground/playgroundRenderer.js";
 
 
 type OnChangeCallback = (() => void) | null;
@@ -122,20 +122,32 @@ export function removeParcelAndSpawn() {
     zIndex: getMaxZIndex() + 1,
   };
   addPlaygroundFigure(fig);
-  renderPlayAddOrUpdateFigure(fig);
+  AddOrUpdatePlayItemRender(fig);
+
+  // === 이펙트 위치를 실제 이미지 중앙으로 보정 ===
+  let effectCenterX = spawnX;
+  let effectCenterY = spawnY;
+  if (playground) {
+    const imgEl = playground.querySelector(`img[data-serial="${fig.serial}"]`) as HTMLImageElement | null;
+    if (imgEl) {
+      const imgRect = imgEl.getBoundingClientRect();
+      effectCenterX = imgRect.left + imgRect.width / 2 + window.scrollX;
+      effectCenterY = imgRect.top + imgRect.height / 2 + window.scrollY;
+    }
+  }
 
   const effectSize = Math.max(imgW, imgH);
   playSpriteEffect(
     (randomFig.effect && randomFig.effect.trim() !== "") ? randomFig.effect : NEW_FIGURE_EFFECT,
     {
       size: effectSize,
-      centerX: spawnX,
-      centerY: spawnY,
+      centerX: effectCenterX,
+      centerY: effectCenterY,
     }
   );
 
   if (randomFig.sound && randomFig.sound.trim() !== "") {
-    playSound(randomFig.sound);
+    playSound(AUDIO_ROOT+randomFig.sound);
   } else if (addResult === "new-figure" && invFig) {
     playSound(NEW_FIGURE_AUDIO);
     renderInventoryInsertItem(invFig);

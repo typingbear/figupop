@@ -3,17 +3,46 @@ import {
   clearPlaygroundFigures,
   getPlaygroundFigures,
   removePlaygroundFigureBySerial,
-  resetToInitialState
+  resetToInitialState,
+  saveToGameStateStorage
 } from "../../core/services/gameStateService.js";
-import { renderPlayground } from "../playground/render/playgroundRenderer.js";
 import { getUIState, setUIState } from "../../core/services/uiStateService.js";
 import { getResponsiveFigureSize } from "../../core/services/figureLibraryService.js";
+import { renderPlayground } from "../playground/playgroundRenderer.js";
+import { showConfirmDialog } from "../../common/utils.js";
+import { TOOLBOX_DIALOG_MESSAGES } from "../../common/messages.js";
 
 // === [설정 모달 관련] ===
 
 function openSoundSettingsModal() {
-  const modal = document.getElementById("sound-settings-modal") as HTMLElement | null;
+  const modal = document.getElementById("settings-modal") as HTMLElement | null;
   if (!modal) return;
+
+  modal.className = "custom-confirm-dialog";
+  modal.style.display = "flex";
+  modal.innerHTML = `
+    <div class="custom-confirm-content">
+      <div class="custom-confirm-message">사운드 설정</div>
+      <div style="margin-bottom:18px;">
+        <div style="margin-bottom:10px;">
+          <label style="font-size:1rem;">효과음 볼륨</label><br>
+          <input id="sfxVolume" type="range" min="0" max="100" style="width:120px;">
+          <span id="sfxVolumeValue"></span>
+        </div>
+        <div>
+          <label style="font-size:1rem;">배경음 볼륨</label><br>
+          <input id="bgmVolume" type="range" min="0" max="100" style="width:120px;">
+          <span id="bgmVolumeValue"></span>
+        </div>
+      </div>
+      <div class="custom-confirm-actions">
+       <button id="sound-settings-save-btn" class="custom-confirm-btn confirm">Save</button>
+      <button id="sound-settings-cancel-btn" class="custom-confirm-btn cancel">Cancel</button>
+      
+      </div>
+      
+    </div>
+  `;
 
   // 볼륨 슬라이더와 값
   const sfxInput = document.getElementById("sfxVolume") as HTMLInputElement | null;
@@ -30,8 +59,6 @@ function openSoundSettingsModal() {
   sfxVal.textContent = sfx.toString();
   bgmInput.value = bgm.toString();
   bgmVal.textContent = bgm.toString();
-
-  modal.classList.add("active");
 
   // input 이벤트: 값 표시만 즉시 변경
   sfxInput.oninput = (e) => {
@@ -58,24 +85,29 @@ function openSoundSettingsModal() {
     cancelBtn.onclick = closeSoundSettingsModal;
   }
 
-  // 바깥쪽 클릭 시 닫기 (선택)
+  // 바깥쪽 클릭 시 닫기
   window.setTimeout(() => {
     function handleOutside(e: MouseEvent) {
-      if (!modal!.contains(e.target as Node)) {
+      if (!modal || !modal.contains(e.target as Node)) {
         closeSoundSettingsModal();
         document.removeEventListener("mousedown", handleOutside);
       }
-
     }
     document.addEventListener("mousedown", handleOutside);
   }, 10);
 }
 
 function closeSoundSettingsModal() {
-  document.getElementById("sound-settings-modal")?.classList.remove("active");
+  const modal = document.getElementById("settings-modal");
+  if (modal) {
+    modal.style.display = "none";
+    modal.className = "";
+    modal.innerHTML = "";
+  }
 }
 
 // === [툴박스 바인딩/초기화] ===
+
 
 export function enableToolbox() {
   const clearBtn = document.getElementById("clear-playground-btn") as HTMLButtonElement | null;
@@ -83,22 +115,29 @@ export function enableToolbox() {
   const resetBtn = document.getElementById("reset-inventory-btn") as HTMLButtonElement | null;
   const settingsBtn = document.getElementById("open-settings-btn") as HTMLButtonElement | null;
 
+  //TODO 테스트끊나면 다이얼로그 나오게 하자
   // 전체 삭제
   clearBtn?.addEventListener("click", () => {
-    clearPlaygroundFigures();
-    renderPlayground();
+    //showConfirmDialog(TOOLBOX_DIALOG_MESSAGES.clear, () => {
+      clearPlaygroundFigures();
+      renderPlayground();
+    //});
   });
 
   // 바둑판 정렬
   gridBtn?.addEventListener("click", () => {
-    arrangeFiguresGridCenter();
-    renderPlayground();
+    //showConfirmDialog(TOOLBOX_DIALOG_MESSAGES.grid, () => {
+      arrangeFiguresGridCenter();
+      renderPlayground();
+    //});
   });
 
   // 초기화(리셋)
   resetBtn?.addEventListener("click", () => {
-    resetToInitialState();
-    location.reload();
+    showConfirmDialog(TOOLBOX_DIALOG_MESSAGES.reset, () => {
+      resetToInitialState();
+      location.reload();
+    });
   });
 
   // 설정(사운드) 모달 오픈
@@ -153,6 +192,8 @@ function arrangeFiguresGridCenter() {
         figures[i].x = Math.max(0, Math.round((playgroundWidth - gridWidth) / 2)) + col * (fitFigW + margin);
         figures[i].y = Math.max(0, Math.round((playgroundHeight - gridHeight) / 2)) + row * (fitFigH + margin);
       }
+      // 위치 변경 후 즉시 저장
+      saveToGameStateStorage();
       return;
     }
   }
@@ -163,6 +204,8 @@ function arrangeFiguresGridCenter() {
     figures[i].x = Math.max(0, Math.round((playgroundWidth - gridWidth) / 2)) + col * (figW + margin);
     figures[i].y = Math.max(0, Math.round((playgroundHeight - gridHeight) / 2)) + row * (figH + margin);
   }
+  // 위치 변경 후 항상 저장
+  saveToGameStateStorage();
 }
 
 //TODO 우클릭삭제 나중에 다른방식으로 수정

@@ -4,26 +4,26 @@ const path = require("path");
 // 변환 목록 (json 파일, ts 파일, 타입명, 변수명)
 const jobs = [
   {
-    jsonPath: path.join(__dirname, "../src/data/figures.json"),
+    jsonPath: path.join(__dirname, "./data/figures.json"),
     tsPath: path.join(__dirname, "../src/data/figures.ts"),
     typeImport: "Figure",
-    typePath: "../common/types",
+    typePath: "./types",
     variable: "figures",
     accessor: "figures", // json 파일 내 실제 데이터 키
   },
   {
-    jsonPath: path.join(__dirname, "../src/data/initialGameState.json"),
+    jsonPath: path.join(__dirname, "./data/initialGameState.json"),
     tsPath: path.join(__dirname, "../src/data/initialGameState.ts"),
     typeImport: "GameState",
-    typePath: "../common/types",
+    typePath: "./types",
     variable: "gameStates",
     accessor: null, // json 파일이 곧 전체 상태면 null
   },  
   {
-    jsonPath: path.join(__dirname, "../src/data/spritsEffects.json"),
+    jsonPath: path.join(__dirname, "./data/spritsEffects.json"),
     tsPath: path.join(__dirname, "../src/data/spritsEffects.ts"),
     typeImport: "SpritesEffect",
-    typePath: "../common/types",
+    typePath: "./types",
     variable: "spritesEffects",
     accessor: null, // json 파일이 곧 전체 상태면 null
   },

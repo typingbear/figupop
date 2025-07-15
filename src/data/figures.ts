@@ -1,5 +1,5 @@
 // 이 파일은 자동 생성됨. figures.json -> figures.ts 변환
-import type { Figure } from "../common/types";
+import type { Figure } from "./types";
 
 export const figures: Figure[] = [
   {
@@ -269,7 +269,8 @@ export const figures: Figure[] = [
     "modes": {
       "base": {
         "width": 1024,
-        "height": 1024
+        "height": 1024,
+        "desc": "rain"
       },
       "rainbow": {
         "width": 640,
@@ -313,7 +314,6 @@ export const figures: Figure[] = [
     "id": "egg",
     "name": "Egg",
     "kind": "prime",
-    "desc": "",
     "modes": {
       "base": {
         "width": 736,
@@ -339,7 +339,7 @@ export const figures: Figure[] = [
     "reactions": [
       {
         "mode": "base",
-        "with": "rock",
+        "with": "l_rock",
         "result": "mode1"
       },
       {
@@ -351,23 +351,9 @@ export const figures: Figure[] = [
     ]
   },
   {
-    "id": "rock",
-    "name": "Rock",
-    "kind": "prime",
-    "desc": "",
-    "modes": {
-      "base": {
-        "width": 640,
-        "height": 640
-      }
-    },
-    "reactions": []
-  },
-  {
     "id": "fire",
     "name": "Fire",
     "kind": "prime",
-    "desc": "",
     "modes": {
       "base": {
         "width": 736,

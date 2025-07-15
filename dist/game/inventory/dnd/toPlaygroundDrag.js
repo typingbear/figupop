@@ -1,14 +1,11 @@
-import { makeSerialKey } from "../../../common/utils.js";
-import { ID_INVENTORY, ID_PLAYGROUND } from "../../../common/config.js";
+import { makeSerialKey, playSound } from "../../../common/utils.js";
+import { DRAG_FIGURE_AUDIO, ID_PLAYGROUND, PANEL_INVENTORY } from "../../../common/config.js";
 /**
  * 인벤토리 썸네일에 드래그 부여 (마우스+터치)
  */
 export function enableInvToPlayDrag() {
-    const root = document.getElementById(ID_INVENTORY);
-    if (!root)
-        return;
     // === 1. 마우스 Drag & Drop (HTML5) ===
-    root.addEventListener("mousedown", e => {
+    PANEL_INVENTORY.addEventListener("mousedown", e => {
         const target = e.target;
         if (!(target instanceof HTMLElement))
             return;
@@ -18,6 +15,7 @@ export function enableInvToPlayDrag() {
         const mode = target.getAttribute("data-mode");
         if (!figureId || !mode)
             return;
+        playSound(DRAG_FIGURE_AUDIO);
         // offset 계산
         const rect = target.getBoundingClientRect();
         const offsetX = e.clientX - rect.left;
@@ -31,17 +29,30 @@ export function enableInvToPlayDrag() {
                     source: "inventory"
                 });
                 ev.dataTransfer.setData("text/plain", dragData);
+                // 썸네일 이미지를 투명 배경으로 복제해서 드래그 프리뷰로 지정
+                const dragImg = target.cloneNode(true);
+                dragImg.style.width = rect.width + "px";
+                dragImg.style.height = rect.height + "px";
+                dragImg.style.background = "transparent";
+                dragImg.style.boxShadow = "none";
+                dragImg.style.border = "none";
+                dragImg.style.outline = "none";
+                dragImg.style.position = "absolute";
+                dragImg.style.left = "-9999px";
+                document.body.appendChild(dragImg);
+                ev.dataTransfer.setDragImage(dragImg, offsetX, offsetY);
+                setTimeout(() => document.body.removeChild(dragImg), 0);
             }
         }, { once: true });
     });
-    root.addEventListener("dragend", e => {
+    PANEL_INVENTORY.addEventListener("dragend", e => {
         const target = e.target;
         if (target instanceof HTMLElement && target.classList.contains("draggable")) {
             target.removeAttribute("draggable");
         }
     });
     // === 2. 터치 Drag(커스텀) ===
-    root.addEventListener("touchstart", e => {
+    PANEL_INVENTORY.addEventListener("touchstart", e => {
         const target = e.target;
         if (!(target instanceof HTMLImageElement))
             return; // ★ img 태그만 허용
@@ -55,18 +66,12 @@ export function enableInvToPlayDrag() {
         const offsetY = touch.clientY - rect.top;
         // img 태그만 복제
         const ghost = target.cloneNode(true);
+        ghost.classList.add("ghost-drag-img");
         ghost.style.width = rect.width + "px";
         ghost.style.height = rect.height + "px";
-        ghost.style.position = "fixed";
         ghost.style.left = `${touch.clientX - offsetX}px`;
         ghost.style.top = `${touch.clientY - offsetY}px`;
-        ghost.style.pointerEvents = "none";
-        ghost.style.opacity = "0.7";
-        ghost.style.zIndex = "9999";
-        ghost.style.background = "transparent"; // 배경 투명화
-        ghost.style.boxShadow = "none"; // 그림자 제거
-        ghost.style.border = "none"; // 테두리 제거(필요시)
-        ghost.style.borderRadius = getComputedStyle(target).borderRadius; // 둥근 모서리 유지
+        ghost.style.borderRadius = getComputedStyle(target).borderRadius;
         document.body.appendChild(ghost);
         function onTouchMove(ev) {
             const t = ev.touches[0];

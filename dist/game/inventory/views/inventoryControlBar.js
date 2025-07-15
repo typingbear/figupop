@@ -1,17 +1,15 @@
 // src/game/inventory/views/inventoryControlBarView.ts
 import { getUIState } from "../../../core/services/uiStateService.js";
+import { PANEL_INVENTORY } from "../../../common/config.js";
 /**
  * 인벤토리 컨트롤바(뷰+소트)
  * @param onChangeView - "grid" | "list"
  * @param onChangeSort - "recent" | "registered" | "name"
  */ export function renderInventoryControlBar(onChangeView, onChangeSort) {
     var _a, _b, _c;
-    const panel = document.getElementById("inventory");
-    if (!panel)
-        return;
     const currentView = ((_a = getUIState("inventoryView")) !== null && _a !== void 0 ? _a : "grid");
     const currentSort = ((_b = getUIState("inventorySort")) !== null && _b !== void 0 ? _b : "recent");
-    (_c = panel.querySelector(".inventory-control-bar")) === null || _c === void 0 ? void 0 : _c.remove();
+    (_c = PANEL_INVENTORY.querySelector(".inventory-control-bar")) === null || _c === void 0 ? void 0 : _c.remove();
     const bar = document.createElement("div");
     bar.className = "inventory-control-bar";
     // Grid/List 버튼
@@ -45,5 +43,5 @@ import { getUIState } from "../../../core/services/uiStateService.js";
     });
     select.onchange = () => onChangeSort(select.value);
     bar.appendChild(select);
-    panel.prepend(bar);
+    PANEL_INVENTORY.prepend(bar);
 }

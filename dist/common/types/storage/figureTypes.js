@@ -1,0 +1,2 @@
+// figureTypes.ts
+export {};

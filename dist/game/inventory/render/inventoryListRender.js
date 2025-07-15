@@ -1,14 +1,11 @@
 import { getFigureById } from "../../../core/services/figureLibraryService.js";
-import { ID_INVENTORY } from "../../../common/config.js";
-import { createInventoryFigureThumb } from "../../../core/images/imageHandler.js";
+import { ID_INVENTORY, PANEL_INVENTORY } from "../../../common/config.js";
+import { createInventoryFigureThumb } from "./inventoryImageHandler.js";
 import { getSortedInventory } from "../views/inventoryViewCommon.js";
 // 인벤토리 리스트(세로/가로 스크롤) 렌더링
 export function renderInventoryList() {
-    const container = document.getElementById(ID_INVENTORY);
-    if (!container)
-        return;
     // 기존 리스트 삭제
-    container.querySelectorAll('.inventory-list').forEach(el => el.remove());
+    PANEL_INVENTORY.querySelectorAll('.inventory-list').forEach(el => el.remove());
     // 새 리스트 생성
     const list = document.createElement("ul");
     list.className = "inventory-list";
@@ -34,13 +31,10 @@ export function renderInventoryList() {
         li.appendChild(modeBar);
         list.appendChild(li);
     });
-    container.appendChild(list);
+    PANEL_INVENTORY.appendChild(list);
 }
 export function addInventoryListItem(invFig) {
-    const container = document.getElementById(ID_INVENTORY);
-    if (!container)
-        return;
-    const list = container.querySelector(".inventory-list");
+    const list = PANEL_INVENTORY.querySelector(".inventory-list");
     if (!list)
         return;
     // 이미 해당 피규어의 썸네일이 존재하면 추가하지 않음
