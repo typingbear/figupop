@@ -121,6 +121,9 @@ import { Entity } from "../../../common/types/game/playgroundTypes.js";
       window.removeEventListener("touchend", onUpTouch);
       window.removeEventListener("touchcancel", onUpTouch);
       draggingTouchId = null;
+      handleUp();
+      draggingImg = null;
+      draggingSerial = null;
     }
   }
 
@@ -310,7 +313,7 @@ import { Entity } from "../../../common/types/game/playgroundTypes.js";
       const result = addOrUnlockInventoryFigure(pendingId, pendingMode);
 
       // 사운드
-      if (pendingSound && pendingSound.trim() !== '') playSound(AUDIO_ROOT+pendingSound);
+      if (pendingSound && pendingSound.trim() !== '') playSound(AUDIO_ROOT + pendingSound);
       else if (result === "new-figure") playSound(NEW_FIGURE_AUDIO);
       else if (result === "new-mode") playSound(UNLOCK_FIGURE_AUDIO);
       else playSound(OLD_FIGURE_AUDIO);

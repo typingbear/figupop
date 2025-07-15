@@ -97,6 +97,9 @@ import { AddOrUpdatePlayItemRender } from "../playgroundRenderer.js";
             window.removeEventListener("touchend", onUpTouch);
             window.removeEventListener("touchcancel", onUpTouch);
             draggingTouchId = null;
+            handleUp();
+            draggingImg = null;
+            draggingSerial = null;
         }
     }
     function getOverlappingFigure(a, figures) {
