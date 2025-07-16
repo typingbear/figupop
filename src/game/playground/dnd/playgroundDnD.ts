@@ -5,7 +5,8 @@ import {
   getInventoryFigures,
   removePlaygroundFigureBySerial,
   addPlaygroundFigure,
-  saveToGameStateStorage
+  saveToGameStateStorage,
+  setCurrentMode
 } from "../../../core/services/gameStateService.js";
 import {
   getReactionResult,
@@ -28,36 +29,36 @@ import { Entity } from "../../../common/types/game/playgroundTypes.js";
   let draggingTouchId: number | null = null;
 
   // ============ [PC: 마우스 DnD] ============
- playgroundEl.addEventListener("mousedown", e => {
-  const target = e.target as HTMLElement;
-  if (target.classList.contains("group-selected")) {
-    return; // 단일 드래그는 하지 않음 (그룹 드래그는 따로 처리)
-  }
-  // ✅ 조건 추가: group-selected 상태일 경우 단일 드래그 방지
-  if (
-    target instanceof HTMLImageElement &&
-    target.hasAttribute("data-serial") &&
-    !target.classList.contains("group-selected") // <-- 이 조건 추가
-  ) {
-    draggingImg = target;
-    draggingSerial = target.getAttribute("data-serial");
+  playgroundEl.addEventListener("mousedown", e => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains("group-selected")) {
+      return; // 단일 드래그는 하지 않음 (그룹 드래그는 따로 처리)
+    }
+    // ✅ 조건 추가: group-selected 상태일 경우 단일 드래그 방지
+    if (
+      target instanceof HTMLImageElement &&
+      target.hasAttribute("data-serial") &&
+      !target.classList.contains("group-selected") // <-- 이 조건 추가
+    ) {
+      draggingImg = target;
+      draggingSerial = target.getAttribute("data-serial");
 
-    playSound(DRAG_FIGURE_AUDIO);
+      playSound(DRAG_FIGURE_AUDIO);
 
-    const newZ = bringFigureToFront(draggingSerial!);
-    if (typeof newZ === "number") draggingImg.style.zIndex = String(newZ);
+      const newZ = bringFigureToFront(draggingSerial!);
+      if (typeof newZ === "number") draggingImg.style.zIndex = String(newZ);
 
-    startX = e.clientX;
-    startY = e.clientY;
-    origX = parseInt(target.style.left) || 0;
-    origY = parseInt(target.style.top) || 0;
+      startX = e.clientX;
+      startY = e.clientY;
+      origX = parseInt(target.style.left) || 0;
+      origY = parseInt(target.style.top) || 0;
 
-    window.addEventListener("mousemove", onMoveMouse);
-    window.addEventListener("mouseup", onUpMouse);
+      window.addEventListener("mousemove", onMoveMouse);
+      window.addEventListener("mouseup", onUpMouse);
 
-    e.preventDefault();
-  }
-});
+      e.preventDefault();
+    }
+  });
 
   function onMoveMouse(e: MouseEvent) {
     handleMove(e.clientX, e.clientY);
@@ -75,7 +76,7 @@ import { Entity } from "../../../common/types/game/playgroundTypes.js";
     const touches = e.changedTouches;
     const target = (e.target as HTMLElement);
     if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")
-    &&  !target.classList.contains("group-selected")) {
+      && !target.classList.contains("group-selected")) {
       draggingImg = target;
       draggingSerial = target.getAttribute("data-serial");
 
@@ -335,12 +336,13 @@ import { Entity } from "../../../common/types/game/playgroundTypes.js";
         });
       }
 
+
       // 인벤토리 UI 업데이트
-      const inventoryFig = getInventoryFigures().find(f => f.id === pendingId);
-      if (inventoryFig) {
-        if (result === "new-figure") renderInventoryInsertItem(inventoryFig);
-        else if (result === "new-mode") renderInventoryUpdateItem(inventoryFig);
-      }
+      if (result === "new-figure") renderInventoryInsertItem(pendingId);
+      else if (result === "new-mode") {
+        renderInventoryUpdateItem(pendingId, pendingMode); setCurrentMode(pendingId, pendingMode);
+      };
+
       // 변신/삭제 등 변화가 있으면 즉시 저장
       saveToGameStateStorage();
     }

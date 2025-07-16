@@ -1,31 +1,37 @@
 import { getFigureById } from "../../../../core/services/figureLibraryService.js";
-import { getUnlockedModes } from "../../../../core/services/gameStateService.js";
+import { getUnlockedModes, setCurrentMode } from "../../../../core/services/gameStateService.js";
 import { makeSerialKey, playSound } from "../../../../common/utils.js";
 import { createInventoryFigureThumb } from "../inventoryCommon.js";
 import { DRAG_FIGURE_AUDIO } from "../../../../common/config.js";
+import { renderInventoryUpdateItem } from "../inventoryRenderer.js";
 /**
  * 인벤토리 그리드에서 피규어의 모드 선택 팝오버를 띄움
  */
 export function showInventoryGridModePopover(figureId, anchorElement) {
+    // 기존 팝오버 제거
     document.querySelectorAll(".inventory-mode-dialog").forEach(e => e.remove());
     const figure = getFigureById(figureId);
     if (!figure)
         return;
     const unlockedModes = getUnlockedModes(figureId);
+    // 팝오버 DOM 생성
     const dialog = document.createElement("div");
     dialog.className = "inventory-mode-dialog";
     Object.keys(figure.modes).forEach(modeName => {
         const isUnlocked = unlockedModes.includes(modeName);
         const img = createInventoryFigureThumb({
-            figure: figure,
+            figure,
             mode: modeName,
             unlocked: isUnlocked,
         });
-        // 팝오버에서는 dragstart만 따로 추가
         if (isUnlocked) {
-            img.addEventListener("mousedown", () => {
+            img.addEventListener("click", () => {
+                setCurrentMode(figureId, modeName);
                 playSound(DRAG_FIGURE_AUDIO);
+                dialog.remove();
+                renderInventoryUpdateItem(figureId, modeName, false);
             });
+            // 드래그 처리
             img.addEventListener("dragstart", ev => {
                 if (ev.dataTransfer) {
                     const rect = img.getBoundingClientRect();
@@ -47,7 +53,7 @@ export function showInventoryGridModePopover(figureId, anchorElement) {
         }
         dialog.appendChild(img);
     });
-    // 이하 위치/표시, 외부 클릭 닫기 등은 이전과 동일
+    // 팝오버 위치 계산
     dialog.style.position = "absolute";
     dialog.style.visibility = "hidden";
     document.body.appendChild(dialog);
@@ -72,6 +78,7 @@ export function showInventoryGridModePopover(figureId, anchorElement) {
     dialog.style.left = `${left}px`;
     dialog.style.top = `${top}px`;
     dialog.style.visibility = "visible";
+    // 외부 클릭 시 팝오버 제거
     setTimeout(() => {
         function handler(e) {
             if (!dialog.contains(e.target)) {

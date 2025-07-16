@@ -1,4 +1,4 @@
-import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront, getInventoryFigures, removePlaygroundFigureBySerial, saveToGameStateStorage } from "../../../core/services/gameStateService.js";
+import { getPlaygroundFigures, addOrUnlockInventoryFigure, bringFigureToFront, removePlaygroundFigureBySerial, saveToGameStateStorage, setCurrentMode } from "../../../core/services/gameStateService.js";
 import { getReactionResult, } from "../../../core/services/figureLibraryService.js";
 import { AUDIO_ROOT, ID_PLAYGROUND, NEW_FIGURE_AUDIO, OLD_FIGURE_AUDIO, UNLOCK_FIGURE_AUDIO, DRAG_FIGURE_AUDIO, DROP_FIGURE_AUDIO } from "../../../common/config.js";
 import { renderInventoryInsertItem, renderInventoryUpdateItem } from "../../inventory/render/inventoryRenderer.js";
@@ -285,13 +285,13 @@ import { AddOrUpdatePlayItemRender } from "../playgroundRenderer.js";
                 });
             }
             // 인벤토리 UI 업데이트
-            const inventoryFig = getInventoryFigures().find(f => f.id === pendingId);
-            if (inventoryFig) {
-                if (result === "new-figure")
-                    renderInventoryInsertItem(inventoryFig);
-                else if (result === "new-mode")
-                    renderInventoryUpdateItem(inventoryFig);
+            if (result === "new-figure")
+                renderInventoryInsertItem(pendingId);
+            else if (result === "new-mode") {
+                renderInventoryUpdateItem(pendingId, pendingMode);
+                setCurrentMode(pendingId, pendingMode);
             }
+            ;
             // 변신/삭제 등 변화가 있으면 즉시 저장
             saveToGameStateStorage();
         }

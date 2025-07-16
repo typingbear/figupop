@@ -17,21 +17,21 @@ export function renderInventory() {
     // 드래그 등록(공통)
     enableInvToPlayDrag();
 }
-export function renderInventoryInsertItem(invFig) {
+export function renderInventoryInsertItem(figureId) {
     const currentView = getUIState("inventoryView");
     if (currentView === "grid") {
-        addInventoryGridItem(invFig);
+        addInventoryGridItem(figureId);
     }
     else {
-        addInventoryListItem(invFig);
+        addInventoryListItem(figureId);
     }
 }
-export function renderInventoryUpdateItem(invFig) {
+export function renderInventoryUpdateItem(figureId, modeOverride, highlightEffect = true) {
     const currentView = getUIState("inventoryView");
     if (currentView === "grid") {
-        updateInventoryGridItem(invFig);
+        updateInventoryGridItem(figureId, modeOverride, highlightEffect);
     }
     else {
-        updateInventoryListItem(invFig);
+        updateInventoryListItem(figureId);
     }
 }

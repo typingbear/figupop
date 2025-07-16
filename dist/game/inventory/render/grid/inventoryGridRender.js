@@ -1,21 +1,8 @@
 import { getFigureById } from "../../../../core/services/figureLibraryService.js";
 import { PANEL_INVENTORY } from "../../../../common/config.js";
-import { showInventoryGridModePopover } from "./inventoryGridModePopover.js";
-import { createInventoryFigureThumb, getSortedInventory } from "../inventoryCommon.js";
+import { createInventoryFigureThumb, getSortedInventory, handleInventoryThumbClick } from "../inventoryCommon.js";
+import { getInventoryFigures } from "../../../../core/services/gameStateService.js";
 // 현재 열린 팝오버의 figureId 저장 (없으면 null)
-let currentPopoverFigureId = null;
-function handleThumbClick(figureId, img) {
-    // 기존 팝오버를 모두 닫음
-    document.querySelectorAll('.inventory-mode-dialog').forEach(e => e.remove());
-    // 이미 같은 피규어의 팝오버가 열려 있었으면 닫고 return
-    if (currentPopoverFigureId === figureId) {
-        currentPopoverFigureId = null;
-        return;
-    }
-    // 새로 열기
-    showInventoryGridModePopover(figureId, img);
-    currentPopoverFigureId = figureId;
-}
 const INVENTORY_CONTENT = document.getElementById("inventory_content");
 /**
  * 그리드 렌더링 (Grid)
@@ -29,17 +16,19 @@ export function renderInventoryGrid(filteredInventory) {
     // filteredInventory가 있으면 그걸, 없으면 전체를 쓴다
     const inventory = filteredInventory !== null && filteredInventory !== void 0 ? filteredInventory : getSortedInventory();
     inventory.forEach(invFig => {
+        var _a;
         const fig = getFigureById(invFig.id);
         if (!fig)
             return;
-        const isUnlocked = invFig.unlockedModes.includes("base");
+        const currentMode = (_a = invFig.currentMode) !== null && _a !== void 0 ? _a : "base";
+        const isUnlocked = invFig.unlockedModes.includes(currentMode);
         const item = document.createElement("div");
         item.className = "inventory-grid-item";
         const img = createInventoryFigureThumb({
             figure: fig,
-            mode: "base",
+            mode: currentMode,
             unlocked: isUnlocked,
-            onClick: (img) => handleThumbClick(invFig.id, img),
+            onClick: (img) => handleInventoryThumbClick(invFig.id, img),
         });
         item.appendChild(img);
         grid.appendChild(item);
@@ -79,54 +68,67 @@ export function renderInventoryList(filteredInventory) {
     });
     INVENTORY_CONTENT.appendChild(list);
 }
-export function addInventoryGridItem(invFig) {
+export function addInventoryGridItem(figureId) {
+    var _a;
     const grid = PANEL_INVENTORY.querySelector(".inventory-grid");
     if (!grid)
         return;
-    // 이미 해당 피규어 썸네일이 존재하면 추가하지 않음
-    if (grid.querySelector(`img[data-figure-id="${invFig.id}"]`))
+    if (grid.querySelector(`img[data-figure-id="${figureId}"]`))
         return;
-    const fig = getFigureById(invFig.id);
-    if (!fig)
+    const fig = getFigureById(figureId);
+    const invFig = getInventoryFigures().find(f => f.id === figureId);
+    if (!fig || !invFig)
         return;
-    const isUnlocked = invFig.unlockedModes.includes("base");
-    // 1칸: div (item)
+    const currentMode = (_a = invFig.currentMode) !== null && _a !== void 0 ? _a : "base";
+    const isUnlocked = invFig.unlockedModes.includes(currentMode);
     const item = document.createElement("div");
     item.className = "inventory-grid-item";
-    // 굳이 data-id는 안 붙여도 OK (img로 찾을 수 있으니)
-    // 썸네일
     const newImg = createInventoryFigureThumb({
         figure: fig,
-        mode: "base",
+        mode: currentMode,
         unlocked: isUnlocked,
-        onClick: (img) => handleThumbClick(invFig.id, img),
+        onClick: (img) => handleInventoryThumbClick(figureId, img),
     });
     item.appendChild(newImg);
-    grid.appendChild(item);
+    // ✅ 맨 앞에 추가
+    grid.prepend(item);
+    // ✅ 테두리 강조 애니메이션
+    item.classList.add("inventory-highlight");
+    setTimeout(() => {
+        item.classList.remove("inventory-highlight");
+    }, 1000);
 }
-export function updateInventoryGridItem(invFig) {
+export function updateInventoryGridItem(figureId, modeOverride, highlightEffect = true) {
+    var _a;
     const grid = PANEL_INVENTORY.querySelector(".inventory-grid");
     if (!grid)
         return;
-    const fig = getFigureById(invFig.id);
-    if (!fig)
+    const fig = getFigureById(figureId);
+    const invFig = getInventoryFigures().find(f => f.id === figureId);
+    if (!fig || !invFig)
         return;
-    // 해당 피규어의 썸네일 img (grid는 base mode만)
-    const img = grid.querySelector(`img[data-figure-id="${invFig.id}"][data-mode="base"]`);
+    const currentMode = (_a = modeOverride !== null && modeOverride !== void 0 ? modeOverride : invFig.currentMode) !== null && _a !== void 0 ? _a : "base";
+    const img = grid.querySelector(`img[data-figure-id="${figureId}"][data-mode]`);
     if (!img)
         return;
-    const isUnlocked = invFig.unlockedModes.includes("base");
+    const isUnlocked = invFig.unlockedModes.includes(currentMode);
+    const currentImgMode = img.getAttribute("data-mode");
     const isCurrentlyUnlocked = !img.classList.contains("locked");
-    // 변화 없으면 skip
-    if (isCurrentlyUnlocked === isUnlocked)
+    // mode 변경 or 잠금 상태 변경이 있는 경우만 교체
+    if (currentImgMode === currentMode && isCurrentlyUnlocked === isUnlocked)
         return;
-    // 새 썸네일 생성
     const newImg = createInventoryFigureThumb({
         figure: fig,
-        mode: "base",
+        mode: currentMode,
         unlocked: isUnlocked,
-        onClick: (img) => handleThumbClick(invFig.id, img),
+        onClick: (img) => handleInventoryThumbClick(figureId, img),
     });
-    // 실제로 img 교체
+    const itemDiv = img.closest(".inventory-grid-item");
     img.replaceWith(newImg);
+    if (highlightEffect && itemDiv) {
+        itemDiv.classList.add("inventory-highlight");
+        setTimeout(() => {
+            itemDiv.classList.remove("inventory-highlight");
+        }, 600);
+    }
 }

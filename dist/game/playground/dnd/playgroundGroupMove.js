@@ -1,10 +1,13 @@
 import { ID_PLAYGROUND } from "../../../common/config.js";
+import { playSound } from "../../../common/utils.js";
+import { DRAG_GROUP_SELECT_AUDIO, DROP_GROUP_SELECT_AUDIO, CANCEL_GROUP_SELECT_AUDIO } from "../../../common/config.js";
 let selectionBox;
 let isSelecting = false;
 let selStartX = 0, selStartY = 0;
 let selectedImgs = [];
 let isDraggingGroup = false;
 let dragStartX = 0, dragStartY = 0;
+let hasMoved = false; // ✅ 이동 여부 확인용
 let originalPositions = [];
 export function enablePlaygroundGroupMove() {
     selectionBox = document.getElementById('selection-box');
@@ -16,9 +19,21 @@ export function enablePlaygroundGroupMove() {
     const playgroundEl = document.getElementById(ID_PLAYGROUND);
     playgroundEl.addEventListener("mousedown", e => {
         const target = e.target;
+        // ✅ 선택 해제 처리
+        const isNotImage = !(target instanceof HTMLImageElement);
+        const isNotSelectionBox = target.id !== 'selection-box';
+        const isNotSelectedImage = !(target instanceof HTMLImageElement && target.classList.contains("group-selected"));
+        if ((isNotImage || isNotSelectedImage) && isNotSelectionBox) {
+            if (selectedImgs.length > 0) {
+                selectedImgs.forEach(img => img.classList.remove("group-selected"));
+                selectedImgs = [];
+                playSound(CANCEL_GROUP_SELECT_AUDIO);
+            }
+        }
         // ✅ 그룹 드래그 시작
         if (target instanceof HTMLImageElement && target.classList.contains("group-selected")) {
             isDraggingGroup = true;
+            hasMoved = false; // 초기화
             dragStartX = e.clientX;
             dragStartY = e.clientY;
             originalPositions = getSelectedImages().map(img => ({
@@ -48,11 +63,6 @@ export function enablePlaygroundGroupMove() {
             window.addEventListener("mouseup", onSelectMouseUp);
             e.preventDefault();
             return;
-        }
-        // ✅ 선택 해제
-        if (selectedImgs.length > 0) {
-            selectedImgs.forEach(img => img.classList.remove("group-selected"));
-            selectedImgs = [];
         }
     });
     function onSelectMouseMove(e) {
@@ -87,12 +97,18 @@ export function enablePlaygroundGroupMove() {
         selectionBox.style.display = 'none';
         window.removeEventListener("mousemove", onSelectMouseMove);
         window.removeEventListener("mouseup", onSelectMouseUp);
+        if (selectedImgs.length > 0) {
+            playSound(DRAG_GROUP_SELECT_AUDIO);
+        }
     }
     function onGroupMove(e) {
         if (!isDraggingGroup)
             return;
         const dx = e.clientX - dragStartX;
         const dy = e.clientY - dragStartY;
+        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+            hasMoved = true;
+        }
         const containerRect = playgroundEl.getBoundingClientRect();
         for (const { img, x, y } of originalPositions) {
             const width = img.getBoundingClientRect().width;
@@ -109,7 +125,12 @@ export function enablePlaygroundGroupMove() {
         if (!isDraggingGroup)
             return;
         isDraggingGroup = false;
-        // ✅ 드래그 끝나면 선택 해제
+        if (hasMoved) {
+            playSound(DROP_GROUP_SELECT_AUDIO); // ✅ 실제로 이동한 경우만 사운드
+        }
+        else {
+            playSound(CANCEL_GROUP_SELECT_AUDIO); // ✅ 클릭만 했을 경우엔 취소 사운드
+        }
         selectedImgs.forEach(img => img.classList.remove("group-selected"));
         selectedImgs = [];
         window.removeEventListener("mousemove", onGroupMove);

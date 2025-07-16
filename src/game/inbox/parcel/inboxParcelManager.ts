@@ -150,7 +150,7 @@ export function removeParcelAndSpawn() {
     playSound(AUDIO_ROOT+randomFig.sound);
   } else if (addResult === "new-figure" && invFig) {
     playSound(NEW_FIGURE_AUDIO);
-    renderInventoryInsertItem(invFig);
+    renderInventoryInsertItem(invFig.id);
   }
 
   // 8. 택배 리필 카운트다운 관리

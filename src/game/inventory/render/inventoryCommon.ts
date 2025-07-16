@@ -3,6 +3,9 @@ import { getSortedInventoryFigures } from "../../../core/services/gameStateCoord
 import { getUIState } from "../../../core/services/uiStateService.js";
 import { IMAGE_ROOT, OUTLINE_IMAGE_BASE } from "../../../common/config.js";
 import { Figure } from "../../../common/types/storage/figureTypes.js";
+import { showInventoryGridModePopover } from "./grid/inventoryGridModePopover.js";
+import { getInventoryFigures } from "../../../core/services/gameStateService.js";
+import { getFigureById } from "../../../core/services/figureLibraryService.js";
 
 export function getSortedInventory() {
   const sortType = getUIState("inventorySort") as InventorySortType;
@@ -56,5 +59,23 @@ export function createInventoryFigureThumb({
   }
 
   return img;
+}
+
+let currentPopoverFigureId: string | null = null;
+
+export function handleInventoryThumbClick(figureId: string, img: HTMLImageElement) {
+  // 기존 팝오버를 모두 닫음
+  document.querySelectorAll('.inventory-mode-dialog').forEach(e => e.remove());
+    
+
+  // 이미 같은 피규어의 팝오버가 열려 있었으면 닫고 return
+  if (currentPopoverFigureId === figureId) {
+    currentPopoverFigureId = null;
+    return;
+  }
+
+  // 새로 열기
+  showInventoryGridModePopover(figureId, img);
+  currentPopoverFigureId = figureId;
 }
 

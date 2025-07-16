@@ -79,6 +79,14 @@ export function isModeUnlocked(figureId: string, mode: string): boolean {
   return !!entry && entry.unlockedModes.includes(mode);
 }
 
+export function setCurrentMode(figureId: string, mode: string): boolean {
+  const entry = data.inventoryFigures.find(f => f.id === figureId);
+  if (!entry) return false;
+
+  entry.currentMode = mode;
+  saveToGameStateStorage();
+  return true;
+}
 
 export function addOrUnlockInventoryFigure(
   figureId: string,

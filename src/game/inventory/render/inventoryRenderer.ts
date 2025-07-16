@@ -2,7 +2,7 @@
 import { getUIState } from "../../../core/services/uiStateService.js";
 import {  PANEL_INVENTORY } from "../../../common/config.js";
 import { enableInvToPlayDrag } from "../dnd/toPlaygroundDrag.js";
-import { addInventoryGridItem,  renderInventoryGrid, updateInventoryGridItem } from "./grid/inventoryGridRender.js";
+import { addInventoryGridItem, renderInventoryGrid,  updateInventoryGridItem } from "./grid/inventoryGridRender.js";
 import { addInventoryListItem,  renderInventoryList, updateInventoryListItem } from "./list/inventoryListRender.js";
 import { InventoryFigure } from "../../../common/types/game/inventoryTypes.js";
 
@@ -22,20 +22,21 @@ export function renderInventory() {
   enableInvToPlayDrag();
 }
 
-export function renderInventoryInsertItem(invFig: InventoryFigure) {
+export function renderInventoryInsertItem(figureId: string) {
   const currentView = getUIState("inventoryView");
   if (currentView === "grid") {
-    addInventoryGridItem(invFig);
+    addInventoryGridItem(figureId);
   } else {
-    addInventoryListItem(invFig);
+    addInventoryListItem(figureId);
   }
 }
 
-export function renderInventoryUpdateItem(invFig: InventoryFigure) {
+
+export function renderInventoryUpdateItem(figureId: string, modeOverride?: string,highlightEffect = true) {
   const currentView = getUIState("inventoryView");
   if (currentView === "grid") {
-    updateInventoryGridItem( invFig);
+    updateInventoryGridItem(figureId, modeOverride,highlightEffect);
   } else {
-    updateInventoryListItem(invFig);
+    updateInventoryListItem(figureId);
   }
 }

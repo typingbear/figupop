@@ -1,0 +1,94 @@
+/* ==============================
+   [INVENTORY GRID & LIST LAYOUT]
+   ============================== */
+
+/* 그리드 */
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 10px;
+  row-gap: 18px;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+.inventory-grid-item {
+  margin: 0;
+  padding: 0;
+}
+
+/* 리스트 */
+.inventory-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.inventory-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  margin: 0;
+}
+
+
+/* --- 모드 선택 팝오버 --- */
+.inventory-mode-dialog {
+  position: absolute;
+  background: #fff;
+  border: 1.5px solid #dedede;
+  border-radius: 13px;
+  box-shadow: 0 4px 24px #0001, 0 1.5px 5px #ffd1b3a0;
+  padding: 12px 8px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  z-index: 9999;
+}
+ .inventory-mode-dialog img {
+  width: 48px;
+  height: 48px;
+}
+
+
+
+/* 썸네일 사이즈 */
+.inventory-grid .thumb-img {
+  cursor: pointer;
+  width: 68px;
+  height: 68px;
+}
+.inventory-list .thumb-img {
+  cursor: default;
+  width: 68px;
+  height: 68px;
+}
+
+/* 반응형 등 기존 미디어 쿼리도 여기 배치 */
+@media (max-width: 1100px) {
+  .inventory-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .inventory-grid .thumb-img {
+    width: 60px;
+    height: 60px;
+  }
+  .inventory-list .thumb-img {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@media (max-width: 768px) {
+  .inventory-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .inventory-grid .thumb-img {
+    width: 52px;
+    height: 52px;
+  }
+  .inventory-list .thumb-img {
+    width: 36px;
+    height: 36px;
+  }
+}

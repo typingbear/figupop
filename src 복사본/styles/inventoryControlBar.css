@@ -1,0 +1,183 @@
+/* ===========================
+   [INVENTORY CONTROL BAR ONLY]
+   =========================== */
+
+.inventory-control-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;    /* 추가: 한 줄 공간이 부족하면 자동 줄바꿈 */
+  margin: 24px auto 18px auto; /* PC에서 위쪽, 아래쪽 공간! */
+  padding: 0 24px;
+  user-select: none;
+  max-width: 700px;  /* PC에서 좌우 너무 넓지 않게 */
+  box-sizing: border-box;
+}
+
+.inventory-control-bar-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  width: auto;         /* 변경: 100% -> auto */
+  margin-bottom: 0;
+}
+
+/* --- Divider (PC에서만 보임) --- */
+.inventory-control-divider {
+  display: inline-block;
+  width: 1.5px; height: 27px;
+  margin: 0 12px;
+  background: #e0bfae;
+  border-radius: 1.5px;
+  opacity: 0.7;
+}
+
+.inventory-sort-select {
+  padding: 4px 8px;
+  border-radius: 7px;
+  border: 1.2px solid #ffd8c2;
+  background: #fff7f0;
+  margin-left: 6px;
+  font-size: 1.08em;
+}
+.inventory-toggle-group {
+  justify-content: flex-start;
+}
+.inventory-toggle-btn {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 7px;
+  background: #f3ecec;
+  cursor: pointer;
+  transition: background 0.18s, color 0.15s;
+  outline: none;
+  margin: 0 1px;
+  font-size: 1.08em;
+  min-width: 70px;
+}
+.inventory-toggle-btn:disabled {
+  background: #ffb4a2;
+  color: #fff;
+  cursor: default;
+}
+.inventory-toggle-btn:not(:disabled):hover {
+  background: #ffe5d1;
+  color: #e85d04;
+}
+
+/* 검색창 관련 */
+.inventory-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;        /* 줄바꿈 시 전체 폭 */
+  justify-content: center;
+  margin: 18px 0 0 0;
+  padding: 0;
+  max-width: 480px;
+  box-sizing: border-box;
+}
+.inventory-search-input {
+  padding: 7px 38px 7px 16px;
+  border-radius: 9px;
+  border: 1.7px solid #ffd8c2;
+  background: #fff7f0;
+  font-size: 16px;
+  color: #444;
+  outline: none;
+  transition: border 0.18s, box-shadow 0.18s;
+  min-width: 160px;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 0 2px 12px #ffd1b340;
+}
+.inventory-search-input:focus {
+  border-color: #ffb4a2;
+  background: #fff3e6;
+  box-shadow: 0 4px 18px #ffd1b360;
+}
+.inventory-search-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+/* ===== 태블릿/모바일 (1100px 이하) ===== */
+@media (max-width: 1100px) {
+  .inventory-control-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    flex-wrap: nowrap;    /* 다시 한 줄(기존대로) */
+    max-width: 98vw;
+    margin: 10px auto 12px auto;
+    padding: 0 2vw;
+  }
+  .inventory-control-bar-row {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+    gap: 7px;
+    width: 100%;
+  }
+  .inventory-toggle-group {
+    justify-content: center;
+    margin-bottom: 0;
+  }
+  .inventory-toggle-btn {
+    padding: 2.5px 10px;
+    font-size: 1em;
+    min-width: 62px;
+    border-radius: 8px;
+  }
+  .inventory-sort-select {
+    font-size: 0.98em;
+    padding: 3px 6px;
+    border-radius: 7px;
+    margin-left: 0;
+  }
+  .inventory-search-wrapper {
+    margin: 6px 0 0 0;
+    padding: 0;
+    max-width: 96vw;
+  }
+  .inventory-search-input {
+    font-size: 15px;
+    padding: 6px 35px 6px 12px;
+    border-radius: 7px;
+    min-width: 120px;
+    max-width: 260px;
+  }
+  .inventory-search-icon {
+    width: 18px;
+    right: 13px;
+  }
+  /* Divider 숨기기(안보이게) */
+  .inventory-control-divider {
+    display: none;
+  }
+}
+
+/* ===== 모바일 (768px 이하) ===== */
+@media (max-width: 768px) {
+  .inventory-control-bar {
+    padding: 0 1vw;
+    max-width: 100vw;
+  }
+  .inventory-search-wrapper {
+    margin: 5px 0 0 0;
+    max-width: 99vw;
+  }
+  .inventory-toggle-btn {
+    min-width: 58px;
+    font-size: 0.98em;
+  }
+}

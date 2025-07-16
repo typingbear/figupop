@@ -138,7 +138,7 @@ export function removeParcelAndSpawn() {
     }
     else if (addResult === "new-figure" && invFig) {
         playSound(NEW_FIGURE_AUDIO);
-        renderInventoryInsertItem(invFig);
+        renderInventoryInsertItem(invFig.id);
     }
     // 8. 택배 리필 카운트다운 관리
     if (getInboxParcels() < PARCEL_LIMIT && state.intervalId === null) {
