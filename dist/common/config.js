@@ -43,7 +43,7 @@ export const INVENTORY_LIST_ENABLED_IMG = "assets/ui/list_enabled.png";
 export const INVENTORY_LIST_DISABLED_IMG = "assets/ui/list_disable.png";
 // playground.css하고 맞춰야함
 export const FIGURE_MAX_SIZE = {
-    pc: 80,
+    pc: 100,
     tablet: 70,
     mobile: 50
 };

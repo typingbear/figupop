@@ -1,5 +1,58 @@
 export const figures = [
     {
+        "id": "egg",
+        "name": "Egg",
+        "kind": "prime",
+        "modes": {
+            "base": {
+                "width": 736,
+                "height": 834
+            },
+            "mode1": {
+                "width": 736,
+                "height": 571
+            },
+            "mode2": {
+                "width": 736,
+                "height": 736
+            },
+            "parrot": {
+                "width": 129,
+                "height": 128
+            },
+            "penguin": {
+                "width": 140,
+                "height": 128
+            }
+        },
+        "reactions": [
+            {
+                "mode": "base",
+                "with": "l_rock",
+                "result": "mode1"
+            },
+            {
+                "mode": "mode1",
+                "with": "fire",
+                "result": "mode2",
+                "sound": "reaction.mp3"
+            }
+        ]
+    },
+    {
+        "id": "fire",
+        "name": "Fire",
+        "kind": "prime",
+        "modes": {
+            "base": {
+                "width": 736,
+                "height": 736,
+                "desc": "fire"
+            }
+        },
+        "reactions": []
+    },
+    {
         "id": "l_basketball",
         "name": "L_basketball",
         "kind": "prime",
@@ -15,7 +68,8 @@ export const figures = [
                 "mode": "base",
                 "with": "l_rain",
                 "result": "l_boy.base",
-                "effect": "circle"
+                "effect": "circle",
+                "sound": "special.mp3"
             }
         ]
     },
@@ -101,6 +155,10 @@ export const figures = [
                 "height": 408
             },
             "milk": {
+                "width": 100,
+                "height": 100
+            },
+            "milk3": {
                 "width": 408,
                 "height": 612
             },
@@ -303,59 +361,6 @@ export const figures = [
             "base": {
                 "width": 1024,
                 "height": 1024
-            }
-        },
-        "reactions": []
-    },
-    {
-        "id": "egg",
-        "name": "Egg",
-        "kind": "prime",
-        "modes": {
-            "base": {
-                "width": 736,
-                "height": 834
-            },
-            "mode1": {
-                "width": 736,
-                "height": 571
-            },
-            "mode2": {
-                "width": 736,
-                "height": 736
-            },
-            "penguin": {
-                "width": 140,
-                "height": 128
-            },
-            "parrot": {
-                "width": 129,
-                "height": 128
-            }
-        },
-        "reactions": [
-            {
-                "mode": "base",
-                "with": "l_rock",
-                "result": "mode1"
-            },
-            {
-                "mode": "mode1",
-                "with": "fire",
-                "result": "mode2",
-                "sound": "reaction.mp3"
-            }
-        ]
-    },
-    {
-        "id": "fire",
-        "name": "Fire",
-        "kind": "prime",
-        "modes": {
-            "base": {
-                "width": 736,
-                "height": 736,
-                "desc": "fire"
             }
         },
         "reactions": []
