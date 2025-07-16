@@ -16,12 +16,17 @@ import { AddOrUpdatePlayItemRender } from "../playgroundRenderer.js";
     // ============ [PC: 마우스 DnD] ============
     playgroundEl.addEventListener("mousedown", e => {
         const target = e.target;
-        if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")) {
+        if (target.classList.contains("group-selected")) {
+            return; // 단일 드래그는 하지 않음 (그룹 드래그는 따로 처리)
+        }
+        // ✅ 조건 추가: group-selected 상태일 경우 단일 드래그 방지
+        if (target instanceof HTMLImageElement &&
+            target.hasAttribute("data-serial") &&
+            !target.classList.contains("group-selected") // <-- 이 조건 추가
+        ) {
             draggingImg = target;
             draggingSerial = target.getAttribute("data-serial");
-            // 드래그 시작 사운드
             playSound(DRAG_FIGURE_AUDIO);
-            // z-index 최상위로!
             const newZ = bringFigureToFront(draggingSerial);
             if (typeof newZ === "number")
                 draggingImg.style.zIndex = String(newZ);
@@ -48,7 +53,8 @@ import { AddOrUpdatePlayItemRender } from "../playgroundRenderer.js";
             return; // 멀티터치 방지
         const touches = e.changedTouches;
         const target = e.target;
-        if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")) {
+        if (target instanceof HTMLImageElement && target.hasAttribute("data-serial")
+            && !target.classList.contains("group-selected")) {
             draggingImg = target;
             draggingSerial = target.getAttribute("data-serial");
             // 드래그 시작 사운드
