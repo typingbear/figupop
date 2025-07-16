@@ -5,7 +5,7 @@ export const UI_STATE_STORAGE_KEY   = "figupop-ui-state";
 export const FIGURE_KIND_FOR_PARCEL = 'prime';
 
 export const  PARCEL_TIME = 1;
-export const  PARCEL_LIMIT = 5;
+export const  PARCEL_LIMIT = 20;
 
 export const DEFAULT_UI_STATE = {
   inventoryOpen: false,

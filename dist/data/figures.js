@@ -158,13 +158,13 @@ export const figures = [
                 "width": 100,
                 "height": 100
             },
-            "milk3": {
-                "width": 408,
-                "height": 612
-            },
             "milkshake": {
                 "width": 487,
                 "height": 640
+            },
+            "test-base": {
+                "width": 408,
+                "height": 612
             }
         },
         "reactions": [
@@ -181,6 +181,30 @@ export const figures = [
                 "effect": "circle"
             }
         ]
+    },
+    {
+        "id": "l_cow_small",
+        "name": "L_cow_small",
+        "kind": "prime",
+        "modes": {
+            "base": {
+                "width": 100,
+                "height": 100
+            }
+        },
+        "reactions": []
+    },
+    {
+        "id": "l_cow_test",
+        "name": "L_cow_test",
+        "kind": "prime",
+        "modes": {
+            "milk": {
+                "width": 100,
+                "height": 100
+            }
+        },
+        "reactions": []
     },
     {
         "id": "l_face",
