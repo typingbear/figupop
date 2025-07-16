@@ -183,23 +183,23 @@ export const figures = [
         ]
     },
     {
-        "id": "l_cow_small",
-        "name": "L_cow_small",
+        "id": "l_cow_maik200",
+        "name": "L_cow_maik200",
         "kind": "prime",
         "modes": {
             "base": {
-                "width": 100,
-                "height": 100
+                "width": 153,
+                "height": 200
             }
         },
         "reactions": []
     },
     {
-        "id": "l_cow_test",
-        "name": "L_cow_test",
+        "id": "l_cow_small",
+        "name": "L_cow_small",
         "kind": "prime",
         "modes": {
-            "milk": {
+            "base": {
                 "width": 100,
                 "height": 100
             }
@@ -385,6 +385,18 @@ export const figures = [
             "base": {
                 "width": 1024,
                 "height": 1024
+            }
+        },
+        "reactions": []
+    },
+    {
+        "id": "l_cow_test",
+        "name": "L_cow_test",
+        "kind": "prime",
+        "modes": {
+            "milk": {
+                "width": 100,
+                "height": 100
             }
         },
         "reactions": []

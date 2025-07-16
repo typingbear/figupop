@@ -17,7 +17,7 @@ function parseName(filename) {
 }
 
 async function buildAndMergeFigures() {
-  // 1. 기존 figures.json 불러오기 (존재 안 하면 빈 배열)
+  // 1. 기존 figures.json 불러오기 (없으면 빈 배열)
   let oldFigures = [];
   if (fs.existsSync(oldFiguresPath)) {
     oldFigures = JSON.parse(fs.readFileSync(oldFiguresPath, 'utf8')).figures || [];
@@ -51,11 +51,10 @@ async function buildAndMergeFigures() {
     figuresMap[id].modes[mode] = { width, height };
   }
 
-  // 3. Merge (id/name/kind/modes의 width, height는 새 데이터 우선, 그 외는 기존꺼)
+  // 3. Merge
   const mergedFigures = Object.values(figuresMap).map(newFig => {
     const old = oldMap[newFig.id];
     if (old) {
-      // modes: width, height는 새것, 그 외(desc 등)는 기존것
       const newModes = {};
       for (const modeName in newFig.modes) {
         newModes[modeName] = {
@@ -71,17 +70,28 @@ async function buildAndMergeFigures() {
       }
       return {
         ...old,
-        ...newFig, // id, name, kind(이미지 기준)
+        ...newFig,
         kind: old.kind || newFig.kind,
         modes: newModes,
+        reactions: Array.isArray(old.reactions) ? old.reactions : []
       };
     }
-    return newFig; // 신규면 그대로
+    // 신규 항목: reactions 추가
+    return {
+      ...newFig,
+      reactions: []
+    };
   });
 
-  // 4. 기존에만 있고 이미지엔 없는 id는 유지(선택적)
+  // 4. 기존에만 있고 이미지엔 없는 항목도 유지
   oldFigures.forEach(oldFig => {
-    if (!mergedFigures.find(f => f.id === oldFig.id)) mergedFigures.push(oldFig);
+    if (!mergedFigures.find(f => f.id === oldFig.id)) {
+      // 누락된 경우에도 reactions 확인
+      mergedFigures.push({
+        ...oldFig,
+        reactions: Array.isArray(oldFig.reactions) ? oldFig.reactions : []
+      });
+    }
   });
 
   // 5. 저장
